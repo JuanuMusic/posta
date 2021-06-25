@@ -1,0 +1,8 @@
+{
+    "network": "kovan",
+    "PostaAddress": "0xc6Cb75F41742C38ea71dF899acB4bf65838b4123",
+    "POHAddress": "0x73BCCE92806BCe146102C44c4D9c3b9b9D745794",
+    "UBIAddress": "0xDdAdE19B13833d1bF52c1fe1352d41A8DD9fE8C9",
+    "pohApiBaseUrl":"https://api-kovan.poh.dev/"
+  }
+  

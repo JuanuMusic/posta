@@ -1,0 +1,49 @@
+import { useWeb3React } from "@web3-react/core";
+import { useEffect, useState } from "react";
+import { injected } from "../connectors";
+import PohAPI from "../DAL/PohAPI";
+import useEagerConnect from "./useEagerConnect";
+
+/**
+ * Not as evil as it sounds.
+ * Hook to handle the human based on the currently selected wallet address.
+ */
+export default function useHuman() {
+  const [address, setAddress] = useState("");
+  const [profile, setProfile] = useState({} as POHProfileModel);
+  const triedEager = useEagerConnect()
+  const context = useWeb3React()
+  const { active, error, activate, account } = context;
+  console.log(context);
+  const handleAccountsChanged = async (accounts: string[]) => {
+    const newAccount = accounts[0];
+    if (newAccount !== address) {
+      setHumanAccount(newAccount);
+    }
+  }
+
+  const setHumanAccount = async (account: string) => {
+    const registeredProfile = await PohAPI.profiles.getByAddress(account);
+    console.log("REG PROFILE", registeredProfile);
+    if (!registeredProfile || !registeredProfile.registered)
+      console.warn("Address", account, "not registered as human");
+
+    activate(injected);
+    setAddress(account);
+    setProfile(registeredProfile || {registered: true, eth_address: account, status: "REGISTERED", display_name:"Juanu", first_name: "Juanu", last_name: "Haedo", bio: "Just a DEV", profile: "A profile", creation_time: new Date(), photo: "", video: "", registered_time: new Date() });
+  }
+
+  useEffect(() => {
+    if (account) setHumanAccount(account);
+  }, [account])
+
+  useEffect(() => {
+    ((window as any).ethereum as any).on(
+      "accountsChanged",
+      handleAccountsChanged
+    );
+  }, [active]);
+
+  console.log("PROFILE", profile);
+  return { address, profile };
+}

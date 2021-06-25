@@ -5,11 +5,13 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/accessutils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./IProofOfhumanity.sol";
 
 contract Posta is ERC721, Ownable {
-    SafeMath for uint256;
+    
+    using SafeMath for uint256;
+
     string HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
     using Strings for uint256;
     address _ubi;
@@ -141,7 +143,7 @@ contract Posta is ERC721, Ownable {
         // Transfer remainder to posta creator
         uint256 forCreator = ubiAmount.sub(toBurn);
         if(forCreator > 0) { 
-            ERC20(_ubi).transferFrom(_msgSender, forCreator);
+            ERC20(_ubi).transferFrom(_msgSender(), _owners[tokenId], forCreator);
         }
 
         // Add support based on ubi amount

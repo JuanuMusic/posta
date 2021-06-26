@@ -20,6 +20,9 @@ import { convertToObject } from "typescript";
 import configService, { IConfiguration } from "./services/configService";
 import UBIService from "./services/UBIService";
 import { ethers } from "ethers";
+import { Switch, Route } from "react-router-dom";
+import MainPage from "./pages/MainPage";
+import PostPage from "./pages/PostPage";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -32,13 +35,13 @@ interface IAppState {
 function appReducer(state: IAppState, action: any) {}
 
 export default function App(props: IAppProps) {
+  const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
   const [appState, dispatch] = useReducer<any, IAppState>(
     appReducer,
     {} as IAppState,
     (s: IAppState) => {}
   );
 
-  const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
   const human = useHuman();
   const context = useWeb3React<Web3Provider>();
 
@@ -49,14 +52,12 @@ export default function App(props: IAppProps) {
   //   dispatch({ con });
   // }, []);
 
-  const onNewPostSent = (stackId: number) => {
-    //_pendingTransactionStacks.push(stackId);
-    //this.processPendingTxs();
-  };
-
   const handleStartAccruing = async () => {
-    await UBIService.startAccruing(human.address, new ethers.providers.Web3Provider(context.library?.provider!));
-  }
+    await UBIService.startAccruing(
+      human.address,
+      new ethers.providers.Web3Provider(context.library?.provider!)
+    );
+  };
 
   console.log("HUMAN", human);
   return (
@@ -65,7 +66,7 @@ export default function App(props: IAppProps) {
         show={isConnectDialogVisible}
         onHide={() => setIsConnectDialogVisible(false)}
       />
-      <Container className="p-3" style={{maxWidth: "750px"}}>
+      <Container className="p-3" style={{ maxWidth: "750px" }}>
         <Row>
           <Col>
             <h1>Posta</h1>
@@ -85,18 +86,16 @@ export default function App(props: IAppProps) {
         </Row>
         <Row>
           <Col>
-            <PostEditor onNewPostSent={onNewPostSent} human={human} />
+            <Switch>
+              <Route path="/post/:tokenId">
+                <PostPage />
+              </Route>
+              <Route path="/">
+                <MainPage />
+              </Route>
+            </Switch>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <PostList human={human} />
-          </Col>
-        </Row>
-        <Row>
-          <Col><Button onClick={handleStartAccruing}>Start Accruing</Button></Col>
-        </Row>
-        {/* <DummyPOHController human={human} /> */}
       </Container>
     </>
   );

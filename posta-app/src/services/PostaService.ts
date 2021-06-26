@@ -1,9 +1,10 @@
-import { ethers, BigNumber } from "ethers";
+import { ethers, BigNumber, EventFilter } from "ethers";
 import IPFSStorageService from "./IPFSStorageService";
 import contractProvider, { EthersProviders } from "./ContractProvider";
 import PohAPI from "../DAL/PohAPI";
 
 interface IPostaService {
+  findPost(tokenId: BigNumber, provider: ethers.providers.Web3Provider) : Promise<ethers.Event[]>;
   giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.Web3Provider): Promise<void>;
   publishPost(postData: IPostData, provider: ethers.providers.Web3Provider): Promise<void>;
   getLatestPosts(maxRecords: number, provider: ethers.providers.Web3Provider): Promise<IPostaNFT[]>;
@@ -23,6 +24,11 @@ const DEFAULT_CONFIRMATIONS = 5;
 
 const PostaService: IPostaService = {
 
+  async findPost(tokenId: BigNumber, provider: ethers.providers.Web3Provider) : Promise<ethers.Event[]> {
+    const postaContract = await contractProvider.getPostaContractForRead(provider);
+    const filter = postaContract.filters.NewPost(null, tokenId);
+    return postaContract.queryFilter(filter);
+  }, 
   /**
    * Requests approval to burn UBIs on the Posta contract.
    * @param from Human address that burns their UBIs
@@ -73,7 +79,7 @@ const PostaService: IPostaService = {
 
     try {
       const postaContract = await contractProvider.getPostaContractForWrite(postData.author, provider);
-      const tx = await postaContract.publishPost(`${uploadedPath}`);
+      const tx = await postaContract.publishPost(`${uploadedPath}`, postData.text);
       await tx.wait(7);
       console.log("Post published TX:", tx);
     }
@@ -135,7 +141,6 @@ const PostaService: IPostaService = {
     };
 
     return retVal;
-
   }
 }
 

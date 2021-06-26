@@ -12,6 +12,8 @@ contract Posta is ERC721, Ownable {
     
     using SafeMath for uint256;
 
+    event NewPost(address indexed author, uint256 indexed tokenId, string value);
+
     string HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
     using Strings for uint256;
     address _ubi;
@@ -63,7 +65,7 @@ contract Posta is ERC721, Ownable {
         _ubi = ubi;
     }
 
-    function publishPost(string memory newTokenURI) public isHuman(_msgSender()) returns(uint256)  {
+    function publishPost(string memory newTokenURI,string memory text) public isHuman(_msgSender()) returns(uint256)  {
         
         // Get the new token iD
         uint256 newItemId = _tokenCounter;
@@ -84,6 +86,8 @@ contract Posta is ERC721, Ownable {
         
         // Update the token counter
         _tokenCounter = _tokenCounter +1;
+
+        emit NewPost(_msgSender(), newItemId, text);
 
         // Return the new token ID
         return newItemId;
@@ -143,7 +147,7 @@ contract Posta is ERC721, Ownable {
         // Transfer remainder to posta creator
         uint256 forCreator = ubiAmount.sub(toBurn);
         if(forCreator > 0) { 
-            ERC20(_ubi).transferFrom(_msgSender(), _owners[tokenId], forCreator);
+            ERC20(_ubi).transferFrom(_msgSender(), ownerOf(tokenId), forCreator);
         }
 
         // Add support based on ubi amount

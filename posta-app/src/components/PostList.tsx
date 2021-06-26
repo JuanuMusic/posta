@@ -6,9 +6,9 @@ import SupportPostDialog from "./SupportPostDialog";
 import PostDisplay from "./PostDisplay";
 import contractProvider from "../services/ContractProvider";
 import { Container, Row, Col } from "react-bootstrap";
+import { ethers } from "ethers";
 
 interface IPostListProps extends IBasePostaProps {}
-
 
 export default function PostList(props: IPostListProps) {
   const [supportPostDialogOpts, setsupportPostDialogOpts] = useState({
@@ -17,16 +17,12 @@ export default function PostList(props: IPostListProps) {
   });
   const [posts, setPost] = useState([] as IPostaNFT[]);
   const context = useWeb3React<Web3Provider>();
+  console.log("CONTEXT", context);
 
   useEffect(() => {
     async function getLatestPosts() {
       try {
-        const postList = await PostaService.getLatestPosts(
-          10,
-          contractProvider.getEthersProviderFromWeb3Provider(
-            context.library?.provider!
-          )
-        );
+        const postList = await PostaService.getLatestPosts(10, ethers.getDefaultProvider("kovan"));
         setPost(postList);
       } catch (error) {
         console.error(error.message);
@@ -34,11 +30,10 @@ export default function PostList(props: IPostListProps) {
       }
     }
 
-    if (context.library) getLatestPosts();
-  }, [context.library]);
+    getLatestPosts();
+  }, []);
 
   const handleBurnUBIsClicked = async (tokenId: string) => {
-
     setsupportPostDialogOpts({
       show: true,
       postTokenId: tokenId,
@@ -65,9 +60,7 @@ export default function PostList(props: IPostListProps) {
           <Row key={index} className="justify-content-center">
             <Col>
               <PostDisplay
-                onBurnUBIsClicked={() =>
-                  handleBurnUBIsClicked(postNFT.tokenId)
-                }
+                onBurnUBIsClicked={() => handleBurnUBIsClicked(postNFT.tokenId)}
                 postaNFT={postNFT}
                 {...props}
               />

@@ -4,12 +4,12 @@ import contractProvider, { EthersProviders } from "./ContractProvider";
 import PohAPI from "../DAL/PohAPI";
 
 interface IPostaService {
-  findPost(tokenId: BigNumber, provider: ethers.providers.Web3Provider) : Promise<ethers.Event[]>;
-  giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.Web3Provider): Promise<void>;
-  publishPost(postData: IPostData, provider: ethers.providers.Web3Provider): Promise<void>;
-  getLatestPosts(maxRecords: number, provider: ethers.providers.Web3Provider): Promise<IPostaNFT[]>;
+  findPost(tokenId: BigNumber, provider: ethers.providers.BaseProvider) : Promise<string>;
+  giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.BaseProvider): Promise<void>;
+  publishPost(postData: IPostData, provider: ethers.providers.BaseProvider): Promise<void>;
+  getLatestPosts(maxRecords: number, provider: ethers.providers.BaseProvider): Promise<IPostaNFT[]>;
   loadPostFromNFT(postNFT: IPostaNFT): Promise<PostData>;
-  requestBurnApproval(from: string, amount: BigNumber, provider: ethers.providers.Web3Provider): Promise<void>;
+  requestBurnApproval(from: string, amount: BigNumber, provider: ethers.providers.BaseProvider): Promise<void>;
 }
 
 interface PostData extends IPostaNFT {
@@ -24,10 +24,11 @@ const DEFAULT_CONFIRMATIONS = 5;
 
 const PostaService: IPostaService = {
 
-  async findPost(tokenId: BigNumber, provider: ethers.providers.Web3Provider) : Promise<ethers.Event[]> {
+  async findPost(tokenId: BigNumber, provider: ethers.providers.BaseProvider) : Promise<string> {
     const postaContract = await contractProvider.getPostaContractForRead(provider);
     const filter = postaContract.filters.NewPost(null, tokenId);
-    return postaContract.queryFilter(filter);
+    const log = await postaContract.queryFilter(filter);
+    return log && log.length && log[0].args && log[0].args.length >= 3 && log[0].args[2];
   }, 
   /**
    * Requests approval to burn UBIs on the Posta contract.
@@ -35,7 +36,7 @@ const PostaService: IPostaService = {
    * @param provider Web3Provider
    * @param waitConfirmation Wait for this confirmations to complete transaction.
    */
-  async requestBurnApproval(from: string, amount: BigNumber, provider: ethers.providers.Web3Provider) {
+  async requestBurnApproval(from: string, amount: BigNumber, provider: ethers.providers.JsonRpcProvider) {
     const ubiContract = await contractProvider.getUBIContractForWrite(from, provider);
     const approvalTx = await ubiContract.approve(await contractProvider.getPostaContractAddress(provider), amount);    
     return await approvalTx.wait(DEFAULT_CONFIRMATIONS);
@@ -48,7 +49,7 @@ const PostaService: IPostaService = {
    * @param from Human burning their UBIs.
    * @param provider Web3Provider
    */
-  async giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.Web3Provider) {
+  async giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.JsonRpcProvider) {
 
     try {      
       // Give support using the Posta contract (which burns half of the UBI)
@@ -70,7 +71,7 @@ const PostaService: IPostaService = {
    * @param postData Data of the post
    * @param drizzle 
    */
-  async publishPost(postData: IPostData, provider: ethers.providers.Web3Provider) {
+  async publishPost(postData: IPostData, provider: ethers.providers.JsonRpcProvider) {
 
     // upload the post to the storage service and get the path to the uploaded file
     const uploadedPath = await IPFSStorageService.uploadPost(postData);
@@ -94,23 +95,24 @@ const PostaService: IPostaService = {
    * @param maxRecords Max number of records to fetch.
    * @returns 
    */
-  async getLatestPosts(maxRecords: number, provider: ethers.providers.Web3Provider): Promise<IPostaNFT[]> {
+  async getLatestPosts(maxRecords: number, provider: ethers.providers.BaseProvider): Promise<IPostaNFT[]> {
     const postaContract = await contractProvider.getPostaContractForRead(provider);
-    console.log("HPST CONTRACT", postaContract)
+    console.log("PSTA CONTRACT", postaContract)
     const counter = await postaContract.getTokenCounter();
 
-    console.log("TOTAL HPSTs", counter);
+    console.log("TOTAL PSTAs", counter);
     const postsNFTs: IPostaNFT[] = [];
 
     // Loop from the last
     for (let tokenId = counter - 1; tokenId >= Math.max(tokenId - maxRecords, 0); tokenId--) {
       // Get NFT data from the contract and add it to the collection of posts 
       const postNFT = await postaContract.getPost(tokenId);
-
+      const content = await PostaService.findPost(BigNumber.from(tokenId), provider);
       console.log("NFT", postNFT);
-
+      console.log("EVENTS", content);
       // Add the NFT to the list of nfts
       postsNFTs.unshift({
+        content: content,
         tokenId: tokenId.toString(),
         tokenURI: postNFT.tokenURI,
         creationDate: new Date(parseInt(postNFT.date, 10) * 1000),

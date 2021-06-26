@@ -91,9 +91,9 @@ export default class PostDisplay extends React.Component<
     };
   }
 
-  componentDidMount() {
-    PostaService.loadPostFromNFT(this.props.postaNFT);
-  }
+  // componentDidMount() {
+  //   PostaService.loadPostFromNFT(this.props.postaNFT);
+  // }
 
   async getEvidence(uri: string) {
     const request = await fetch(uri);
@@ -144,7 +144,7 @@ export default class PostDisplay extends React.Component<
                   <blockquote className="blockquote mb-0">
                     <p className="post-text text-dark">
                       {" "}
-                      {this.state.text || (
+                      {this.props.postaNFT.content || (
                         <Skeleton />
                       )}{" "}
                     </p>

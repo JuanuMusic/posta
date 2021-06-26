@@ -7973,19 +7973,19 @@
     "absolutePath": "/E/Code/Repos/JuanuMusic/posta/posta-contracts/contracts/DummyUBI.sol",
     "exportedSymbols": {
       "Context": [
-        3179
+        3175
       ],
       "DummyUBI": [
         192
       ],
       "ERC20": [
-        1717
+        1713
       ],
       "IERC20": [
-        1795
+        1791
       ],
       "IERC20Metadata": [
-        1881
+        1877
       ],
       "IUBI": [
         304
@@ -8011,7 +8011,7 @@
         "id": 130,
         "nodeType": "ImportDirective",
         "scope": 193,
-        "sourceUnit": 1718,
+        "sourceUnit": 1714,
         "src": "59:55:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -8035,7 +8035,7 @@
               "id": 132,
               "name": "ERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 1717,
+              "referencedDeclaration": 1713,
               "src": "161:5:1"
             },
             "id": 133,
@@ -8057,10 +8057,10 @@
         ],
         "contractDependencies": [
           304,
-          1717,
-          1795,
-          1881,
-          3179
+          1713,
+          1791,
+          1877,
+          3175
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
@@ -8068,10 +8068,10 @@
         "linearizedBaseContracts": [
           192,
           304,
-          1717,
-          1881,
-          1795,
-          3179
+          1713,
+          1877,
+          1791,
+          3175
         ],
         "name": "DummyUBI",
         "nodeType": "ContractDefinition",
@@ -8127,7 +8127,7 @@
                   "id": 137,
                   "name": "ERC20",
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 1717,
+                  "referencedDeclaration": 1713,
                   "src": "197:5:1"
                 },
                 "nodeType": "ModifierInvocation",
@@ -8206,7 +8206,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1598,
+                      "referencedDeclaration": 1594,
                       "src": "325:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -8339,7 +8339,7 @@
                           "name": "_msgSender",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3167,
+                          "referencedDeclaration": 3163,
                           "src": "423:10:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -8389,7 +8389,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1660,
+                      "referencedDeclaration": 1656,
                       "src": "417:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -8527,7 +8527,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1660,
+                      "referencedDeclaration": 1656,
                       "src": "540:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -8720,19 +8720,19 @@
     "absolutePath": "/E/Code/Repos/JuanuMusic/posta/posta-contracts/contracts/DummyUBI.sol",
     "exportedSymbols": {
       "Context": [
-        3179
+        3175
       ],
       "DummyUBI": [
         192
       ],
       "ERC20": [
-        1717
+        1713
       ],
       "IERC20": [
-        1795
+        1791
       ],
       "IERC20Metadata": [
-        1881
+        1877
       ],
       "IUBI": [
         304
@@ -8758,7 +8758,7 @@
         "id": 130,
         "nodeType": "ImportDirective",
         "scope": 193,
-        "sourceUnit": 1718,
+        "sourceUnit": 1714,
         "src": "59:55:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -8782,7 +8782,7 @@
               "id": 132,
               "name": "ERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 1717,
+              "referencedDeclaration": 1713,
               "src": "161:5:1"
             },
             "id": 133,
@@ -8804,10 +8804,10 @@
         ],
         "contractDependencies": [
           304,
-          1717,
-          1795,
-          1881,
-          3179
+          1713,
+          1791,
+          1877,
+          3175
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
@@ -8815,10 +8815,10 @@
         "linearizedBaseContracts": [
           192,
           304,
-          1717,
-          1881,
-          1795,
-          3179
+          1713,
+          1877,
+          1791,
+          3175
         ],
         "name": "DummyUBI",
         "nodeType": "ContractDefinition",
@@ -8874,7 +8874,7 @@
                   "id": 137,
                   "name": "ERC20",
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 1717,
+                  "referencedDeclaration": 1713,
                   "src": "197:5:1"
                 },
                 "nodeType": "ModifierInvocation",
@@ -8953,7 +8953,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1598,
+                      "referencedDeclaration": 1594,
                       "src": "325:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -9086,7 +9086,7 @@
                           "name": "_msgSender",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3167,
+                          "referencedDeclaration": 3163,
                           "src": "423:10:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -9136,7 +9136,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1660,
+                      "referencedDeclaration": 1656,
                       "src": "417:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -9274,7 +9274,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1660,
+                      "referencedDeclaration": 1656,
                       "src": "540:5:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -9469,7 +9469,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-26T14:26:02.295Z",
+  "updatedAt": "2021-06-26T21:43:38.727Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -1,9 +1,9 @@
 import { Contract, ethers } from "ethers";
 import configService from "./configService";
 
-const DummyPOHContract = require('../contracts/DummyProofOfHumanity.json');
 const PostaContract = require('../contracts/Posta.json');
 const UBIContract = require('../contracts/IUBI.json');
+const DummyPOHContract = require('../contracts/DummyProofOfHumanity.json');
 
 export type EthersProviders = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc;
 

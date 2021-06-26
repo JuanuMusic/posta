@@ -18,8 +18,8 @@ export default function PostPage(props: any) {
 
     useEffect(() => {
         async function init() {
-            const events = await PostaService.findPost(BigNumber.from(tokenId), new ethers.providers.Web3Provider(context.library?.provider!));
-            
+            const postLogs = await PostaService.getPostLogs(BigNumber.from(tokenId), new ethers.providers.Web3Provider(context.library?.provider!));
+        
         }
 
         if(context.library) init();

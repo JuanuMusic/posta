@@ -14,7 +14,6 @@ export default function useHuman() {
   const triedEager = useEagerConnect()
   const context = useWeb3React()
   const { active, error, activate, account } = context;
-  console.log(context);
   const handleAccountsChanged = async (accounts: string[]) => {
     const newAccount = accounts[0];
     if (newAccount !== address) {
@@ -24,7 +23,6 @@ export default function useHuman() {
 
   const setHumanAccount = async (account: string) => {
     const registeredProfile = await PohAPI.profiles.getByAddress(account);
-    console.log("REG PROFILE", registeredProfile);
     if (!registeredProfile || !registeredProfile.registered)
       console.warn("Address", account, "not registered as human");
 
@@ -44,6 +42,5 @@ export default function useHuman() {
     );
   }, [active]);
 
-  console.log("PROFILE", profile);
   return { address, profile };
 }

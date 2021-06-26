@@ -17,7 +17,7 @@ export default function PostList(props: IPostListProps) {
   });
   const [posts, setPost] = useState([] as IPostaNFT[]);
   const context = useWeb3React<Web3Provider>();
-  console.log("CONTEXT", context);
+  
 
   useEffect(() => {
     async function getLatestPosts() {
@@ -39,8 +39,6 @@ export default function PostList(props: IPostListProps) {
       postTokenId: tokenId,
     });
   };
-
-  console.log("PROPS", props);
 
   return (
     <>

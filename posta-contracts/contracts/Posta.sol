@@ -15,16 +15,14 @@ contract Posta is ERC721, Ownable {
     event NewPost(address indexed author, uint256 indexed tokenId, string value);
 
     string HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
+    string POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
+    string CANT_SUPPORT_SELF_CONTENT = "CANT_SUPPORT_SELF_CONTENT";
+
     using Strings for uint256;
-    address _ubi;
+    address private _ubi;
+    uint256 private _maxChars;
 
     struct PostaData {
-        
-        // URI of the NFT data
-        string tokenURI;
-        
-        // Date at which the post was minted
-        uint256 date;
         
         // Ammount given as support
         uint256 supportGiven;
@@ -59,15 +57,17 @@ contract Posta is ERC721, Ownable {
         _;
     }
 
-    constructor(address poh, address ubi) public ERC721("Posta", "PSTA") {
+    constructor(address poh, address ubi, uint256 maxChars) public ERC721("Posta", "PSTA") {
         _tokenCounter = 0;
         _poh = poh;
         _ubi = ubi;
+        _maxChars = maxChars;
     }
 
-    function publishPost(string memory newTokenURI,string memory text) public isHuman(_msgSender()) returns(uint256)  {
-        
-        // Get the new token iD
+    function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
+        require(bytes(text).length <= _maxChars, POST_TEXT_TOO_LONG);
+
+        // Get the new token iD  
         uint256 newItemId = _tokenCounter;
 
         // Mint the NFT with the new ID
@@ -75,8 +75,6 @@ contract Posta is ERC721, Ownable {
 
         // Generate the post NFT storage data
         PostaData memory post = PostaData({
-            date: block.timestamp,
-            tokenURI: newTokenURI,
             supportGiven: 0,
             supportersCount: 0
         });
@@ -104,22 +102,31 @@ contract Posta is ERC721, Ownable {
     function _setPost(uint256 tokenId, PostaData memory data) internal virtual tokenExists(tokenId) {
      _posts[tokenId] = data;
     }
+
+    /// @dev Set the max length allowed for posts.
+    function setMaxChars(uint256 maxChars) public onlyOwner() {
+        _maxChars = maxChars;
+    }
+
+    function getMaxChars() public view returns(uint256) {
+        return _maxChars;
+    }
     
     function tokenURI(uint256 tokenId) public view virtual override tokenExists(tokenId) returns (string memory) {
-
-        PostaData memory post = _posts[tokenId];
-        string memory base = _baseURI();
+        return "NOT IMPLEMENTED - FILTER LOGS BY EVENT NewPost(indexed author,indexed token,text) TO GET DATA";
+        // PostaData memory post = _posts[tokenId];
+        // string memory base = _baseURI();
         
-        // If there is no base URI, return the token URI.
-        if (bytes(base).length == 0) {
-            return post.tokenURI;
-        }
-        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(post.tokenURI).length > 0) {
-            return string(abi.encodePacked(base, post.tokenURI));
-        }
-        // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
-        return string(abi.encodePacked(base, tokenId.toString()));
+        // // If there is no base URI, return the token URI.
+        // if (bytes(base).length == 0) {
+        //     return post.tokenURI;
+        // }
+        // // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        // if (bytes(post.tokenURI).length > 0) {
+        //     return string(abi.encodePacked(base, post.tokenURI));
+        // }
+        // // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
+        // return string(abi.encodePacked(base, tokenId.toString()));
     }
 
     function getTokenCounter() public view returns(uint256) {
@@ -136,7 +143,7 @@ contract Posta is ERC721, Ownable {
      * If a Human gives support multiple times it will only count as one supporter.
      */
     function support(uint256 tokenId, uint256 ubiAmount) public tokenExists(tokenId) {
-
+        require(_msgSender() != ownerOf(tokenId), CANT_SUPPORT_SELF_CONTENT);
         // ammount to burn
         uint256 toBurn = ubiAmount.div(2);
         require(toBurn > 0, "Posta: invalid ubi amount to burn");
@@ -157,7 +164,6 @@ contract Posta is ERC721, Ownable {
 
     function _addSupport(uint256 tokenId, uint256 amount, address supporter) private {
         
-        uint256 amountToBurn = 
          // Add the amount of support given
         _posts[tokenId].supportGiven += amount;
 

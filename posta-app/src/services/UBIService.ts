@@ -1,8 +1,4 @@
-import { providers, Contract, ethers, BigNumber } from "ethers";
-import IPFSStorageService from "./IPFSStorageService";
-//const { providers, Contract } = require('ethers');
-import configService from "./configService";
-import contractProvider, { EthersProviders } from "./ContractProvider";
+import contractProvider from "./ContractProvider";
 import { Web3Provider } from "@ethersproject/providers";
 
 export default {
@@ -18,9 +14,9 @@ export default {
       return await contract.balanceOf(address);
     },
 
+    /** Call to Start accruing UBI  */
     async startAccruing(address: string, provider: Web3Provider) {
       const contract = await contractProvider.getUBIContractForWrite(address, provider);
-      console.log("UBI CONTRACT", contract);
       const tx = await contract.startAccruing(address);
     }
 }

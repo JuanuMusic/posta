@@ -282,7 +282,7 @@
     "absolutePath": "/E/Code/Repos/JuanuMusic/posta/posta-contracts/contracts/IProofOfHumanity.sol",
     "exportedSymbols": {
       "IERC20": [
-        1220
+        655
       ],
       "IProofOfHumanity": [
         40
@@ -307,7 +307,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 41,
-        "sourceUnit": 1221,
+        "sourceUnit": 656,
         "src": "180:56:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -320,7 +320,7 @@
               "id": 3,
               "name": "IERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 1220,
+              "referencedDeclaration": 655,
               "src": "270:6:0"
             },
             "id": 4,
@@ -329,14 +329,14 @@
           }
         ],
         "contractDependencies": [
-          1220
+          655
         ],
         "contractKind": "interface",
         "fullyImplemented": false,
         "id": 40,
         "linearizedBaseContracts": [
           40,
-          1220
+          655
         ],
         "name": "IProofOfHumanity",
         "nodeType": "ContractDefinition",
@@ -753,7 +753,7 @@
     "absolutePath": "/E/Code/Repos/JuanuMusic/posta/posta-contracts/contracts/IProofOfHumanity.sol",
     "exportedSymbols": {
       "IERC20": [
-        1220
+        655
       ],
       "IProofOfHumanity": [
         40
@@ -778,7 +778,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 41,
-        "sourceUnit": 1221,
+        "sourceUnit": 656,
         "src": "180:56:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -791,7 +791,7 @@
               "id": 3,
               "name": "IERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 1220,
+              "referencedDeclaration": 655,
               "src": "270:6:0"
             },
             "id": 4,
@@ -800,14 +800,14 @@
           }
         ],
         "contractDependencies": [
-          1220
+          655
         ],
         "contractKind": "interface",
         "fullyImplemented": false,
         "id": 40,
         "linearizedBaseContracts": [
           40,
-          1220
+          655
         ],
         "name": "IProofOfHumanity",
         "nodeType": "ContractDefinition",
@@ -1226,7 +1226,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-26T14:24:02.006Z",
+  "updatedAt": "2021-06-26T21:32:34.126Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

@@ -48,7 +48,7 @@ contract DummyProofOfHumanity is IProofOfHumanity, ERC20  {
         });
     }
 
-    function submissionCounter() external override view returns(uint) { return 0; } 
+    function submissionCounter() external override pure returns(uint) { return 0; } 
 
 function getSubmissionInfo(address _submissionID) external override view returns (SubmissionInfo memory) {
     

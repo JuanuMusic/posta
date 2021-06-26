@@ -5,7 +5,6 @@ import Col from "react-bootstrap/Col";
 import FormGroup from "react-bootstrap/FormGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
-import IPFSStorageService from "../services/IPFSStorageService";
 import PostaService from "../services/PostaService";
 import { useWeb3React } from "@web3-react/core";
 import { Web3Provider } from '@ethersproject/providers'
@@ -22,6 +21,8 @@ export default function PostEditor(props: IPostEditorProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { chainId, library } = useWeb3React();
   const context = useWeb3React<Web3Provider>()
+
+  const MAX_CHARS = 140;
 
   useEffect(() => {
     setIsEditorEnabled(
@@ -68,14 +69,17 @@ export default function PostEditor(props: IPostEditorProps) {
               placeholder="What's happening?"
               rows={3}
               value={postText}
-              onChange={(e) => setPostText(e.target.value)}
+              onChange={(e) => (e.target.value.length <= MAX_CHARS) && setPostText(e.target.value)}
               disabled={!isEditorEnabled}
             ></FormControl>
           </FormGroup>
         </Col>
       </Row>
       <Row>
-        <Col xs={12} className="d-flex justify-content-end">
+        <Col xs={12} className="d-flex justify-content-between ">
+        <div>
+          {`${postText.length}/${MAX_CHARS}`}
+        </div>
           <Button disabled={!isSendButtonEnabled} onClick={handleSendPost} className="mb-5">
             Send
           </Button>

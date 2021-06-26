@@ -58,8 +58,6 @@ export default function App(props: IAppProps) {
       new ethers.providers.Web3Provider(context.library?.provider!)
     );
   };
-
-  console.log("HUMAN", human);
   return (
     <>
       <ConnectWalletDialog

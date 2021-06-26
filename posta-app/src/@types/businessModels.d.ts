@@ -1,4 +1,8 @@
 interface IPostaNFT {
+    authorImage: string | undefined;
+    authorDisplayName: string;
+    authorFullName: string;
+    author: string;
     content: string;
     tokenId: string;
     tokenURI: string;

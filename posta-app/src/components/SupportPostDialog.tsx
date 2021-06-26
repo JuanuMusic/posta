@@ -6,6 +6,7 @@ import {
   ModalTitle,
   Modal,
   Button,
+  Spinner,
 } from "react-bootstrap";
 import { Gem } from "react-bootstrap-icons";
 import PostaService from "../services/PostaService";
@@ -50,10 +51,11 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
   const currentUBIBalance = useUBIBalance(props.human.address);
   const [isApproved, setIsApproved] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [isBurning, setIsBurning] = useState(false);
   const context = useWeb3React<Web3Provider>();
 
   const handleClose = () => {
-    props.onClose && props.onClose();
+    if (!isApproving && !isBurning) props.onClose && props.onClose();
   };
 
   const handleApproveBurn = async () => {
@@ -80,7 +82,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
   /**
    * Send  request to burn UBIs. First approves the ammount and then burns it.
    */
-  const handleBurnUBIs = async () => {
+  const handleGiveUBISupport = async () => {
     if (amount) {
       const parsedAmount = utils.parseEther(amount);
 
@@ -88,12 +90,16 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
         parsedAmount.gt(BigNumber.from("0")) &&
         parsedAmount.lte(currentUBIBalance)
       ) {
+        setIsBurning(true);
         await PostaService.giveSupport(
           props.postTokenId,
           parsedAmount,
           props.human.address,
-          new ethers.providers.Web3Provider(context.library?.provider!)
+          new ethers.providers.Web3Provider(context.library?.provider!),
+          0
         );
+        setIsBurning(false);
+        props.onClose && props.onClose();
       }
     }
   };
@@ -111,7 +117,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
   };
 
   const _isConfirmButtonEnabled = () => {
-    return isApproved && _isAmountValid();
+    return isApproved && !isBurning && _isAmountValid();
   };
 
   const _isApproveButtonEnabled = () => {
@@ -121,7 +127,9 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
   return (
     <Modal show={props.show} onHide={handleClose} centered>
       <Modal.Header>
-        <Modal.Title>Support Post <span className="muted">({props.postTokenId})</span></Modal.Title>
+        <Modal.Title>
+          Support Post <span className="muted">({props.postTokenId})</span>
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         UBI Balance: {ethers.utils.formatEther(currentUBIBalance.toString())}
@@ -147,10 +155,19 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
           disabled={!_isApproveButtonEnabled()}
           onClick={handleApproveBurn}
         >
-          Let us burn it for ya!
+          Approve{" "}
+          {isApproving && (
+            <Spinner animation="border" variant="light" size="sm" />
+          )}
         </Button>
-        <Button disabled={!_isConfirmButtonEnabled()} onClick={handleBurnUBIs}>
-          Burn baby, burn...
+        <Button
+          disabled={!_isConfirmButtonEnabled()}
+          onClick={handleGiveUBISupport}
+        >
+          {"Support & Burn"}{" "}
+          {isBurning && (
+            <Spinner animation="border" variant="light" size="sm" />
+          )}
         </Button>
       </Modal.Footer>
     </Modal>

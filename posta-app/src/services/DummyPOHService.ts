@@ -4,7 +4,7 @@ import contractProvider from "./ContractProvider";
 //const { providers, Contract } = require('ethers');
 
 export default {
-  async registerHuman(address: string, provider: any) {
+  async registerHuman(address: string, provider: ethers.providers.JsonRpcProvider) {
     const dummyPoh = await contractProvider.getDummyPOHContractForWrite(address, provider);
     return await dummyPoh.register(address);
   }

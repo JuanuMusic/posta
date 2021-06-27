@@ -8,9 +8,9 @@ export default {
    * @param provider 
    * @returns 
    */
-    async balanceOf(address: string, provider: Web3Provider) {
+    async balanceOf(address: string) {
       
-      const contract = await contractProvider.getUBIContractForRead(provider);
+      const contract = await contractProvider.getUBIContractForRead();
       return await contract.balanceOf(address);
     },
 

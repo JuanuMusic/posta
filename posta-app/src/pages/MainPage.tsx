@@ -32,7 +32,6 @@ export default function MainPage() {
           <Button onClick={handleStartAccruing}>Start Accruing</Button>
         </Col>
       </Row> */}
-      {/* <DummyPOHController human={human} /> */}
     </Container>
   );
 }

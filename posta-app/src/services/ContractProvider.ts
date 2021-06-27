@@ -7,7 +7,8 @@ const DummyPOHContract = require('../contracts/DummyProofOfHumanity.json');
 
 export type EthersProviders = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc;
 
-
+const provider = configService.getEthersProvider();
+console.log("PROVIDER", provider);
 const contractProvider = {
 
     /**
@@ -17,9 +18,9 @@ const contractProvider = {
      * @param ethersProvider Web3Provider
      * @returns 
      */
-    async getContractForRead(contractAddress: string, abi: any, ethersProvider: ethers.providers.BaseProvider): Promise<Contract> {
-        const contract = new Contract(contractAddress, abi, ethersProvider);
-        return contract.connect(ethersProvider)
+    async getContractForRead(contractAddress: string, abi: any): Promise<Contract> {
+        const contract = new Contract(contractAddress, abi, provider);
+        return contract.connect(provider)
     },
 
     /**
@@ -53,16 +54,16 @@ const contractProvider = {
      * @param provider Web3Provider
      * @returns 
      */
-    async getPostaContractForRead(provider: ethers.providers.BaseProvider): Promise<Contract> {
+    async getPostaContractForRead(): Promise<Contract> {
         const network = await provider.getNetwork();
         const config = configService.getConfig(network.chainId);
-        return await this.getContractForRead(config.PostaAddress, PostaContract.abi, provider);
+        return await this.getContractForRead(config.PostaAddress, PostaContract.abi);
     },
 
-    async getUBIContractForRead(provider: ethers.providers.BaseProvider): Promise<Contract> {
+    async getUBIContractForRead(): Promise<Contract> {
         const network = await provider.getNetwork();
         const config = configService.getConfig(network.chainId);
-        return await this.getContractForRead(config.UBIAddress, UBIContract.abi, provider);
+        return await this.getContractForRead(config.UBIAddress, UBIContract.abi);
     },
 
     async getUBIContractForWrite(address: string, provider: ethers.providers.JsonRpcProvider): Promise<Contract> {

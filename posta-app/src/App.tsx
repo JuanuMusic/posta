@@ -94,6 +94,9 @@ export default function App(props: IAppProps) {
             </Switch>
           </Col>
         </Row>
+        <Row>
+          <Col><DummyPOHController human={human} /></Col>
+        </Row>
       </Container>
     </>
   );

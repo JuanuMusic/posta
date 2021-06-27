@@ -32,10 +32,7 @@ function useUBIBalance(address: string) {
   useEffect(() => {
     if (!address) return;
     async function getBalance() {
-      const balance = await UBIService.balanceOf(
-        address,
-        new ethers.providers.Web3Provider(context.library?.provider!)
-      );
+      const balance = await UBIService.balanceOf(address);
       // Update the current UBI balance.
       setCurrentUBIBalance(balance);
     }

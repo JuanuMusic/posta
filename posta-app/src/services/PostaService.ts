@@ -24,7 +24,7 @@ const DEFAULT_CONFIRMATIONS = 5;
 const PostaService: IPostaService = {
 
   async getPostLogs(tokenId: BigNumber, provider: ethers.providers.BaseProvider): Promise<PostLogs> {
-    const postaContract = await contractProvider.getPostaContractForRead(provider);
+    const postaContract = await contractProvider.getPostaContractForRead();
     const filter = postaContract.filters.NewPost(null, tokenId);
     const log = await postaContract.queryFilter(filter);
     const block = await log[0].getBlock();
@@ -98,7 +98,7 @@ const PostaService: IPostaService = {
    * @returns 
    */
   async getLatestPosts(maxRecords: number, provider: ethers.providers.BaseProvider): Promise<IPostaNFT[]> {
-    const postaContract = await contractProvider.getPostaContractForRead(provider);
+    const postaContract = await contractProvider.getPostaContractForRead();
     const counter = await postaContract.getTokenCounter();
     const postsNFTs: IPostaNFT[] = [];
 

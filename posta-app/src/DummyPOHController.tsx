@@ -9,7 +9,7 @@ export default function DummyPOHController(props: IBasePostaProps) {
     const context = useWeb3React<Web3Provider>()
 
     const handleRegisterHumanClicked = async () => {
-        await DummyPOHService.registerHuman(props.human.address, context.library?.provider);
+        await DummyPOHService.registerHuman(props.human.address, new Web3Provider(context.library?.provider!));
         console.log("REGISTERED");
     }
 

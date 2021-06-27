@@ -7,6 +7,7 @@ import PostDisplay from "./PostDisplay";
 import contractProvider from "../services/ContractProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import { ethers } from "ethers";
+import configService from "../services/configService";
 
 interface IPostListProps extends IBasePostaProps {}
 
@@ -22,7 +23,7 @@ export default function PostList(props: IPostListProps) {
   useEffect(() => {
     async function getLatestPosts() {
       try {
-        const postList = await PostaService.getLatestPosts(10, ethers.getDefaultProvider("kovan"));
+        const postList = await PostaService.getLatestPosts(10, configService.getEthersProvider());
         setPost(postList);
       } catch (error) {
         console.error(error.message);

@@ -70,11 +70,11 @@ contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgrade
     }
 
      function setBaseURI(string memory baseURI_) external onlyOwner() {
-        _baseURIextended = baseURI_;
+        baseURI = baseURI_;
     }
     
     function _baseURI() internal view virtual override returns (string memory) {
-        return _baseURIextended;
+        return baseURI;
     }
 
     function _setPost(uint256 tokenId, PostaData memory data) internal virtual tokenExists(tokenId) {
@@ -88,23 +88,6 @@ contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgrade
 
     function getMaxChars() public view returns(uint256) {
         return _maxChars;
-    }
-    
-    function tokenURI(uint256 tokenId) public view virtual override tokenExists(tokenId) returns (string memory) {
-        return "NOT IMPLEMENTED - FILTER LOGS BY EVENT NewPost(indexed author,indexed token,text) TO GET DATA";
-        // PostaData memory post = _posts[tokenId];
-        // string memory base = _baseURI();
-        
-        // // If there is no base URI, return the token URI.
-        // if (bytes(base).length == 0) {
-        //     return post.tokenURI;
-        // }
-        // // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        // if (bytes(post.tokenURI).length > 0) {
-        //     return string(abi.encodePacked(base, post.tokenURI));
-        // }
-        // // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
-        // return string(abi.encodePacked(base, tokenId.toString()));
     }
 
     function getTokenCounter() public view returns(uint256) {

@@ -21,8 +21,9 @@ contract PostaStorage {
     mapping(uint256 => mapping(address => bool)) internal _supporters;
 
     address internal _poh;
-    // Base URI
-    string internal _baseURIextended;
 
     uint256 internal _tokenCounter;
+
+    // Base URI
+    string internal baseURI;
 }

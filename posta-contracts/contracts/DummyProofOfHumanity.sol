@@ -40,7 +40,7 @@ contract DummyProofOfHumanity is IProofOfHumanity, ERC20  {
         _registrants[submissionID] = true;
         _submissions[submissionID] = IProofOfHumanity.SubmissionInfo({
             status: 0,
-            submissionTime: 1616166541,
+            submissionTime: block.timestamp,
             index: 106,
             registered: true,
             hasVouched: true,
@@ -50,8 +50,8 @@ contract DummyProofOfHumanity is IProofOfHumanity, ERC20  {
 
     function submissionCounter() external override pure returns(uint) { return 0; } 
 
-function getSubmissionInfo(address _submissionID) external override view returns (SubmissionInfo memory) {
-    
+function getSubmissionInfo(address submissionID) external override view returns (SubmissionInfo memory) {
+    return _submissions[submissionID];
 }
     // // /** @dev Returns the balance of a particular submission of the ProofOfHumanity contract.
     // //  *  Note that this function takes the expiration date into account.

@@ -5,6 +5,8 @@ import PohAPI from "../DAL/PohAPI";
 import PohService from "./PoHService";
 
 interface IPostaService {
+  getTokenUrl(tokenId: string, provider: ethers.providers.BaseProvider): Promise<string>;
+  setBaseURI(from: string, baseUrl: string, provider: ethers.providers.BaseProvider): Promise<void>;
   getPostLogs(tokenId: BigNumber, provider: ethers.providers.BaseProvider): Promise<PostLogs>;
   giveSupport(tokenID: string, amount: BigNumber, from: string, provider: ethers.providers.BaseProvider, confirmations: number | undefined): Promise<void>;
   publishPost(postData: IPostData, provider: ethers.providers.BaseProvider): Promise<void>;
@@ -22,7 +24,35 @@ const DEFAULT_CONFIRMATIONS = 5;
 
 
 const PostaService: IPostaService = {
+  /**
+   * Gets the token URL with JSON metadata
+   * @param tokenId 
+   * @param provider 
+   */
+  async getTokenUrl(tokenId: string, provider: ethers.providers.BaseProvider): Promise<string> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const uri = await postaContract.tokenURI(tokenId);
+    return uri;
+  },
 
+  /**
+   * Sets the base url for buiulding the tokenURI.
+   * OnlyOwner
+   * @param baseUrl 
+   * @param provider 
+   */
+  async setBaseURI(from: string, baseUrl: string, provider: ethers.providers.JsonRpcProvider): Promise<void> {
+    const postaContract = await contractProvider.getPostaContractForWrite(from, provider);
+    const tx = await postaContract.setBaseURI(baseUrl);
+    console.log("SET BASE URL TX", tx);
+  },
+
+  /**
+   * Returns an array with the posts logs to build the posts.
+   * @param tokenId 
+   * @param provider 
+   * @returns 
+   */
   async getPostLogs(tokenId: BigNumber, provider: ethers.providers.BaseProvider): Promise<PostLogs> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const filter = postaContract.filters.NewPost(null, tokenId);
@@ -36,6 +66,7 @@ const PostaService: IPostaService = {
       blockTime: new Date(block.timestamp * 1000)
     };
   },
+  
   /**
    * Requests approval to burn UBIs on the Posta contract.
    * @param from Human address that burns their UBIs
@@ -61,8 +92,8 @@ const PostaService: IPostaService = {
       // Give support using the Posta contract (which burns half of the UBI)
       const contract = await contractProvider.getPostaContractForWrite(from, provider);
       const tx = await contract.support(tokenID, amount);
-      
-      if(confirmations === 0) return;
+
+      if (confirmations === 0) return;
       return await tx.wait(confirmations || DEFAULT_CONFIRMATIONS);
     }
     catch (error) {
@@ -116,20 +147,28 @@ const PostaService: IPostaService = {
 
 export default PostaService;
 
-async function buildPost(postaContract: ethers.Contract, tokenId: number, provider: ethers.providers.BaseProvider) : Promise<IPostaNFT> {
+async function buildPost(postaContract: ethers.Contract, tokenId: number, provider: ethers.providers.BaseProvider): Promise<IPostaNFT> {
   const postNFT = await postaContract.getPost(tokenId);
   const postLogs = await PostaService.getPostLogs(BigNumber.from(tokenId), provider);
-  const human = await PohService.getHuman(postLogs.author)
+  const tokenURI = await postaContract.tokenURI(tokenId);
+  let human: POHProfileModel;
+  try {
+    human = await PohService.getHuman(postLogs.author)
+  } catch (error) {
+    // If fails, set human object
+    human = { display_name: "", first_name: "", last_name: "" };
+    console.error(error);
+  }
 
   // Add the NFT to the list of nfts
   return {
     author: postLogs.author,
-    authorDisplayName: human && human.display_name,
-    authorFullName: human && (human.first_name + " " + human.last_name),
+    authorDisplayName: (human && human.display_name) || postLogs.author,
+    authorFullName: (human && (human.first_name + " " + human.last_name)) || postLogs.author,
     authorImage: human && human.photo,
     content: postLogs.content,
     tokenId: tokenId.toString(),
-    tokenURI: postNFT.tokenURI,
+    tokenURI: tokenURI,
     creationDate: new Date(postLogs.blockTime),
     supportGiven: postNFT.supportGiven,
     supportCount: postNFT.supportersCount,

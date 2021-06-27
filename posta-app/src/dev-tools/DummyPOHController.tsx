@@ -1,7 +1,6 @@
 import { useWeb3React } from "@web3-react/core";
-import React from "react";
 import { Button } from "react-bootstrap"
-import DummyPOHService from "./services/DummyPOHService";
+import DummyPOHService from "../services/DummyPOHService";
 import { Web3Provider } from "@ethersproject/providers";
 
 export default function DummyPOHController(props: IBasePostaProps) {

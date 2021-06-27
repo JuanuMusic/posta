@@ -25,8 +25,8 @@ export default {
     },
 
     /**
-     * If available, returns REACT_APP_NETWORK env variable.
-     * Else, if ENV is "development" use local. Fallback: use "kovan".
+     * If env variable REACT_APP_NETWORK, returns getDefaultProvider(process.env.REACT_APP_NETWORK)
+     * If NODE_ENV is "development" use local network. Fallback: use "kovan".
      * @returns 
      */
     getEthersProvider(): ethers.providers.BaseProvider {
@@ -34,7 +34,6 @@ export default {
             (process.env.NODE_ENV === "development" ?
                 new ethers.providers.JsonRpcProvider("http://localhost:7545", { chainId: LOCAL_CHAIN_ID, name: "develop" }) :
                 ethers.getDefaultProvider("kovan"));
-        console.log("THA PROVIDER", provider)
         return provider;
     }
 }

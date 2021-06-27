@@ -15,11 +15,12 @@ import {
 } from "react-bootstrap";
 import moment from "moment";
 
-import { FaFire, FaUsers } from "react-icons/fa";
+import { FaFire, FaUserAlt, FaUsers } from "react-icons/fa";
 import { ethers } from "ethers";
 import Skeleton from "react-loading-skeleton";
 import { useWeb3React } from "@web3-react/core";
 import useHuman from "../hooks/useHuman";
+import { ReactComponent as POHLogo } from "../assets/poh.svg";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postaNFT: IPostaNFT;
@@ -46,29 +47,30 @@ export default function PostDisplay(props: IPostDisplayProps) {
         <Container>
           <Row>
             <Col className="d-flex">
-              {(props.postaNFT.authorImage && (
-                <img className="avatar mr-2" src={props.postaNFT.authorImage} />
-              )) || (
-                <Skeleton
-                  className="m-2"
-                  circle={true}
-                  width={50}
-                  height={50}
-                />
-              )}
+              {/* Profile Picture */}
+              <ProfilePicture imageUrl={props.postaNFT.authorImage} />
+
               <div className="flex-fill">
-                <span className="text-dark">
-                  <strong>
-                    {props.postaNFT.authorDisplayName ||
-                      props.postaNFT.authorDisplayName || <Skeleton />}
-                  </strong>
-                </span>{" "}
-                <br />
-                <blockquote className="blockquote mb-0">
+                <div className="d-flex justify-content-between">
+                  {/* Human Name */}
+                  <span className="text-dark">
+                    <strong>
+                      {props.postaNFT.authorDisplayName ||
+                        props.postaNFT.authorDisplayName || <Skeleton />}
+                    </strong>
+                  </span>{" "}
+                  {/* NFT ID */}
+                  <span className="text-muted">
+                    <a className="text-muted" target="_blank" href={props.postaNFT.tokenURI}>PSTA:{props.postaNFT.tokenId}</a>
+                  </span>
+                </div>
+                <blockquote className="blockquote mt-2 ml-2 mb-0">
+                  {/* Post Text */}
                   <p className="post-text text-dark">
                     {" "}
                     {props.postaNFT.content || <Skeleton />}{" "}
                   </p>
+                  {/* Post Date */}
                   <footer className="blockquote-footer">
                     <span className="fw-light">
                       {(props.postaNFT.creationDate &&
@@ -100,6 +102,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                   "0"
                 }
               />
+              <div>metadata</div>
             </Col>
           </Row>
         </Container>
@@ -120,7 +123,7 @@ function SupportersCount(props: any) {
       }
     >
       <div className="d-inline-flex text-dark align-self-center justify-content-center px-2 mx-2">
-        <FaUsers />
+        <FaUsers className="align-self-center mr-2" />
         <span>{props.supporters} supporters</span>
       </div>
     </OverlayTrigger>
@@ -155,5 +158,13 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
         </Button>
       </div>
     </OverlayTrigger>
+  );
+}
+
+function ProfilePicture(props: any) {
+  return (
+    (props.imageUrl && (
+      <img className="avatar mr-2" src={props.imageUrl} />
+    )) || <POHLogo className="flex-shrink-0 avatar mr-2 text-secondary p-1 bg-secondary" />
   );
 }

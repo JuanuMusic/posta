@@ -9,30 +9,16 @@ import { Container, Row, Col } from "react-bootstrap";
 import { ethers } from "ethers";
 import configService from "../services/configService";
 
-interface IPostListProps extends IBasePostaProps {}
+interface IPostListProps extends IBasePostaProps {
+  posts: IPostaNFT[]
+}
 
 export default function PostList(props: IPostListProps) {
   const [supportPostDialogOpts, setsupportPostDialogOpts] = useState({
     show: false,
     postTokenId: "",
   });
-  const [posts, setPost] = useState([] as IPostaNFT[]);
-  const context = useWeb3React<Web3Provider>();
   
-
-  useEffect(() => {
-    async function getLatestPosts() {
-      try {
-        const postList = await PostaService.getLatestPosts(10, configService.getEthersProvider());
-        setPost(postList);
-      } catch (error) {
-        console.error(error.message);
-        console.error(error.stack);
-      }
-    }
-
-    getLatestPosts();
-  }, []);
 
   const handleBurnUBIsClicked = async (tokenId: string) => {
     setsupportPostDialogOpts({
@@ -55,7 +41,7 @@ export default function PostList(props: IPostListProps) {
         human={props.human}
       />{" "}
       <Container>
-        {posts.map((postNFT, index) => (
+        {props.posts.map((postNFT, index) => (
           <Row key={index} className="justify-content-center">
             <Col>
               <PostDisplay

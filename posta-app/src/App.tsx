@@ -9,7 +9,7 @@ import Container from "react-bootstrap/Container";
 import PostEditor from "./components/PostEditor";
 import PostList from "./components/PostList";
 import PohAPI from "./DAL/PohAPI";
-import DummyPOHController from "./DummyPOHController";
+import DummyPOHController from "./dev-tools/DummyPOHController";
 //import { InjectedConnector } from "@web3-react/injected-connector";
 import { Web3Provider } from "@ethersproject/providers";
 //import useEagerConnect from "./hooks/useEagerConnect";
@@ -23,6 +23,7 @@ import { ethers } from "ethers";
 import { Switch, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import PostPage from "./pages/PostPage";
+import PostaController from "./dev-tools/PostaController";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -36,21 +37,8 @@ function appReducer(state: IAppState, action: any) {}
 
 export default function App(props: IAppProps) {
   const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
-  const [appState, dispatch] = useReducer<any, IAppState>(
-    appReducer,
-    {} as IAppState,
-    (s: IAppState) => {}
-  );
-
   const human = useHuman();
   const context = useWeb3React<Web3Provider>();
-
-  // CONFIG
-  // useEffect(() => {
-  //   if(context.chainId && context.library.provider && context.libr)
-  //   const config = configService.getConfig();
-  //   dispatch({ con });
-  // }, []);
 
   const handleStartAccruing = async () => {
     await UBIService.startAccruing(
@@ -94,9 +82,27 @@ export default function App(props: IAppProps) {
             </Switch>
           </Col>
         </Row>
-        <Row>
-          <Col><DummyPOHController human={human} /></Col>
-        </Row>
+
+        {/* Control Dummy POH */}
+        {/* <Row>
+          <Col>
+            <DummyPOHController human={human} />
+          </Col>
+        </Row> */}
+
+        {/* Control Posta Contract */}
+        {/* <Row>
+          <Col>
+            <PostaController owner={human.address} />
+          </Col>
+        </Row> */}
+
+        {/* Start accruing UBI Dummy */}
+        {/* <Row>
+        <Col>
+          <Button onClick={handleStartAccruing}>Start Accruing</Button>
+        </Col>
+      </Row> */}
       </Container>
     </>
   );

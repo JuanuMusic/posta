@@ -28,7 +28,7 @@ export default function PostEditor(props: IPostEditorProps) {
     setIsEditorEnabled(
       props.human &&
         props.human.profile &&
-        props.human.profile.registered &&
+        !!props.human.profile.registered &&
         !isLoading
     );
   }, [props.human, props.human.profile, props.human.profile.registered, isLoading]);
@@ -37,7 +37,7 @@ export default function PostEditor(props: IPostEditorProps) {
     setIsSendButtonEnabled(
       props.human &&
         props.human.profile &&
-        props.human.profile.registered &&
+        !!props.human.profile.registered &&
         typeof postText === "string" && 
         postText !== "" &&
         !isLoading

@@ -1,53 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "./IProofOfhumanity.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import "./IProofOfHumanity.sol";
+import "./PostaStorage.sol";
 
-contract Posta is ERC721, Ownable {
+contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgradeable {
     
     using SafeMath for uint256;
+    //using Strings for uint256;
 
     event NewPost(address indexed author, uint256 indexed tokenId, string value);
 
-    string HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
-    string POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
-    string CANT_SUPPORT_SELF_CONTENT = "CANT_SUPPORT_SELF_CONTENT";
-
-    using Strings for uint256;
-    address private _ubi;
-    uint256 private _maxChars;
-
-    struct PostaData {
-        
-        // Ammount given as support
-        uint256 supportGiven;
-        
-        // Total number of unique humans that support this post
-        uint256 supportersCount;
-    }
-    
-    // Mapping for NFTS
-    mapping (uint256 => PostaData) private _posts;
-
-    // Mapping for humans that support each post
-    mapping(uint256 => mapping(address => bool)) _supporters;
-
-    address private _poh;
-    // Base URI
-    string private _baseURIextended;
-
-    uint256 private _tokenCounter;
-    
+    string constant HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
+    string constant POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
+    string constant CANT_SUPPORT_SELF_CONTENT = "CANT_SUPPORT_SELF_CONTENT";
 
     /// Require that an address is a valid registered human.
     modifier isHuman(address _submission) {
-        IProofOfHumanity.SubmissionInfo memory info = IProofOfHumanity(_poh).getSubmissionInfo(_submission);
-        require(info.registered, HUMAN_NOT_REGISTERED);
+        require(IProofOfHumanity(_poh).isRegistered(_submission), HUMAN_NOT_REGISTERED);
         _;
     }
 
@@ -56,8 +32,10 @@ contract Posta is ERC721, Ownable {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         _;
     }
-
-    constructor(address poh, address ubi, uint256 maxChars) public ERC721("Posta", "PSTA") {
+    
+    function initialize(address poh, address ubi, uint256 maxChars) public virtual initializer {
+        __ERC721_init("Posta","PSTA");
+        OwnableUpgradeable.__Ownable_init();
         _tokenCounter = 0;
         _poh = poh;
         _ubi = ubi;

@@ -1,12 +1,5 @@
-/**
- *  @authors: [@unknownunknown1*, @clesaege]
- *  @reviewers: []
- *  @auditors: []
- *  @bounties: []
- *  @deployments: []
- *  @tools: []
- */
 
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -14,9 +7,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface IProofOfHumanity is IERC20 {
 
     struct SubmissionInfo {
-        uint8 status  ;
-        uint64 submissionTime   ;
-        uint64 index   ;
+        uint8 status;
+        uint submissionTime;
+        uint64 index;
         bool registered ;
         bool hasVouched;
         uint256 numberOfRequests;

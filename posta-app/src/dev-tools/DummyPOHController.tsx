@@ -1,14 +1,19 @@
 import { useWeb3React } from "@web3-react/core";
 import { Button } from "react-bootstrap"
-import DummyPOHService from "../services/DummyPOHService";
 import { Web3Provider } from "@ethersproject/providers";
+import useContractProvider from "src/hooks/useContractProvider";
+import { PohService } from "posta-lib/build/services/PoHService";
+import { ethers } from "ethers";
+
 
 export default function DummyPOHController(props: IBasePostaProps) {
-
-    const context = useWeb3React<Web3Provider>()
+    const contractProvider = useContractProvider();
+    const context = useWeb3React<ethers.providers.Web3Provider>();
 
     const handleRegisterHumanClicked = async () => {
-        await DummyPOHService.registerHuman(props.human.address, new Web3Provider(context.library?.provider!));
+        if(!contractProvider || !context.account) return;
+        const poh = await contractProvider.getDummyPOHContractForWrite(context.account);
+        await poh.register(props.human.address);
         console.log("REGISTERED");
     }
 

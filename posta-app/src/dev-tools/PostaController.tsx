@@ -1,24 +1,21 @@
 import { useWeb3React } from "@web3-react/core";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
-import PostaService from "../services/PostaService";
 import { Web3Provider } from "@ethersproject/providers";
 import { useState } from "react";
+import useContractProvider from "src/hooks/useContractProvider";
+import { PostaService } from "posta-lib/build";
 
 interface IPostaControllerProps {
   owner: string;
 }
 
 export default function PostaController(props: IPostaControllerProps) {
-  const context = useWeb3React<Web3Provider>();
   const [baseURI, setBaseURI] = useState("");
-  const [loadedBaseURI, setLoadedBaseURI] = useState("");
+  const contractProvider = useContractProvider();
 
   const handleSetBaseUrlClicked = async () => {
-    await PostaService.setBaseURI(
-      props.owner,
-      baseURI,
-      new Web3Provider(context.library?.provider!)
-    );
+    if (!contractProvider) return;
+    await PostaService.setBaseURI(props.owner, baseURI, contractProvider);
     console.log("Base URI updated");
   };
 

@@ -5,9 +5,10 @@ import Col from "react-bootstrap/Col";
 import FormGroup from "react-bootstrap/FormGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
-import PostaService from "../services/PostaService";
 import { useWeb3React } from "@web3-react/core";
-import { Web3Provider } from '@ethersproject/providers'
+import { Web3Provider } from "@ethersproject/providers";
+import useContractProvider from "src/hooks/useContractProvider";
+import { IPostData, PostaService } from "posta-lib/build/services/PostaService";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
@@ -20,7 +21,8 @@ export default function PostEditor(props: IPostEditorProps) {
   const [isSendButtonEnabled, setIsSendButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { chainId, library } = useWeb3React();
-  const context = useWeb3React<Web3Provider>()
+  const context = useWeb3React<Web3Provider>();
+  const contractProvider = useContractProvider();
 
   const MAX_CHARS = 140;
 
@@ -31,20 +33,26 @@ export default function PostEditor(props: IPostEditorProps) {
         !!props.human.profile.registered &&
         !isLoading
     );
-  }, [props.human, props.human.profile, props.human.profile.registered, isLoading]);
+  }, [
+    props.human,
+    props.human.profile,
+    props.human.profile.registered,
+    isLoading,
+  ]);
 
   useEffect(() => {
     setIsSendButtonEnabled(
       props.human &&
         props.human.profile &&
         !!props.human.profile.registered &&
-        typeof postText === "string" && 
+        typeof postText === "string" &&
         postText !== "" &&
         !isLoading
     );
   }, [props.human, isLoading, postText]);
 
   const handleSendPost = async () => {
+    if (!contractProvider) return;
     // Generate the post data with the content and the author address
     const postData: IPostData = {
       text: postText,
@@ -53,10 +61,11 @@ export default function PostEditor(props: IPostEditorProps) {
 
     setIsLoading(true);
     // Publish the tyweet through the Posta Service
-    await PostaService.publishPost(postData, new Web3Provider(await context.library?.provider!));
+    await PostaService.publishPost(postData, contractProvider);
 
     setPostText("");
     setIsLoading(false);
+    props.onNewPostSent && props.onNewPostSent(0);
   };
 
   return (
@@ -69,7 +78,10 @@ export default function PostEditor(props: IPostEditorProps) {
               placeholder="What's happening?"
               rows={3}
               value={postText}
-              onChange={(e) => (e.target.value.length <= MAX_CHARS) && setPostText(e.target.value)}
+              onChange={(e) =>
+                e.target.value.length <= MAX_CHARS &&
+                setPostText(e.target.value)
+              }
               disabled={!isEditorEnabled}
             ></FormControl>
           </FormGroup>
@@ -77,10 +89,12 @@ export default function PostEditor(props: IPostEditorProps) {
       </Row>
       <Row>
         <Col xs={12} className="d-flex justify-content-between ">
-        <div>
-          {`${postText.length}/${MAX_CHARS}`}
-        </div>
-          <Button disabled={!isSendButtonEnabled} onClick={handleSendPost} className="mb-5">
+          <div>{`${postText.length}/${MAX_CHARS}`}</div>
+          <Button
+            disabled={!isSendButtonEnabled}
+            onClick={handleSendPost}
+            className="mb-5"
+          >
             Send
           </Button>
         </Col>

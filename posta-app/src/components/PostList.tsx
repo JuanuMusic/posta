@@ -1,13 +1,8 @@
-import { useWeb3React } from "@web3-react/core";
-import { Web3Provider } from "@ethersproject/providers";
-import React, { useEffect, useState } from "react";
-import PostaService from "../services/PostaService";
+import  { useState } from "react";
 import SupportPostDialog from "./SupportPostDialog";
 import PostDisplay from "./PostDisplay";
-import contractProvider from "../services/ContractProvider";
 import { Container, Row, Col } from "react-bootstrap";
-import { ethers } from "ethers";
-import configService from "../services/configService";
+import { IPostaNFT } from "posta-lib/build/services/PostaService";
 
 interface IPostListProps extends IBasePostaProps {
   posts: IPostaNFT[]

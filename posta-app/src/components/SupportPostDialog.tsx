@@ -9,11 +9,11 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { Gem } from "react-bootstrap-icons";
-import PostaService from "../services/PostaService";
-import UBIService from "../services/UBIService";
-import { Web3Provider } from "@ethersproject/providers";
+
 import { BigNumber, ethers, utils } from "ethers";
 import { useWeb3React } from "@web3-react/core";
+import useContractProvider from "src/hooks/useContractProvider";
+import { PostaService, UBIService } from "posta-lib/build";
 
 interface ISupportPostDialogProps extends IBasePostaProps {
   show: boolean;
@@ -27,35 +27,39 @@ interface ISupportPostDialogProps extends IBasePostaProps {
  * @returns
  */
 function useUBIBalance(address: string) {
-  const context = useWeb3React<Web3Provider>();
+  
   const [currentUBIBalance, setCurrentUBIBalance] = useState(BigNumber.from(0));
+  const contractProvider = useContractProvider();
+  
   useEffect(() => {
-    if (!address) return;
     async function getBalance() {
-      const balance = await UBIService.balanceOf(address);
-      // Update the current UBI balance.
-      setCurrentUBIBalance(balance);
+      if (!address) return;
+      if(!contractProvider) return;
+      // const balance = await UBIService.balanceOf(address, contractProvider);
+      // // Update the current UBI balance.
+      // setCurrentUBIBalance(balance);
     }
 
     getBalance();
-  }, [address]);
+  }, [address, contractProvider]);
 
   return currentUBIBalance;
 }
 
 function SupportPostDialog(props: ISupportPostDialogProps) {
+  const contractProvider = useContractProvider();
   const [amount, setAmount] = useState("");
   const currentUBIBalance = useUBIBalance(props.human.address);
   const [isApproved, setIsApproved] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isBurning, setIsBurning] = useState(false);
-  const context = useWeb3React<Web3Provider>();
 
   const handleClose = () => {
     if (!isApproving && !isBurning) props.onClose && props.onClose();
   };
 
   const handleApproveBurn = async () => {
+    if(!contractProvider) return;
     if (amount) {
       setIsApproving(true);
       const parsedAmount = utils.parseEther(amount);
@@ -67,7 +71,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
         await PostaService.requestBurnApproval(
           props.human.address,
           parsedAmount,
-          new ethers.providers.Web3Provider(context.library?.provider!)
+          contractProvider
         );
 
         setIsApproved(true);
@@ -80,6 +84,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
    * Send  request to burn UBIs. First approves the ammount and then burns it.
    */
   const handleGiveUBISupport = async () => {
+    if(!contractProvider) return;
     if (amount) {
       const parsedAmount = utils.parseEther(amount);
 
@@ -92,7 +97,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
           props.postTokenId,
           parsedAmount,
           props.human.address,
-          new ethers.providers.Web3Provider(context.library?.provider!),
+          contractProvider,
           0
         );
         setIsBurning(false);

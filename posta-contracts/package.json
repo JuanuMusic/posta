@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/truffle-box/drizzle-box.git"
+    "url": "git+https://github.com/JuanuMusic/posta.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author":"Juan Manuel Haedo",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/truffle-box/drizzle-box/issues"
+    "url": "https://github.com/JuanuMusic/posta/issues"
   },
-  "homepage": "https://github.com/truffle-box/drizzle-box#readme",
+  "homepage": "https://github.com/JuanuMusic/posta#readme",
   "dependencies": {
     "@openzeppelin/contracts": "4.1.0",
     "@openzeppelin/contracts-upgradeable": "^4.1.0",

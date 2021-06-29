@@ -1,7 +1,8 @@
 import { useWeb3React } from "@web3-react/core";
+import { PohAPI } from "posta-lib/build";
+import { POHProfileModel } from "posta-lib/build/services/PohAPI";
 import { useEffect, useState } from "react";
 import { injected } from "../connectors";
-import PohAPI from "../DAL/PohAPI";
 import useEagerConnect from "./useEagerConnect";
 
 /**

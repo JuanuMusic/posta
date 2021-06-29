@@ -1,0 +1,19 @@
+{
+  "name": "posta-lib",
+  "version": "1.0.0",
+  "description": "Common libraries for Posta apps",
+  "main": "./build/index.ts",
+  "types": "./src/@types/**/*.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "ethers": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^15.12.5"
+  }
+}

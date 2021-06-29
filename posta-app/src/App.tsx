@@ -1,28 +1,19 @@
-import React, { useEffect, useReducer, useState } from "react";
-import {
-  Web3ReactProvider,
-  useWeb3React,
-  UnsupportedChainIdError,
-} from "@web3-react/core";
+import { useState } from "react";
+import { useWeb3React } from "@web3-react/core";
 import "./App.css";
 import Container from "react-bootstrap/Container";
-import PostEditor from "./components/PostEditor";
-import PostList from "./components/PostList";
-import PohAPI from "./DAL/PohAPI";
-import DummyPOHController from "./dev-tools/DummyPOHController";
-//import { InjectedConnector } from "@web3-react/injected-connector";
-import { Web3Provider } from "@ethersproject/providers";
-//import useEagerConnect from "./hooks/useEagerConnect";
+
 import useHuman from "./hooks/useHuman";
 import { Button, Col, Row } from "react-bootstrap";
 import ConnectWalletDialog from "./components/ConnectWalletDialog";
-import { convertToObject } from "typescript";
-import configService, { IConfiguration } from "./services/configService";
-import UBIService from "./services/UBIService";
 import { ethers } from "ethers";
 import { Switch, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import PostPage from "./pages/PostPage";
+import configProvider from "./config/configProvider";
+import useContractProvider from "./hooks/useContractProvider";
+import { IConfiguration, UBIService } from "posta-lib/build";
+import DummyPOHController from "./dev-tools/DummyPOHController";
 import PostaController from "./dev-tools/PostaController";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
@@ -33,18 +24,15 @@ interface IAppState {
   config: IConfiguration | undefined;
 }
 
-function appReducer(state: IAppState, action: any) {}
-
 export default function App(props: IAppProps) {
   const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
   const human = useHuman();
-  const context = useWeb3React<Web3Provider>();
+  const context = useWeb3React<ethers.providers.Web3Provider>();
+  const contractProvider = useContractProvider();
 
   const handleStartAccruing = async () => {
-    await UBIService.startAccruing(
-      human.address,
-      new ethers.providers.Web3Provider(context.library?.provider!)
-    );
+    if (!contractProvider) return;
+    await UBIService.startAccruing(human.address, contractProvider);
   };
   return (
     <>
@@ -84,18 +72,18 @@ export default function App(props: IAppProps) {
         </Row>
 
         {/* Control Dummy POH */}
-        {/* <Row>
+        <Row>
           <Col>
             <DummyPOHController human={human} />
           </Col>
-        </Row> */}
+        </Row>
 
         {/* Control Posta Contract */}
-        {/* <Row>
+        <Row>
           <Col>
             <PostaController owner={human.address} />
           </Col>
-        </Row> */}
+        </Row>
 
         {/* Start accruing UBI Dummy */}
         {/* <Row>

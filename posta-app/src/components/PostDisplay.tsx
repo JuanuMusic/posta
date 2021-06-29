@@ -3,8 +3,6 @@ import React from "react";
 // No me la
 import Container from "react-bootstrap/Container";
 
-import { Web3Provider } from "@ethersproject/providers";
-
 import {
   Button,
   Card,
@@ -21,6 +19,7 @@ import Skeleton from "react-loading-skeleton";
 import { useWeb3React } from "@web3-react/core";
 import useHuman from "../hooks/useHuman";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
+import { IPostaNFT } from "posta-lib/build/services/PostaService";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postaNFT: IPostaNFT;

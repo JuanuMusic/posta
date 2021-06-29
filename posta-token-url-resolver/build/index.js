@@ -41,8 +41,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var ethers_1 = require("ethers");
 var express_1 = __importDefault(require("express"));
-var index_1 = require("posta-lib/build/index");
+// import { PostaService, PohService, ContractProvider } from "./posta-lib/index"
 var dotenv_1 = __importDefault(require("dotenv"));
+var develop_json_1 = __importDefault(require("./config/develop.json"));
+var kovan_json_1 = __importDefault(require("./config/kovan.json"));
+var Posta_json_1 = __importDefault(require("./contracts/Posta.json"));
+var IUBI_json_1 = __importDefault(require("./contracts/IUBI.json"));
+var DummyProofOfHumanity_json_1 = __importDefault(require("./contracts/DummyProofOfHumanity.json"));
+var posta_lib_1 = require("./posta-lib");
 dotenv_1.default.config();
 var app = express_1.default();
 // Change this to your local chain id
@@ -59,24 +65,23 @@ function getEthersProvider() {
             ethers_1.ethers.getDefaultProvider("kovan"));
     return provider;
 }
-var develop_json_1 = __importDefault(require("./config/develop.json"));
-var Posta_json_1 = __importDefault(require("./contracts/Posta.json"));
-var IUBI_json_1 = __importDefault(require("./contracts/IUBI.json"));
-var DummyProofOfHumanity_json_1 = __importDefault(require("./contracts/DummyProofOfHumanity.json"));
+function getConfig() {
+    return process.env.NETWORK === "kovan" ? kovan_json_1.default : develop_json_1.default;
+}
 var provider = getEthersProvider();
-var contractprovider = new index_1.ContractProvider(develop_json_1.default, provider, { PostaContract: Posta_json_1.default, UBIContract: IUBI_json_1.default, POHContract: DummyProofOfHumanity_json_1.default });
+var contractprovider = new posta_lib_1.ContractProvider(getConfig(), provider, { PostaContract: Posta_json_1.default, UBIContract: IUBI_json_1.default, POHContract: DummyProofOfHumanity_json_1.default });
 app.get('/post/:tokenId', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var tokenId, logs, human, retVal;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 tokenId = req.params.tokenId;
-                return [4 /*yield*/, index_1.PostaService.getPostLogs(ethers_1.BigNumber.from(tokenId), contractprovider)];
+                return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(ethers_1.BigNumber.from(tokenId), contractprovider)];
             case 1:
                 logs = _a.sent();
                 if (!logs)
                     return [2 /*return*/, res.status(404).send("Log not found")];
-                return [4 /*yield*/, index_1.PohService.getHuman(logs.author)];
+                return [4 /*yield*/, posta_lib_1.PohService.getHuman(logs.author)];
             case 2:
                 human = _a.sent();
                 retVal = {
@@ -96,11 +101,11 @@ app.get('/', function (req, res) {
 });
 function initialize() {
     return __awaiter(this, void 0, void 0, function () {
-        var provider;
+        var PORT;
         return __generator(this, function (_a) {
-            provider = getEthersProvider();
-            app.listen(3000, function () {
-                console.log('The application is listening on port 3000!');
+            PORT = process.env.PORT;
+            app.listen(PORT, function () {
+                console.log("The application is listening on port " + PORT + "!");
             });
             return [2 /*return*/];
         });

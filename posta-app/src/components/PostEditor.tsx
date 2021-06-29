@@ -5,10 +5,8 @@ import Col from "react-bootstrap/Col";
 import FormGroup from "react-bootstrap/FormGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
-import { useWeb3React } from "@web3-react/core";
-import { Web3Provider } from "@ethersproject/providers";
-import useContractProvider from "src/hooks/useContractProvider";
-import { IPostData, PostaService } from "posta-lib/build/services/PostaService";
+import useContractProvider from "../hooks/useContractProvider";
+import { IPostData, PostaService } from "../posta-lib/services/PostaService";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
@@ -20,8 +18,6 @@ export default function PostEditor(props: IPostEditorProps) {
   const [isEditorEnabled, setIsEditorEnabled] = useState(false);
   const [isSendButtonEnabled, setIsSendButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { chainId, library } = useWeb3React();
-  const context = useWeb3React<Web3Provider>();
   const contractProvider = useContractProvider();
 
   const MAX_CHARS = 140;

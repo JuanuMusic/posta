@@ -1,22 +1,36 @@
-import kovanConfig from "../config/kovan.json";
-import developConfig from "../config/develop.json";
+import kovanConfig from "./kovan.json";
+import developConfig from "./develop.json";
 import { ethers } from "ethers";
-import { IConfiguration } from "posta-lib/build";
+import { IConfiguration } from "../posta-lib/services/ContractProvider";
 
 // Change this to your local chain id
 const LOCAL_CHAIN_ID = 1337;
 const LOCAL_NETWORK_URL = "http://localhost:7545";
 const LOCAL_NETWORK_NAME = "develop";
 
+
+const KOVAN_CHAIN_ID = 42;
 const NETWORK_CONFIGS: { [key: number]: IConfiguration } = {
-    [42]: kovanConfig,
+    [KOVAN_CHAIN_ID]: kovanConfig,
     [LOCAL_CHAIN_ID]: developConfig
 };
+
+const CHAIN_ID_BY_NAME : {[key: string]: number} = {
+    ["kovan"]: KOVAN_CHAIN_ID,
+    ["local"]: LOCAL_CHAIN_ID
+}
+
+
 export default {
 
     getConfig(chainId: number): IConfiguration {
         if (!NETWORK_CONFIGS[chainId]) throw new Error(`No configuration found for chainId ${chainId}`);
         return NETWORK_CONFIGS[chainId];
+    },
+
+    getConfigByName(networkName: string): IConfiguration {
+        console.log("Getting network by Name", networkName);
+        return NETWORK_CONFIGS[CHAIN_ID_BY_NAME[networkName]];
     },
 
     /**

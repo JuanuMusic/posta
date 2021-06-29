@@ -2,7 +2,7 @@ import  { useState } from "react";
 import SupportPostDialog from "./SupportPostDialog";
 import PostDisplay from "./PostDisplay";
 import { Container, Row, Col } from "react-bootstrap";
-import { IPostaNFT } from "posta-lib/build/services/PostaService";
+import { IPostaNFT } from "../posta-lib/services/PostaService";
 
 interface IPostListProps extends IBasePostaProps {
   posts: IPostaNFT[]

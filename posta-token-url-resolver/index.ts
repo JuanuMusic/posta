@@ -1,7 +1,14 @@
 import { BigNumber, ethers } from "ethers";
 import express from "express";
-import { PostaService, PohService, ContractProvider } from "posta-lib/build/index"
+// import { PostaService, PohService, ContractProvider } from "./posta-lib/index"
 import dotenv from "dotenv";
+import develop from "./config/develop.json";
+import kovan from "./config/kovan.json";
+
+import PostaContract from './contracts/Posta.json';
+import UBIContract from './contracts/IUBI.json';
+import DummyPOHContract from './contracts/DummyProofOfHumanity.json';
+import { ContractProvider, IConfiguration, PohService, PostaService } from "./posta-lib";
 
 dotenv.config();
 
@@ -16,6 +23,7 @@ const LOCAL_CHAIN_ID = 1337;
      * @returns 
      */
 function getEthersProvider(): ethers.providers.BaseProvider {
+    
     const provider = (process.env.NETWORK && ethers.getDefaultProvider(process.env.NETWORK)) ||
         (process.env.NODE_ENV === "development" ?
             new ethers.providers.JsonRpcProvider("http://localhost:7545", { chainId: LOCAL_CHAIN_ID, name: "develop" }) :
@@ -23,18 +31,18 @@ function getEthersProvider(): ethers.providers.BaseProvider {
     return provider;
 }
 
-import config from "./config/develop.json";
-import PostaContract from './contracts/Posta.json';
-import UBIContract from './contracts/IUBI.json';
-import DummyPOHContract from './contracts/DummyProofOfHumanity.json';
+function getConfig(): IConfiguration {
+    return process.env.NETWORK === "kovan" ? kovan : develop;
+}
+
 
 const provider = getEthersProvider();
-const contractprovider = new ContractProvider(config, provider, { PostaContract, UBIContract, POHContract: DummyPOHContract });
+const contractprovider = new ContractProvider(getConfig(), provider, { PostaContract, UBIContract, POHContract: DummyPOHContract });
 
 app.get('/post/:tokenId', async (req, res) => {
     const tokenId = req.params.tokenId;
     const logs = await PostaService.getPostLogs(BigNumber.from(tokenId), contractprovider);
-    if(!logs) return res.status(404).send("Log not found");
+    if (!logs) return res.status(404).send("Log not found");
     const human = await PohService.getHuman(logs.author);
     const retVal = {
         author: logs.author,
@@ -53,11 +61,11 @@ app.get('/', (req, res) => {
 })
 
 async function initialize() {
-    const provider: ethers.providers.BaseProvider = getEthersProvider();
+    
 
-
-    app.listen(3000, () => {
-        console.log('The application is listening on port 3000!');
+    const PORT = process.env.PORT;
+    app.listen(PORT, () => {
+        console.log(`The application is listening on port ${PORT}!`);
     })
 }
 

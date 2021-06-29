@@ -1,9 +1,7 @@
-import { useWeb3React } from "@web3-react/core";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
-import { Web3Provider } from "@ethersproject/providers";
 import { useState } from "react";
-import useContractProvider from "src/hooks/useContractProvider";
-import { PostaService } from "posta-lib/build";
+import { PostaService } from "../posta-lib";
+import useContractProvider from "../hooks/useContractProvider";
 
 interface IPostaControllerProps {
   owner: string;

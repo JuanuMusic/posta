@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import {
   FormControl,
   InputGroup,
@@ -11,9 +11,8 @@ import {
 import { Gem } from "react-bootstrap-icons";
 
 import { BigNumber, ethers, utils } from "ethers";
-import { useWeb3React } from "@web3-react/core";
-import useContractProvider from "src/hooks/useContractProvider";
-import { PostaService, UBIService } from "posta-lib/build";
+import useContractProvider from "../hooks/useContractProvider";
+import { PostaService, UBIService } from "../posta-lib";
 
 interface ISupportPostDialogProps extends IBasePostaProps {
   show: boolean;
@@ -35,9 +34,9 @@ function useUBIBalance(address: string) {
     async function getBalance() {
       if (!address) return;
       if(!contractProvider) return;
-      // const balance = await UBIService.balanceOf(address, contractProvider);
-      // // Update the current UBI balance.
-      // setCurrentUBIBalance(balance);
+      const balance = await UBIService.balanceOf(address, contractProvider);
+      // Update the current UBI balance.
+      setCurrentUBIBalance(balance);
     }
 
     getBalance();

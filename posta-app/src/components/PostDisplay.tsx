@@ -1,5 +1,3 @@
-import React from "react";
-
 // No me la
 import Container from "react-bootstrap/Container";
 
@@ -13,13 +11,12 @@ import {
 } from "react-bootstrap";
 import moment from "moment";
 
-import { FaFire, FaUserAlt, FaUsers } from "react-icons/fa";
+import { FaFire, FaUsers } from "react-icons/fa";
 import { ethers } from "ethers";
 import Skeleton from "react-loading-skeleton";
-import { useWeb3React } from "@web3-react/core";
 import useHuman from "../hooks/useHuman";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
-import { IPostaNFT } from "posta-lib/build/services/PostaService";
+import { IPostaNFT } from "../posta-lib/services/PostaService";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postaNFT: IPostaNFT;

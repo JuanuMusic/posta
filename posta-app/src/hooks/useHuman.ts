@@ -1,8 +1,7 @@
 import { useWeb3React } from "@web3-react/core";
-import { PohAPI } from "posta-lib/build";
-import { POHProfileModel } from "posta-lib/build/services/PohAPI";
 import { useEffect, useState } from "react";
 import { injected } from "../connectors";
+import { PohAPI, POHProfileModel } from "../posta-lib/services/PohAPI";
 import useEagerConnect from "./useEagerConnect";
 
 /**
@@ -29,7 +28,7 @@ export default function useHuman() {
 
     activate(injected);
     setAddress(account);
-    setProfile(registeredProfile || {registered: true, eth_address: account, status: "REGISTERED", display_name:"Juanu", first_name: "Juanu", last_name: "Haedo", bio: "Just a DEV", profile: "A profile", creation_time: new Date(), photo: "", video: "", registered_time: new Date() });
+    setProfile(registeredProfile || { registered: true, eth_address: account, status: "REGISTERED", display_name: "Juanu", first_name: "Juanu", last_name: "Haedo", bio: "Just a DEV", profile: "A profile", creation_time: new Date(), photo: "", video: "", registered_time: new Date() });
   }
 
   useEffect(() => {
@@ -37,7 +36,8 @@ export default function useHuman() {
   }, [account])
 
   useEffect(() => {
-    ((window as any).ethereum as any).on(
+    const ethereum = ((window as any).ethereum as any);
+    ethereum && ethereum.on(
       "accountsChanged",
       handleAccountsChanged
     );

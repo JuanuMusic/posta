@@ -1,9 +1,7 @@
 import { useWeb3React } from "@web3-react/core";
 import { Button } from "react-bootstrap"
-import { Web3Provider } from "@ethersproject/providers";
-import useContractProvider from "src/hooks/useContractProvider";
-import { PohService } from "posta-lib/build/services/PoHService";
 import { ethers } from "ethers";
+import useContractProvider from "../hooks/useContractProvider";
 
 
 export default function DummyPOHController(props: IBasePostaProps) {

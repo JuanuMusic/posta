@@ -1,13 +1,12 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
-import { PostaService } from "posta-lib/build";
-import { IPostaNFT } from "posta-lib/build/services/PostaService";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import useContractProvider from "src/hooks/useContractProvider";
 import PostEditor from "../components/PostEditor";
 import PostList from "../components/PostList";
+import useContractProvider from "../hooks/useContractProvider";
 import useHuman from "../hooks/useHuman";
+import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 
 export default function MainPage() {
   const context = useWeb3React<ethers.providers.Web3Provider>();
@@ -16,7 +15,10 @@ export default function MainPage() {
   const contractProvider = useContractProvider();
 
   const refreshLatestPosts = async () => {
-    if(!contractProvider) return;
+    if(!contractProvider) {
+      console.warn("Contract provider not set");
+      return;
+    }
     try {
       const postList = await PostaService.getLatestPosts(10, contractProvider);
       console.log(postList);

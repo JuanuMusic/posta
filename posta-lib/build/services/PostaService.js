@@ -252,6 +252,12 @@ var PostaService = {
             });
         });
     },
+    /**
+     * Builds a post object to be used for display.
+     * @param tokenId
+     * @param contractProvider
+     * @returns
+     */
     buildPost: function (tokenId, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, postNFT, postLogs, tokenURI, human, error_3;

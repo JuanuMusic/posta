@@ -10,9 +10,7 @@ import { ethers } from "ethers";
 import { Switch, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import PostPage from "./pages/PostPage";
-import configProvider from "./config/configProvider";
 import useContractProvider from "./hooks/useContractProvider";
-import { IConfiguration, UBIService } from "posta-lib/build";
 import DummyPOHController from "./dev-tools/DummyPOHController";
 import PostaController from "./dev-tools/PostaController";
 
@@ -20,20 +18,11 @@ import PostaController from "./dev-tools/PostaController";
 
 interface IAppProps {}
 
-interface IAppState {
-  config: IConfiguration | undefined;
-}
-
 export default function App(props: IAppProps) {
   const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
   const human = useHuman();
   const context = useWeb3React<ethers.providers.Web3Provider>();
-  const contractProvider = useContractProvider();
 
-  const handleStartAccruing = async () => {
-    if (!contractProvider) return;
-    await UBIService.startAccruing(human.address, contractProvider);
-  };
   return (
     <>
       <ConnectWalletDialog
@@ -72,18 +61,18 @@ export default function App(props: IAppProps) {
         </Row>
 
         {/* Control Dummy POH */}
-        <Row>
+        {/* <Row>
           <Col>
             <DummyPOHController human={human} />
           </Col>
-        </Row>
+        </Row> */}
 
         {/* Control Posta Contract */}
-        <Row>
+        {/* <Row>
           <Col>
             <PostaController owner={human.address} />
           </Col>
-        </Row>
+        </Row> */}
 
         {/* Start accruing UBI Dummy */}
         {/* <Row>

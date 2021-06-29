@@ -1,12 +1,11 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
-import { PostaService } from "posta-lib/build";
-import { IPostaNFT } from "posta-lib/build/services/PostaService";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PostDisplay from "src/components/PostDisplay";
-import useContractProvider from "src/hooks/useContractProvider";
-import useHuman from "src/hooks/useHuman";
+import PostDisplay from "../components/PostDisplay";
+import useContractProvider from "../hooks/useContractProvider";
+import useHuman from "../hooks/useHuman";
+import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 
 interface IPostPageProps {
   author: string;

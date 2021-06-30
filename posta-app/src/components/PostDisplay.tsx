@@ -79,8 +79,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
               </div>
             </Col>
           </Row>
+          <Row><Col><hr className="my-2" /></Col></Row>
           <Row>
-            <Col className="d-flex align-items-start">
+            <Col className="d-flex align-items-start mt-2 mb-1">
               <GiveSupportButton
                 className="align-self-center"
                 disabled={props.postaNFT.author === human.address}
@@ -146,6 +147,7 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           variant="outline-danger"
           onClick={props.onClick}
           disabled={props.disabled}
+          size="sm"
         >
           <div className="d-flex justify-content-cente align-items-center">
             <FaFire />

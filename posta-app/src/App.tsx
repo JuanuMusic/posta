@@ -13,6 +13,8 @@ import PostPage from "./pages/PostPage";
 import useContractProvider from "./hooks/useContractProvider";
 import DummyPOHController from "./dev-tools/DummyPOHController";
 import PostaController from "./dev-tools/PostaController";
+import AppHeader from "./components/AppHeader";
+import ConnectWalletButton from "./components/ConnectWalletButton";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -20,8 +22,6 @@ interface IAppProps {}
 
 export default function App(props: IAppProps) {
   const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
-  const human = useHuman();
-  const context = useWeb3React<ethers.providers.Web3Provider>();
 
   return (
     <>
@@ -32,19 +32,10 @@ export default function App(props: IAppProps) {
       <Container className="p-3" style={{ maxWidth: "750px" }}>
         <Row>
           <Col>
-            <h1>Posta</h1>
-          </Col>
-          <Col className="d-flex justify-content-end align-items-center">
-            <Button
-              className=""
-              onClick={() => setIsConnectDialogVisible(true)}
-            >
-              {context.active
-                ? context.account?.substring(0, 4) +
-                  "..." +
-                  context.account?.substring(context.account.length - 4)
-                : "Connect"}
-            </Button>
+              <AppHeader />
+              <ConnectWalletButton className="text-right mb-2"
+                onConnectButtonClicked={() => setIsConnectDialogVisible(true)}
+              />
           </Col>
         </Row>
         <Row>

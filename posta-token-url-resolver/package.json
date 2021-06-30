@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node build/index.js",
+    "dev": "tsc && npm start",
     "postinstall": "npx tsc",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "npx tsc -w",

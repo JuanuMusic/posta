@@ -1,0 +1,20 @@
+{
+  "name": "posta",
+  "version": "1.0.0",
+  "description": "General project manager",
+  "main": "index.js",
+  "scripts": {
+    "dev-url-resolver": "cd posta-lib && npm run build-win && cd ../posta-token-url-resolver && npm run dev && cd ..",
+    "dev-app": "cd posta-lib && npm run build-win && cd ../posta-app && npm run dev && cd .."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JuanuMusic/posta.git"
+  },
+  "author": "Juan Manuel Haedo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JuanuMusic/posta/issues"
+  },
+  "homepage": "https://github.com/JuanuMusic/posta#readme"
+}

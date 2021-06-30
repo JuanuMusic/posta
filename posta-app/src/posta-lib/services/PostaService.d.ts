@@ -3,7 +3,7 @@ import { IContractProvider } from "./ContractProvider";
 interface IPostaService {
     getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
     setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
-    getPostLogs(tokenIds: number[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
+    getPostLogs(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
     giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
     publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<void>;
     getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;

@@ -5,7 +5,8 @@
   "main": "./build/index.ts",
   "types": "./src/@types/**/*.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-win": "tsc && Xcopy /E /I \"./src\" \"../posta-app/src/posta-lib/\" && Xcopy /E /I \"./src\" \"../posta-token-url-resolver/posta-lib/\""
   },
   "author": "",
   "license": "ISC",

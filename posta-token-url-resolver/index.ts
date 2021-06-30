@@ -23,11 +23,11 @@ const LOCAL_CHAIN_ID = 1337;
      * @returns 
      */
 function getEthersProvider(): ethers.providers.BaseProvider {
-    
-    const provider = (process.env.NETWORK && ethers.getDefaultProvider(process.env.NETWORK)) ||
+
+    const provider = (process.env.NETWORK && ethers.getDefaultProvider(process.env.NETWORK, { infura: process.env.INFURA_PROJECT_ID })) ||
         (process.env.NODE_ENV === "development" ?
             new ethers.providers.JsonRpcProvider("http://localhost:7545", { chainId: LOCAL_CHAIN_ID, name: "develop" }) :
-            ethers.getDefaultProvider("kovan"));
+            ethers.getDefaultProvider("kovan", { infura: process.env.INFURA_PROJECT_ID }));
     return provider;
 }
 
@@ -40,16 +40,19 @@ const provider = getEthersProvider();
 const contractprovider = new ContractProvider(getConfig(), provider, { PostaContract, UBIContract, POHContract: DummyPOHContract });
 
 app.get('/post/:tokenId', async (req, res) => {
-    const tokenId = req.params.tokenId;
-    const logs = await PostaService.getPostLogs(BigNumber.from(tokenId), contractprovider);
-    if (!logs) return res.status(404).send("Log not found");
-    const human = await PohService.getHuman(logs.author);
+    const tokenId = parseInt(req.params.tokenId, 10); // tokenId from url param
+    // Get the logs for the token
+    const logs = await PostaService.getPostLogs([tokenId], contractprovider);
+    if (!logs || logs.length === 0) return res.status(404).send("Log not found");
+    const log = logs[0];
+    console.log("THE LOGS", logs);
+    const human = await PohService.getHuman(log.author);
     const retVal = {
-        author: logs.author,
-        blockTime: logs.blockTime,
-        content: logs.content,
+        author: log.author,
+        blockTime: log.blockTime,
+        content: log.content,
         name: `PSTA:${tokenId} by ${human && human.display_name || "UNKNOWN"}`,
-        external_url: `localhost:3001/post/${tokenId}`
+        external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`
     }
 
     res.status(200).send(JSON.stringify(retVal));
@@ -61,7 +64,7 @@ app.get('/', (req, res) => {
 })
 
 async function initialize() {
-    
+
 
     const PORT = process.env.PORT;
     app.listen(PORT, () => {

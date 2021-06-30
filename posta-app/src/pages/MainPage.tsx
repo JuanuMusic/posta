@@ -1,5 +1,6 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
+import { stringify } from "querystring";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import PostEditor from "../components/PostEditor";
@@ -15,27 +16,49 @@ export default function MainPage() {
   const contractProvider = useContractProvider();
 
   const refreshLatestPosts = async () => {
-    if(!contractProvider) {
+    if (!contractProvider) {
       console.warn("Contract provider not set");
       return;
     }
     try {
+      // Get the last 10 posts
       const postList = await PostaService.getLatestPosts(10, contractProvider);
       console.log(postList);
-      setPosts(postList);
+      // If list is not null, set to the state
+      if (postList) setPosts(postList);
     } catch (error) {
       console.error(error.message);
       console.error(error.stack);
     }
-  }
+  };
 
   useEffect(() => {
-    refreshLatestPosts();
+    async function onContractProviderChanged() {
+      if (!contractProvider) return;
+
+      refreshLatestPosts();
+      console.log("Subscribing to NewPost");
+      (await contractProvider.getPostaContractForRead()).on(
+        "NewPost",
+        async (author: string, tokenId: number, value: string) => {
+          console.log("NewPost received", author, tokenId, value);      
+          const log = await PostaService.getPostLogs([tokenId], contractProvider);
+          if(log && log.length > 0)
+            appendPost(await PostaService.buildPost(log[0], contractProvider));
+        }
+      );
+    }
+
+    onContractProviderChanged();
   }, [contractProvider]);
+
+  const appendPost = (post: IPostaNFT) => {
+    setPosts([...posts, post]);
+  }
 
   const onNewPostSent = (stackId: number) => {
     //_pendingTransactionStacks.push(stackId);
-    refreshLatestPosts()
+    refreshLatestPosts();
   };
 
   return (

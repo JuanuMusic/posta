@@ -24,14 +24,23 @@ export default function PostPage(props: any) {
   async function init() {
     if (!contractProvider || isInitialized) return;
     setIsLoading(true);
-    const post = await PostaService.buildPost(tokenId, contractProvider);
-    console.log("POST", post);
-    setPost(post);
+    // Get the logs for this specific post
+    const log = await PostaService.getPostLogs(
+      [parseInt(tokenId, 10)],
+      contractProvider
+    );
+
+    // If any logs, set the state
+    if (log && log.length > 0) {
+      const post = await PostaService.buildPost(log[0], contractProvider);
+      console.log("POST", post);
+      setPost(post);
+      setIsInitialized(true);
+    }
     setIsLoading(false);
-    setIsInitialized(true);
   }
 
-
+  // Initialize page when library is available
   useEffect(() => {
     if (context.library) init();
   }, [context]);

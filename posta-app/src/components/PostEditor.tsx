@@ -7,6 +7,7 @@ import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import useContractProvider from "../hooks/useContractProvider";
 import { IPostData, PostaService } from "../posta-lib/services/PostaService";
+import useHuman from "../hooks/useHuman";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
@@ -19,33 +20,25 @@ export default function PostEditor(props: IPostEditorProps) {
   const [isSendButtonEnabled, setIsSendButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const contractProvider = useContractProvider();
+  const human = useHuman();
 
   const MAX_CHARS = 140;
 
+  // Update editor status
   useEffect(() => {
-    setIsEditorEnabled(
-      props.human &&
-        props.human.profile &&
-        !!props.human.profile.registered &&
-        !isLoading
-    );
-  }, [
-    props.human,
-    props.human.profile,
-    props.human.profile.registered,
-    isLoading,
-  ]);
+    const isHuman = human && !human.isLoading && human.profile && !!human.profile.registered;
+    setIsEditorEnabled(isHuman && !isLoading);
+  }, [human, human.isLoading, human.profile]);
 
   useEffect(() => {
+    const isHuman = human && !human.isLoading && human.profile && !!human.profile.registered;
     setIsSendButtonEnabled(
-      props.human &&
-        props.human.profile &&
-        !!props.human.profile.registered &&
+      isHuman &&
         typeof postText === "string" &&
         postText !== "" &&
         !isLoading
     );
-  }, [props.human, isLoading, postText]);
+  }, [human.isLoading, isLoading, postText]);
 
   const handleSendPost = async () => {
     if (!contractProvider) return;

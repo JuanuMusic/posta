@@ -1,4 +1,4 @@
-export { ContractProvider } from "./services/ContractProvider";
+export { ContractProvider, IConfiguration } from "./services/ContractProvider";
 export { PostaService } from "./services/PostaService";
 export { PohService } from "./services/PoHService";
 export { UBIService } from "./services/UBIService";

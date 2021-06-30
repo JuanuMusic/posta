@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostaService = void 0;
+var ethers_1 = require("ethers");
 var PoHService_1 = require("./PoHService");
 var DEFAULT_CONFIRMATIONS = 5;
 var PostaService = {
@@ -99,7 +100,7 @@ var PostaService = {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
-                        filter = postaContract.filters.NewPost(null, tokenIds);
+                        filter = postaContract.filters.NewPost(null, [tokenIds]);
                         return [4 /*yield*/, postaContract.queryFilter(filter)];
                     case 2:
                         logs = _a.sent();
@@ -242,7 +243,7 @@ var PostaService = {
                         counter = _a.sent();
                         tokenIds = [];
                         for (i = counter - maxRecords; i < counter; i++) {
-                            tokenIds.push(i);
+                            tokenIds.push(ethers_1.BigNumber.from(i));
                         }
                         return [4 /*yield*/, PostaService.getPostLogs(tokenIds, contractProvider)];
                     case 3:

@@ -11,6 +11,7 @@ import useEagerConnect from "./useEagerConnect";
 export default function useHuman() {
   const [address, setAddress] = useState("");
   const [profile, setProfile] = useState({} as POHProfileModel);
+  const [isLoading, setIsLoading] = useState(true);
   const triedEager = useEagerConnect()
   const context = useWeb3React()
   const { active, error, activate, account } = context;
@@ -22,13 +23,16 @@ export default function useHuman() {
   }
 
   const setHumanAccount = async (account: string) => {
+    setIsLoading(true);
     const registeredProfile = await PohAPI.profiles.getByAddress(account);
     if (!registeredProfile || !registeredProfile.registered)
       console.warn("Address", account, "not registered as human");
 
     activate(injected);
     setAddress(account);
-    setProfile(registeredProfile || { registered: true, eth_address: account, status: "REGISTERED", display_name: "Juanu", first_name: "Juanu", last_name: "Haedo", bio: "Just a DEV", profile: "A profile", creation_time: new Date(), photo: "", video: "", registered_time: new Date() });
+    if(registeredProfile)
+      setProfile(registeredProfile);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -41,7 +45,7 @@ export default function useHuman() {
       "accountsChanged",
       handleAccountsChanged
     );
-  }, [active]);
+  }, [((window as any).ethereum as any)]);
 
-  return { address, profile };
+  return { address, profile, isLoading };
 }

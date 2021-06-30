@@ -78,9 +78,8 @@ const PostaService: IPostaService = {
     const filter = postaContract.filters.NewPost(null, tokenIds);
     const logs = await postaContract.queryFilter(filter);
     if (!logs) return null
-    return await Promise.all(logs.map(async log => {
+    const retVal = await Promise.all(logs.map(async log => {
       const block = await log.getBlock();
-      console.log("LOG", log)
       return {
         author: log.args && log.args.length >= 3 && log.args[0],
         tokenId: log.args && log.args.length >= 3 && log.args[1],
@@ -90,6 +89,8 @@ const PostaService: IPostaService = {
         blockTime: block && new Date(block.timestamp * 1000) || new Date(0)
       };
     }));
+
+    return retVal;
   },
 
   /**
@@ -155,25 +156,24 @@ const PostaService: IPostaService = {
    */
   async getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
     const postaContract = await contractProvider.getPostaContractForRead();
-    const counter = await postaContract.getTokenCounter();
+    const bnCounter = await postaContract.getTokenCounter();
+    const counter = bnCounter.toNumber()
 
-    
     // Build the token id array to fetch from logs
     const tokenIds = []
-    for(let i = counter-maxRecords; i < counter; i++) {
-      tokenIds.push(i);
+    for (let i = counter - 1; i >= Math.max(counter - maxRecords, 0); i--) {
+      tokenIds.unshift(i);
     }
     // Get logs for all token ids
     const postLogs = await PostaService.getPostLogs(tokenIds, contractProvider);
-    if(!postLogs) return null;
+    if (!postLogs) return null;
+
 
     // Build the posts from the logs
-    const postsNFTs: IPostaNFT[] = await Promise.all(postLogs.map(async log => {
-      return await PostaService.buildPost(log, contractProvider);
-    }));
-  
+    const postsNFTs: IPostaNFT[] = await Promise.all(postLogs.map(async log => await PostaService.buildPost(log, contractProvider)));
+
     // Return the list of nfts posts
-    return postsNFTs;
+    return postsNFTs.sort((a, b) => parseInt(a.tokenId, 10) > parseInt(b.tokenId, 10) ? - 1 : 1);
   },
 
   /**
@@ -189,27 +189,27 @@ const PostaService: IPostaService = {
     const tokenURI = await postaContract.tokenURI(log.tokenId);
 
 
-      let human: POHProfileModel;
-      try {
-        human = await PohService.getHuman(log.author)
-      } catch (error) {
-        // If fails, set human object
-        human = { display_name: "", first_name: "", last_name: "" };
-        console.error(error);
-      }
-      return {
-        author: log.author,
-        authorDisplayName: (human && human.display_name) || log.author,
-        authorFullName: (human && (human.first_name + " " + human.last_name)) || log.author,
-        authorImage: human && human.photo,
-        content: log.content,
-        tokenId: log.tokenId.toString(),
-        tokenURI: tokenURI,
-        creationDate: new Date(log.blockTime),
-        supportGiven: postNFT.supportGiven,
-        supportCount: postNFT.supportersCount,
-      }
+    let human: POHProfileModel;
+    try {
+      human = await PohService.getHuman(log.author)
+    } catch (error) {
+      // If fails, set human object
+      human = { display_name: "", first_name: "", last_name: "" };
+      console.error(error);
     }
+    return {
+      author: log.author,
+      authorDisplayName: (human && human.display_name) || log.author,
+      authorFullName: (human && (human.first_name + " " + human.last_name)) || log.author,
+      authorImage: human && human.photo,
+      content: log.content,
+      tokenId: log.tokenId.toString(),
+      tokenURI: tokenURI,
+      creationDate: new Date(log.blockTime),
+      supportGiven: postNFT.supportGiven,
+      supportCount: postNFT.supportersCount,
+    }
+  }
 }
 
 export { PostaService };

@@ -92,7 +92,7 @@ var PostaService = {
      */
     getPostLogs: function (tokenIds, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
-            var postaContract, filter, logs;
+            var postaContract, filter, logs, retVal;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -112,7 +112,6 @@ var PostaService = {
                                         case 0: return [4 /*yield*/, log.getBlock()];
                                         case 1:
                                             block = _a.sent();
-                                            console.log("LOG", log);
                                             return [2 /*return*/, {
                                                     author: log.args && log.args.length >= 3 && log.args[0],
                                                     tokenId: log.args && log.args.length >= 3 && log.args[1],
@@ -124,7 +123,9 @@ var PostaService = {
                                     }
                                 });
                             }); }))];
-                    case 3: return [2 /*return*/, _a.sent()];
+                    case 3:
+                        retVal = _a.sent();
+                        return [2 /*return*/, retVal];
                 }
             });
         });
@@ -230,7 +231,7 @@ var PostaService = {
      */
     getLatestPosts: function (maxRecords, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
-            var postaContract, counter, tokenIds, i, postLogs, postsNFTs;
+            var postaContract, bnCounter, counter, tokenIds, i, postLogs, postsNFTs;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -239,28 +240,27 @@ var PostaService = {
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getTokenCounter()];
                     case 2:
-                        counter = _a.sent();
+                        bnCounter = _a.sent();
+                        counter = bnCounter.toNumber();
                         tokenIds = [];
-                        for (i = counter - maxRecords; i < counter; i++) {
-                            tokenIds.push(i);
+                        for (i = counter - 1; i >= Math.max(counter - maxRecords, 0); i--) {
+                            tokenIds.unshift(i);
                         }
                         return [4 /*yield*/, PostaService.getPostLogs(tokenIds, contractProvider)];
                     case 3:
                         postLogs = _a.sent();
                         if (!postLogs)
                             return [2 /*return*/, null];
-                        return [4 /*yield*/, Promise.all(postLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, PostaService.buildPost(log, contractProvider)];
-                                        case 1: return [2 /*return*/, _a.sent()];
-                                    }
-                                });
-                            }); }))];
+                        return [4 /*yield*/, Promise.all(postLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, PostaService.buildPost(log, contractProvider)];
+                                    case 1: return [2 /*return*/, _a.sent()];
+                                }
+                            }); }); }))];
                     case 4:
                         postsNFTs = _a.sent();
                         // Return the list of nfts posts
-                        return [2 /*return*/, postsNFTs];
+                        return [2 /*return*/, postsNFTs.sort(function (a, b) { return parseInt(a.tokenId, 10) > parseInt(b.tokenId, 10) ? -1 : 1; })];
                 }
             });
         });

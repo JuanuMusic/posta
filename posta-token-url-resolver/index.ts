@@ -8,7 +8,8 @@ import kovan from "./config/kovan.json";
 import PostaContract from './contracts/Posta.json';
 import UBIContract from './contracts/IUBI.json';
 import DummyPOHContract from './contracts/DummyProofOfHumanity.json';
-import { ContractProvider, IConfiguration, PohService, PostaService } from "./posta-lib";
+import { ContractProvider, PohService, PostaService } from "./posta-lib";
+import { IConfiguration } from "./posta-lib/services/ContractProvider";
 
 dotenv.config();
 

@@ -35,9 +35,11 @@ export default function MainPage() {
   useEffect(() => {
     async function onContractProviderChanged() {
       if (!contractProvider) return;
-
-      refreshLatestPosts();
-      console.log("Subscribing to NewPost");
+      
+      // Refresh the latest posts
+      await refreshLatestPosts();
+      
+      // Subscribe to NewPost evemt
       (await contractProvider.getPostaContractForRead()).on(
         "NewPost",
         async (author: string, tokenId: number, value: string) => {

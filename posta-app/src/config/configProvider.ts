@@ -41,10 +41,10 @@ export default {
     getEthersProvider(webProvider: any | undefined= undefined): ethers.providers.BaseProvider {
         if(webProvider) return new ethers.providers.Web3Provider(webProvider);
 
-        const provider = (process.env.REACT_APP_NETWORK && ethers.getDefaultProvider(process.env.REACT_APP_NETWORK, {infura: "2d57450fe0764ada8ddd89568c426c14"})) ||
+        const provider = (process.env.REACT_APP_NETWORK && ethers.getDefaultProvider(process.env.REACT_APP_NETWORK, {infura: process.env.REACT_APP_INFURA_PROJECT_ID, etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY})) ||
             (process.env.NODE_ENV === "development" ?
                 new ethers.providers.JsonRpcProvider(LOCAL_NETWORK_URL, { chainId: LOCAL_CHAIN_ID, name: LOCAL_NETWORK_NAME }) :
-                ethers.getDefaultProvider("kovan", {infura: "2d57450fe0764ada8ddd89568c426c14"}));
+                ethers.getDefaultProvider("kovan", {infura: process.env.REACT_APP_INFURA_PROJECT_ID, etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY}));
 
         console.log("PROVIDER", provider);
         return provider;

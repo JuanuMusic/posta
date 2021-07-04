@@ -1,7 +1,8 @@
-import { PohAPI, POHProfileModel } from "./PohAPI";
+import { PohAPI, POHProfileModel } from "./PohAPI"
 
 // Cache profiles
 const _profilesCache: { [key: string]: POHProfileModel } = {};
+
 
 async function ensureHumanIsCached(address: string) {
     // Cache profile

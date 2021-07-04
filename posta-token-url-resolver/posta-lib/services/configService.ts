@@ -13,10 +13,10 @@ export default {
      * @returns 
      */
     getEthersProvider(): ethers.providers.BaseProvider | ethers.providers.JsonRpcProvider {
-        const provider = (process.env.DEFAULT_NETWORK && ethers.getDefaultProvider(process.env.DEFAULT_NETWORK, {infura: process.env.INFURA_PROJECT_ID, etherscan: process.env.ETHERSCAN_API_KEY})) ||
+        const provider = (process.env.DEFAULT_NETWORK && ethers.getDefaultProvider(process.env.DEFAULT_NETWORK)) ||
             (process.env.NODE_ENV === "development" ?
                 new ethers.providers.JsonRpcProvider(LOCAL_NETWORK_URL, { chainId: LOCAL_CHAIN_ID, name: LOCAL_NETWORK_NAME }) :
-                ethers.getDefaultProvider("kovan", {infura: process.env.INFURA_PROJECT_ID, etherscan: process.env.ETHERSCAN_API_KEY}));
+                ethers.getDefaultProvider("kovan"));
         return provider;
     }
 }

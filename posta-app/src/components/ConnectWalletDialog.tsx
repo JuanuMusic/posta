@@ -2,7 +2,7 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { NoEthereumProviderError } from "@web3-react/injected-connector";
 import { WalletConnectConnectorArguments } from "@web3-react/walletconnect-connector";
 import { useEffect, useState } from "react";
-import { Modal, Spinner } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { injected } from "../connectors";
 import { Web3Provider } from "@ethersproject/providers";
 
@@ -99,7 +99,7 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
           const disabled = !!activatingConnector || connected || !!error;
 
           return (
-            <button
+            <Button
               style={{
                 height: "3rem",
                 borderRadius: "1rem",
@@ -146,7 +146,7 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
                 )} */}
               </div>
               {name}
-            </button>
+            </Button>
           );
         })}
       </Modal.Body>

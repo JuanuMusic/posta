@@ -2,8 +2,6 @@ import{ useEffect, useState } from "react";
 import {
   FormControl,
   InputGroup,
-  ModalBody,
-  ModalTitle,
   Modal,
   Button,
   Spinner,
@@ -13,6 +11,7 @@ import { Gem } from "react-bootstrap-icons";
 import { BigNumber, ethers, utils } from "ethers";
 import useContractProvider from "../hooks/useContractProvider";
 import { PostaService, UBIService } from "../posta-lib";
+import { useHuman } from "../contextProviders/HumanProvider";
 
 interface ISupportPostDialogProps extends IBasePostaProps {
   show: boolean;
@@ -47,8 +46,9 @@ function useUBIBalance(address: string) {
 
 function SupportPostDialog(props: ISupportPostDialogProps) {
   const contractProvider = useContractProvider();
+  const human = useHuman();
   const [amount, setAmount] = useState("");
-  const currentUBIBalance = useUBIBalance(props.human.address);
+  const currentUBIBalance = useUBIBalance(human.profile.eth_address || "");
   const [isApproved, setIsApproved] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isBurning, setIsBurning] = useState(false);
@@ -68,7 +68,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
         parsedAmount.lte(currentUBIBalance)
       ) {
         await PostaService.requestBurnApproval(
-          props.human.address,
+          human.profile.eth_address || "",
           parsedAmount,
           contractProvider
         );
@@ -95,7 +95,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
         await PostaService.giveSupport(
           props.postTokenId,
           parsedAmount,
-          props.human.address,
+          human.profile.eth_address || "",
           contractProvider,
           0
         );

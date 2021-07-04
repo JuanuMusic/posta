@@ -201,24 +201,18 @@ var PostaService = {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 4, , 5]);
+                        _a.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, contractProvider.getPostaContractForWrite(postData.author)];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.publishPost(postData.text)];
                     case 2:
                         tx = _a.sent();
-                        return [4 /*yield*/, tx.wait(DEFAULT_CONFIRMATIONS)];
+                        return [2 /*return*/, { tx: tx }];
                     case 3:
-                        _a.sent();
-                        console.log("Post published TX:", tx);
-                        return [3 /*break*/, 5];
-                    case 4:
                         error_2 = _a.sent();
-                        console.error(error_2.message);
-                        console.error(error_2.stack);
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, { tx: null, error: error_2 }];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -276,7 +270,9 @@ var PostaService = {
             var postaContract, postNFT, tokenURI, human, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0:
+                        console.log("Building post...", log);
+                        return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getPost(log.tokenId)];

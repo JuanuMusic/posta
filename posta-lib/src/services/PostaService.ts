@@ -9,7 +9,7 @@ interface IPostaService {
   setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
   getPostLogs(tokenIds: number[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
   giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
-  publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<void>;
+  publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<{ tx: null, error?: any }>;
   getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
   requestBurnApproval(from: string, amount: BigNumber, contractProvider: IContractProvider): Promise<void>;
   buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT>;
@@ -139,12 +139,10 @@ const PostaService: IPostaService = {
     try {
       const postaContract = await contractProvider.getPostaContractForWrite(postData.author);
       const tx = await postaContract.publishPost(postData.text);
-      await tx.wait(DEFAULT_CONFIRMATIONS);
-      console.log("Post published TX:", tx);
+      return { tx };
     }
     catch (error) {
-      console.error(error.message);
-      console.error(error.stack);
+      return { tx: null, error }
     }
   },
 
@@ -183,6 +181,7 @@ const PostaService: IPostaService = {
    * @returns 
    */
   async buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT> {
+    console.log("Building post...", log);
     const postaContract = await contractProvider.getPostaContractForRead();
 
     const postNFT = await postaContract.getPost(log.tokenId);

@@ -1,20 +1,33 @@
-import { useWeb3React } from "@web3-react/core";
-import { ethers } from "ethers";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
+import { useHuman } from "../contextProviders/HumanProvider";
+import ConnectWalletDialog from "./ConnectWalletDialog";
 
-export default function ConnectWalletButton(props: any) {
-  const context = useWeb3React<ethers.providers.Web3Provider>();
+function getAddressForDisplay(address: string) {
   return (
-    <div className={props.className}>
-      <Button
-        onClick={props.onConnectButtonClicked}
-      >
-        {context.active
-          ? context.account?.substring(0, 4) +
-            "..." +
-            context.account?.substring(context.account.length - 4)
-          : "Connect"}
-      </Button>
-    </div>
+    address.substring(0, 4) + "..." + address.substring(address.length - 4)
+  );
+}
+export default function ConnectWalletButton(props: any) {
+  const human = useHuman();
+  const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
+
+
+  return (
+    <>
+      <div className={props.className}>
+        <Button onClick={() => setIsConnectDialogVisible(true)}>
+          {human && !human.isLoading && human.profile && human.profile.registered
+            ? `Connected as ${
+                human.profile?.display_name
+              } (${getAddressForDisplay(human.profile.eth_address || "")})`
+            : "Connect"}
+        </Button>
+      </div>
+      <ConnectWalletDialog
+        show={isConnectDialogVisible}
+        onHide={() => setIsConnectDialogVisible(false)}
+      />
+    </>
   );
 }

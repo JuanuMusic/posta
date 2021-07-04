@@ -14,9 +14,9 @@ import moment from "moment";
 import { FaFire, FaUsers } from "react-icons/fa";
 import { ethers } from "ethers";
 import Skeleton from "react-loading-skeleton";
-import useHuman from "../hooks/useHuman";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
+import { useHuman } from "../contextProviders/HumanProvider";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postaNFT: IPostaNFT;
@@ -36,6 +36,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const handleBurnUBIsClicked = async () => {
     props.onBurnUBIsClicked && props.onBurnUBIsClicked(props.postaNFT.tokenId);
   };
+
 
   return (
     <Card style={{ width: "100%", maxWidth: "700px" }} className="mx-auto">
@@ -84,7 +85,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
             <Col className="d-flex align-items-start mt-2 mb-1">
               <GiveSupportButton
                 className="align-self-center"
-                disabled={props.postaNFT.author === human.address}
+                disabled={!human.profile.registered || props.postaNFT.author === human.profile.eth_address}
                 onClick={handleBurnUBIsClicked}
                 supportGiven={
                   props.postaNFT.supportGiven &&

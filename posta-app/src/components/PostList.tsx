@@ -1,11 +1,12 @@
-import  { useState } from "react";
+import { useState } from "react";
 import SupportPostDialog from "./SupportPostDialog";
 import PostDisplay from "./PostDisplay";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
 
 interface IPostListProps extends IBasePostaProps {
-  posts: IPostaNFT[]
+  posts: IPostaNFT[];
+  isLoading: boolean;
 }
 
 export default function PostList(props: IPostListProps) {
@@ -13,7 +14,6 @@ export default function PostList(props: IPostListProps) {
     show: false,
     postTokenId: "",
   });
-  
 
   const handleBurnUBIsClicked = async (tokenId: string) => {
     setsupportPostDialogOpts({
@@ -33,22 +33,39 @@ export default function PostList(props: IPostListProps) {
             postTokenId: "",
           })
         }
-        human={props.human}
-      />{" "}
+      />
       <Container>
-        {props.posts.map((postNFT, index) => (
-          <Row key={index} className="justify-content-center">
-            <Col>
-              <PostDisplay
-                onBurnUBIsClicked={() => handleBurnUBIsClicked(postNFT.tokenId)}
-                postaNFT={postNFT}
-                {...props}
-              />
-              <hr />
-            </Col>
-          </Row>
-        ))}
+        {props.isLoading ? (
+          <LoadingList />
+        ) : (
+          props.posts.map((postNFT, index) => (
+            <Row key={index} className="justify-content-center">
+              <Col>
+                <PostDisplay
+                  onBurnUBIsClicked={() =>
+                    handleBurnUBIsClicked(postNFT.tokenId)
+                  }
+                  postaNFT={postNFT}
+                  {...props}
+                />
+                <hr />
+              </Col>
+            </Row>
+          ))
+        )}
       </Container>
     </>
+  );
+}
+
+function LoadingList() {
+  return (
+    <Container className="d-flex justify-content-center align-items-center">
+      <Card>
+        <Card.Body className="text-dark d-flex justify-content-center align-items-center">
+          <Spinner animation="border" className="mr-2" /> Loading Postas...
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }

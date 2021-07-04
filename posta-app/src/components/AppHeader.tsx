@@ -1,9 +1,10 @@
 import { FaGithub, FaQuestion } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ConnectWalletButton from "./ConnectWalletButton";
 
-export default function AppHeader() {
+export default function AppHeader(props: any) {
   return (
-    <>
+    <div {...props}>
       <div className="d-flex justify-content-between align-items-center m-0">
         <div>
           <h1>
@@ -12,25 +13,11 @@ export default function AppHeader() {
             </a>
           </h1>
         </div>
-        <div>
-          <a
-            className="m-2"
-            href="https://github.com/JuanuMusic/posta/blob/main/README.md"
-            target="_blank"
-          >
-            <FaQuestion size={20} className="text-light" />
-          </a>
-          <a
-            className="m-2"
-            href="https://github.com/juanumusic/posta"
-            target="_blank"
-          >
-            <FaGithub size={30} className="text-light" />
-          </a>
-        </div>
+        <ConnectWalletButton className="text-right mb-2" />
       </div>
+      <span>Microblogging for human beings<br />
       <hr className="bg-secondary m-0 mb-2" />
-      <span>Microblogging for human beings (exclusively)</span>
-    </>
+      <small>Powered by <strong><a href="https://www.proofofhumanity.id/" target="_blank">Proof of Humanity</a></strong></small></span>
+    </div>
   );
 }

@@ -1,21 +1,21 @@
-import { useWeb3React } from "@web3-react/core";
-import { ethers } from "ethers";
-import { stringify } from "querystring";
-import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import PostEditor from "../components/PostEditor";
-import PostList from "../components/PostList";
-import useContractProvider from "../hooks/useContractProvider";
-import useHuman from "../hooks/useHuman";
-import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
+import { useEffect, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import PostEditor from "../../components/PostEditor/PostEditor";
+import PostList from "../../components/PostList";
+import { useHuman } from "../../contextProviders/HumanProvider";
+import useContractProvider from "../../hooks/useContractProvider";
+import { IPostaNFT, PostaService } from "../../posta-lib/services/PostaService";
+import HumanNotRegistered from "./components/HumanNotRegistered";
 
 export default function MainPage() {
-  const context = useWeb3React<ethers.providers.Web3Provider>();
+  console.log("Rendering MainPage")
   const human = useHuman();
   const [posts, setPosts] = useState<IPostaNFT[]>([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const contractProvider = useContractProvider();
 
   const refreshLatestPosts = async () => {
+    setIsLoadingPosts(true);
     if (!contractProvider) {
       console.warn("Contract provider not set");
       return;
@@ -30,6 +30,7 @@ export default function MainPage() {
       console.error(error.message);
       console.error(error.stack);
     }
+    setIsLoadingPosts(false);
   };
 
   useEffect(() => {
@@ -59,7 +60,6 @@ export default function MainPage() {
   }
 
   const onNewPostSent = (stackId: number) => {
-    //_pendingTransactionStacks.push(stackId);
     refreshLatestPosts();
   };
 
@@ -67,12 +67,14 @@ export default function MainPage() {
     <Container>
       <Row>
         <Col>
-          <PostEditor onNewPostSent={onNewPostSent} human={human} />
+        {(human.profile.registered && !human.isLoading) && (<PostEditor onNewPostSent={onNewPostSent} />)}
+        {(!human.profile.registered) && (<HumanNotRegistered isLoading={human.isLoading} />)}
         </Col>
       </Row>
+      <Row><Col><hr className="bg-secondary mx-2 my-3" /></Col></Row>
       <Row>
         <Col>
-          <PostList human={human} posts={posts} />
+          <PostList posts={posts} isLoading={isLoadingPosts} />
         </Col>
       </Row>
     </Container>

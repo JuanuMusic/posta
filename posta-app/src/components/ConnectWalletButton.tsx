@@ -16,12 +16,12 @@ export default function ConnectWalletButton(props: any) {
   return (
     <>
       <div className={props.className}>
-        <Button onClick={() => setIsConnectDialogVisible(true)}>
+        <Button variant="warning" onClick={() => setIsConnectDialogVisible(true)}>
           {human && !human.isLoading && human.profile && human.profile.registered
             ? `Connected as ${
                 human.profile?.display_name
               } (${getAddressForDisplay(human.profile.eth_address || "")})`
-            : "Connect"}
+            : "Connect as Human"}
         </Button>
       </div>
       <ConnectWalletDialog

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import { injected } from "../connectors";
 import { Web3Provider } from "@ethersproject/providers";
+import { ReactComponent as MetamaskLogo } from "../assets/metamask-fox.svg";
 
 interface IConnectWalletDialogProps {
   show: boolean;
@@ -12,7 +13,7 @@ interface IConnectWalletDialogProps {
 }
 
 enum ConnectorNames {
-  Injected = "Injected",
+  Injected = "MetaMask",
   //   Network = "Network",
   //   WalletConnect = "WalletConnect",
   //   WalletLink = "WalletLink",
@@ -26,6 +27,10 @@ enum ConnectorNames {
   //   Portis = "Portis",
   //   Torus = "Torus",
 }
+
+const connectorImages: { [connectorName in ConnectorNames]: any } = {
+  [ConnectorNames.Injected]: MetamaskLogo,
+};
 
 const connectorsByName: { [connectorName in ConnectorNames]: any } = {
   [ConnectorNames.Injected]: injected,
@@ -79,8 +84,8 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
   };
 
   useEffect(() => {
-    handleHide && handleHide()
-  }, [account])
+    handleHide && handleHide();
+  }, [account]);
 
   return (
     <Modal show={props.show} onHide={handleHide} centered>
@@ -92,63 +97,70 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
           When connecting, make sure to select the address you used to register
           on Proof of Humanity
         </p>
-        {Object.keys(connectorsByName).map((name: string) => {
-          const currentConnector = connectorsByName[name as ConnectorNames];
-          const activating = currentConnector === activatingConnector;
-          const connected = currentConnector === connector;
-          const disabled = !!activatingConnector || connected || !!error;
+        <div className="w-100 d-flex justify-content-center align-items-center">
+          {Object.keys(connectorsByName).map((name: string) => {
+            const currentConnector = connectorsByName[name as ConnectorNames];
+            const activating = currentConnector === activatingConnector;
+            const connected = currentConnector === connector;
+            const disabled = !!activatingConnector || connected || !!error;
 
-          return (
-            <Button
-              style={{
-                height: "3rem",
-                borderRadius: "1rem",
-                borderColor: activating
-                  ? "orange"
-                  : connected
-                  ? "green"
-                  : "unset",
-                cursor: disabled ? "unset" : "pointer",
-                position: "relative",
-              }}
-              disabled={disabled}
-              key={name}
-              onClick={() => {
-                setActivatingConnector(currentConnector);
-                activate(connectorsByName[name as ConnectorNames]);
-              }}
-            >
-              <div
+            return (
+              <Button
                 style={{
-                  position: "absolute",
-                  top: "0",
-                  left: "0",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "black",
-                  margin: "0 0 0 1rem",
+                  borderColor: activating
+                    ? "orange"
+                    : connected
+                    ? "green"
+                    : "unset",
+                  cursor: disabled ? "unset" : "pointer",
+                  position: "relative",
+                }}
+                disabled={disabled}
+                key={name}
+                onClick={() => {
+                  setActivatingConnector(currentConnector);
+                  activate(connectorsByName[name as ConnectorNames]);
                 }}
               >
-                {activating && (
-                  <Spinner
-                    animation="border"
-                    role="status"
-                    // style={{ height: "25%", marginLeft: "-1rem" }}
-                  >
-                    <span className="sr-only">Loading...</span>
-                  </Spinner>
-                )}
-                {/* {connected && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    color: "black",
+                  }}
+                >
+                  {activating && (
+                    <Spinner
+                      animation="border"
+                      role="status"
+                      // style={{ height: "25%", marginLeft: "-1rem" }}
+                    >
+                      <span className="sr-only">Loading...</span>
+                    </Spinner>
+                  )}
+                  {/* {connected && (
                   <span role="img" aria-label="check">
                     ✅
                   </span>
                 )} */}
-              </div>
-              {name}
-            </Button>
-          );
-        })}
+                </div>
+                <div>
+                    <MetamaskLogo className="wallet-logo" />{" "}
+                    {name}
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+        <div className="w-100 text-center my-2">
+          <small className="text-muted">
+            Other wallets will be added soon...
+          </small>
+        </div>
       </Modal.Body>
     </Modal>
   );

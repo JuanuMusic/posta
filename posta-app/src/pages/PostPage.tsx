@@ -13,14 +13,12 @@ interface IPostPageProps {
 
 export default function PostPage(props: any) {
   const [post, setPost] = useState<IPostaNFT>();
-  const context = useWeb3React<ethers.providers.Web3Provider>();
   const { tokenId } = useParams<{ tokenId: string }>();
   const contractProvider = useContractProvider();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function init() {
-    if (!contractProvider || isInitialized) return;
+    if (!contractProvider) return;
     setIsLoading(true);
     // Get the logs for this specific post
     const log = await PostaService.getPostLogs(
@@ -28,33 +26,35 @@ export default function PostPage(props: any) {
       contractProvider
     );
 
+    console.log("LOG", log);
+
     // If any logs, set the state
     if (log && log.length > 0) {
       const post = await PostaService.buildPost(log[0], contractProvider);
       console.log("POST", post);
       setPost(post);
-      setIsInitialized(true);
     }
     setIsLoading(false);
   }
 
   // Initialize page when library is available
   useEffect(() => {
-    if (context.library) init();
-  }, [context]);
+    init();
+  }, [contractProvider]);
 
   const handleBurnUBIsClicked = () => console.log("TODO");
 
   return (
     <>
-      {isLoading ? (
-        "Loading..."
-      ) : (
-        <PostDisplay
-          postaNFT={post!}
-          onBurnUBIsClicked={handleBurnUBIsClicked}
-        />
-      )}
+      {isLoading
+        ? "Loading..."
+        : (post && (
+            <PostDisplay
+              postaNFT={post}
+              onBurnUBIsClicked={handleBurnUBIsClicked}
+            />
+          )) ||
+          "Not found"}
     </>
   );
 }

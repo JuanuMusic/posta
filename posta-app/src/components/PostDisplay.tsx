@@ -13,7 +13,6 @@ import moment from "moment";
 
 import { FaFire, FaUsers } from "react-icons/fa";
 import { ethers } from "ethers";
-import Skeleton from "react-loading-skeleton";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
 import { useHuman } from "../contextProviders/HumanProvider";
@@ -37,7 +36,6 @@ export default function PostDisplay(props: IPostDisplayProps) {
     props.onBurnUBIsClicked && props.onBurnUBIsClicked(props.postaNFT.tokenId);
   };
 
-
   return (
     <Card style={{ width: "100%", maxWidth: "700px" }} className="mx-auto">
       <Card.Body className="px-1 py-2">
@@ -50,42 +48,59 @@ export default function PostDisplay(props: IPostDisplayProps) {
               <div className="flex-fill">
                 <div className="d-flex justify-content-between">
                   {/* Human Name */}
-                  <a href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${props.postaNFT.author.toLowerCase()}`} className="text-dark">
+                  <a
+                    href={`${
+                      process.env.REACT_APP_HUMAN_PROFILE_BASE_URL
+                    }/${props.postaNFT.author.toLowerCase()}`}
+                    className="text-dark"
+                  >
                     <strong>
                       {props.postaNFT.authorDisplayName ||
-                        props.postaNFT.authorDisplayName || <Skeleton />}
+                        props.postaNFT.author}
                     </strong>
                   </a>{" "}
                   {/* NFT ID */}
                   <span className="text-muted">
-                    <a className="text-muted" target="_blank" href={props.postaNFT.tokenURI}>PSTA:{props.postaNFT.tokenId}</a>
+                    <a
+                      className="text-muted"
+                      target="_blank"
+                      href={props.postaNFT.tokenURI}
+                    >
+                      PSTA:{props.postaNFT.tokenId}
+                    </a>
                   </span>
                 </div>
                 <blockquote className="blockquote mt-2 ml-2 mb-0">
                   {/* Post Text */}
                   <p className="post-text text-dark">
                     {" "}
-                    {props.postaNFT.content || <Skeleton />}{" "}
+                    {props.postaNFT.content || "..."}{" "}
                   </p>
                   {/* Post Date */}
                   <footer className="blockquote-footer">
                     <span className="fw-light">
-                      {(props.postaNFT.creationDate &&
-                        moment(props.postaNFT.creationDate).format(
-                          "MMMM Do YYYY, h:mm"
-                        )) || <Skeleton />}
+                      {moment(
+                        props.postaNFT.creationDate || new Date(0)
+                      ).format("MMMM Do YYYY, h:mm")}
                     </span>
                   </footer>
                 </blockquote>
               </div>
             </Col>
           </Row>
-          <Row><Col><hr className="my-2" /></Col></Row>
+          <Row>
+            <Col>
+              <hr className="my-2" />
+            </Col>
+          </Row>
           <Row>
             <Col className="d-flex align-items-start mt-2 mb-1">
               <GiveSupportButton
                 className="align-self-center"
-                disabled={!human.profile.registered || props.postaNFT.author === human.profile.eth_address}
+                disabled={
+                  !human.profile.registered ||
+                  props.postaNFT.author === human.profile.eth_address
+                }
                 onClick={handleBurnUBIsClicked}
                 supportGiven={
                   props.postaNFT.supportGiven &&
@@ -164,6 +179,8 @@ function ProfilePicture(props: any) {
   return (
     (props.imageUrl && (
       <img className="avatar mr-2" src={props.imageUrl} />
-    )) || <POHLogo className="flex-shrink-0 avatar mr-2 text-secondary p-1 bg-secondary" />
+    )) || (
+      <POHLogo className="flex-shrink-0 avatar mr-2 text-secondary p-1 bg-secondary" />
+    )
   );
 }

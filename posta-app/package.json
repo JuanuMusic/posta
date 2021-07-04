@@ -43,10 +43,8 @@
     "react-bootstrap-icons": "^1.5.0",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
-    "react-loading-skeleton": "^2.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "typescript": "^4.3.2",
     "web-vitals": "^1.1.2",
     "web3-react": "^5.0.5"
   },
@@ -79,6 +77,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.12",
-    "@types/react-router-dom": "^5.1.7"
+    "@types/react-router-dom": "^5.1.7",
+    "typescript": "^4.3.5"
   }
 }

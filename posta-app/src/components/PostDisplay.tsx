@@ -50,7 +50,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
               <div className="flex-fill">
                 <div className="d-flex justify-content-between">
                   {/* Human Name */}
-                  <a href={`https://app-kovan.poh.dev/profile/${props.postaNFT.author.toLowerCase()}`} className="text-dark">
+                  <a href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${props.postaNFT.author.toLowerCase()}`} className="text-dark">
                     <strong>
                       {props.postaNFT.authorDisplayName ||
                         props.postaNFT.authorDisplayName || <Skeleton />}

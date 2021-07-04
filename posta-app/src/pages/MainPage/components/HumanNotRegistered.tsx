@@ -29,7 +29,7 @@ export default function HumanNotRegistered(props: IHumanNotRegisteredProps) {
         <Container className="text-light m-4">
           <h2 className="text-warning">Prove your humanity</h2>
           <p>
-            It looks like you are not registered on Proof of Humanity. Go to <a href="https://www.proofofhumanity.id/" className="text-warning">Proof of Humanity</a> and register your rightfully owned human identity.<br />
+            It looks like you are not registered on Kovan's Proof of Humanity. Go to <a href="https://app-kovan.poh.dev/" className="text-warning">Kovans's Proof of Humanity</a> and register your rightfully owned Kovan identity.<br />
             <small className="text-warning">
               (if you are registered, make sure to select the right account)
             </small>

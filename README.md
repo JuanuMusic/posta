@@ -26,11 +26,6 @@ This feature does 4 things:
 
 Suggestions about this behavior are more than welcome
 
-### Storage system
-The storage system is still to be defined. A potential candidate for this could be [ARweave](https://www.arweave.org/) since it has the potential to store data for a long time (200 years) as opposed to [FileCoin](https://filecoin.io/) which requires monthly payments. **Other solutions suggestions are welcomed !🙌**
-
-This part is important since it would mean that the HUman would need to pay for the storage of the NFT, so it must be thought pretty smartly 🧠.
-
 ###  Notice
 This is a work in progress to learn about building a fully functioning Decentralized app.
 PRs will be accepted to help improving the architecture.

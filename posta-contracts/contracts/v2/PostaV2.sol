@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "./IProofOfHumanity.sol";
-import "./PostaStorage.sol";
+import "../IProofOfHumanity.sol";
+import "./PostaStorageV2.sol";
 
-contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgradeable {
+contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorageV2 {
     
     using SafeMath for uint256;
     //using Strings for uint256;
@@ -34,7 +34,7 @@ contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgrade
     }
     
     function initialize(address poh, address ubi, uint256 maxChars) public virtual initializer {
-        __ERC721_init("Posta","PSTA");
+        __ERC721_init("Posta","POSTA");
         OwnableUpgradeable.__Ownable_init();
         _tokenCounter = 0;
         _poh = poh;
@@ -106,7 +106,7 @@ contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgrade
     function support(uint256 tokenId, uint256 ubiAmount) public tokenExists(tokenId) {
         require(_msgSender() != ownerOf(tokenId), CANT_SUPPORT_SELF_CONTENT);
         // ammount to burn
-        uint256 toBurn = ubiAmount.div(2);
+        uint256 toBurn = ubiAmount.div((1*(10**18) / _burnPct));
         require(toBurn > 0, "Posta: invalid ubi amount to burn");
         
         // Burn the UBI on behalf of the caller.
@@ -133,5 +133,25 @@ contract Posta is PostaStorage, Initializable, OwnableUpgradeable, ERC721Upgrade
             _supporters[tokenId][supporter] = true;
             _posts[tokenId].supportersCount += 1;
         }
+    }
+
+    /** Get percentage value of UBI to burn for each support given */
+    function getBurnPct() public view returns (uint256){
+        return _burnPct;
+    }
+
+    /** Set the percentage value of UBI to burn for each support given */
+    function setBurnPct(uint256 burnPct) public onlyOwner {
+        _burnPct = burnPct;
+    }
+
+    /** Get percentage value of UBI to send to treasury for each support given */
+    function getTreasuryPct() public view returns (uint256) {
+        return _burnPct;
+    }
+
+    /** Set the percentage value of UBI to send to treasury for each support given */
+    function setTreasuryPct(uint256 treasuryPct) public onlyOwner {
+        _treasuryPct = treasuryPct;
     }
 }

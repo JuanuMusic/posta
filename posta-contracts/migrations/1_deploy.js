@@ -27,17 +27,21 @@ module.exports = async function (deployer) {
   // Deploy Posta with proxy
   const proxyInstance = await deployProxy(Posta, [pohAddress, ubiAddress,MAX_CHARS], { deployer });
   console.log('Deployed Posta at', proxyInstance.address);
+
+  deployer.proxyAddress = proxyInstance.address;
   
 }
 
 
 async function deployDummyUBI(deployer) {
+  console.log("Deploying Dummy UBI contract...");
   const DummyUBI = artifacts.require("DummyUBI");
   const dummyUBIContract = await deployer.deploy(DummyUBI);
   return DummyUBI.address;
 }
 
 async function deployDummyPOH(deployer, governor, ubiAddress) {
+  console.log("Deploying Dummy PoH contract...");
   const DummyProofOfHumanity = artifacts.require("DummyProofOfHumanity");
   await deployer.deploy(DummyProofOfHumanity, governor, ubiAddress);
   return DummyProofOfHumanity.address;

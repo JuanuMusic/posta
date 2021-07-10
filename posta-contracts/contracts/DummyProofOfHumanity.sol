@@ -36,7 +36,7 @@ contract DummyProofOfHumanity is IProofOfHumanity, ERC20  {
 
     function register(address submissionID) public {
         // Dummy contracts assigns free ERC20
-        _ubi.mint(submissionID, 100*10**18);
+        _ubi.mint(submissionID, 1000*(10**18));
         _registrants[submissionID] = true;
         _submissions[submissionID] = IProofOfHumanity.SubmissionInfo({
             status: 0,

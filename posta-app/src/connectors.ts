@@ -19,7 +19,7 @@ const RPC_URLS: { [chainId: number]: string } = {
   42: `https://kovan.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
 }
 
-export const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42,1337] })
+export const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42,1337, 31337] })
 
 export const network = new NetworkConnector({
   urls: { 1: RPC_URLS[1], 4: RPC_URLS[4] },

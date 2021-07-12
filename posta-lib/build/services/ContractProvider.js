@@ -58,6 +58,13 @@ var ContractProvider = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(ContractProvider.prototype, "ethersProvider", {
+        get: function () {
+            return this._provider;
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * Returns an instance of a contract for read only
      * @param contractAddress The address of the contract
@@ -97,6 +104,16 @@ var ContractProvider = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.getContractForWrite(this._config.POHAddress, this._contracts.POHContract.abi, fromAddress)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ContractProvider.prototype.getPohContractForRead = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getContractForRead(this._config.POHAddress, this._contracts.POHContract.abi)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });

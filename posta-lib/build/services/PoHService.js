@@ -78,6 +78,20 @@ var PohService = {
                 }
             });
         });
+    },
+    isRegistered: function (address, contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var poh;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, contractProvider.getPohContractForRead()];
+                    case 1:
+                        poh = _a.sent();
+                        return [4 /*yield*/, poh.isRegistered(address)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
     }
 };
 exports.PohService = PohService;

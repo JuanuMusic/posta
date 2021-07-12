@@ -1,3 +1,4 @@
+import { IContractProvider } from "./ContractProvider";
 import { POHProfileModel } from "./PohAPI";
 declare const PohService: {
     /**
@@ -6,5 +7,6 @@ declare const PohService: {
      * @returns
      */
     getHuman(address: string): Promise<POHProfileModel>;
+    isRegistered(address: string, contractProvider: IContractProvider): Promise<any>;
 };
 export { PohService };

@@ -5,6 +5,7 @@ export type EthersProviders = ethers.providers.ExternalProvider | ethers.provide
 
 export interface IContractProvider {
     config: IConfiguration;
+    ethersProvider: ethers.providers.BaseProvider;
     /**
     * Returns an instance of a contract for read only
     * @param contractAddress The address of the contract
@@ -32,13 +33,17 @@ export interface IContractProvider {
      * @returns 
      */
     getPostaContractForRead(): Promise<Contract>;
-
+    getPohContractForRead(): Promise<Contract>;
     getUBIContractForRead(): Promise<Contract>;
     getUBIContractForWrite(address: string): Promise<Contract>;
 }
 
 export interface IConfiguration {
-    network: string,
+    network: {
+        URL: string,
+        chainID: number,
+        name: string,
+    },
     PostaAddress: string,
     POHAddress: string,
     UBIAddress: string,
@@ -72,6 +77,10 @@ export class ContractProvider implements IContractProvider {
         return this._config;
     }
 
+    get ethersProvider() : ethers.providers.BaseProvider {
+        return this._provider;
+    }
+
     /**
      * Returns an instance of a contract for read only
      * @param contractAddress The address of the contract
@@ -100,6 +109,10 @@ export class ContractProvider implements IContractProvider {
 
     async getDummyPOHContractForWrite(fromAddress: string): Promise<Contract> {
         return await this.getContractForWrite(this._config.POHAddress, this._contracts.POHContract.abi, fromAddress);
+    }
+
+    async getPohContractForRead(): Promise<Contract> {
+        return await this.getContractForRead(this._config.POHAddress, this._contracts.POHContract.abi);
     }
 
     async getPostaContractForWrite(fromAddress: string): Promise<Contract> {

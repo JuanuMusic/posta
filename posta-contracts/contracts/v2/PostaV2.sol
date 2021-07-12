@@ -32,15 +32,6 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         _;
     }
-    
-    function initialize(address poh, address ubi, uint256 maxChars) public virtual initializer {
-        __ERC721_init("Posta","POSTA");
-        OwnableUpgradeable.__Ownable_init();
-        _tokenCounter = 0;
-        _poh = poh;
-        _ubi = ubi;
-        _maxChars = maxChars;
-    }
 
     function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
         require(bytes(text).length <= _maxChars, POST_TEXT_TOO_LONG);
@@ -153,5 +144,21 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
     /** Set the percentage value of UBI to send to treasury for each support given */
     function setTreasuryPct(uint256 treasuryPct) public onlyOwner {
         _treasuryPct = treasuryPct;
+    }
+
+    function getPOH() public view returns(address) {
+        return _poh;
+    }
+
+    function setPOH(address poh) public onlyOwner {
+        _poh = poh;
+    }   
+
+    function getUBI() public view returns(address) {
+        return _ubi;
+    }
+
+    function setUBI(address ubi) public onlyOwner {
+        _ubi = ubi;
     }
 }

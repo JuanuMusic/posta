@@ -1,4 +1,4 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 
 import { IContractProvider } from "./ContractProvider";
 import { POHProfileModel } from "./PohAPI";

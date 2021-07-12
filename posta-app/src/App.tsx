@@ -1,22 +1,24 @@
-import { useEffect, useState } from "react";
 import "./App.scss";
 import Container from "react-bootstrap/Container";
 
 import { Col, Row } from "react-bootstrap";
-import ConnectWalletDialog from "./components/ConnectWalletDialog";
 import { Switch, Route } from "react-router-dom";
 import PostPage from "./pages/PostPage";
 
 import AppHeader from "./components/AppHeader";
-import ConnectWalletButton from "./components/ConnectWalletButton";
 import MainPage from "./pages/MainPage/MainPage";
 import SuperHeader from "./components/SuperHeader";
+import DummyPOHController from "./dev-tools/DummyPOHController";
+import PostaController from "./dev-tools/PostaController";
+import { useWeb3React } from "@web3-react/core";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
 interface IAppProps {}
 
 export default function App(props: IAppProps) {
+
+  const web3Context = useWeb3React();
 
   return (
     <>
@@ -45,18 +47,18 @@ export default function App(props: IAppProps) {
         </Row>
 
         {/* Control Dummy POH */}
-        {/* <Row>
+        <Row>
           <Col>
-            <DummyPOHController human={human} />
+            <DummyPOHController />
           </Col>
-        </Row> */}
+        </Row>
 
         {/* Control Posta Contract */}
-        {/* <Row>
+        <Row>
           <Col>
-            <PostaController owner={human.address} />
+            <PostaController owner={web3Context.account || ""} />
           </Col>
-        </Row> */}
+        </Row>
 
         {/* Start accruing UBI Dummy */}
         {/* <Row>

@@ -66,7 +66,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       target="_blank"
                       href={props.postaNFT.tokenURI}
                     >
-                      PSTA:{props.postaNFT.tokenId}
+                      $POSTA:{props.postaNFT.tokenId}
                     </a>
                   </span>
                 </div>

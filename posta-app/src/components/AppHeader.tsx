@@ -1,5 +1,3 @@
-import { FaGithub, FaQuestion } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
 
 export default function AppHeader(props: any) {

@@ -1,7 +1,11 @@
 {
-    "network": "develop",
-    "PostaAddress": "0xB1a3BC033b79192626a04c47C96d83b36C6c4af2",
-    "POHAddress": "0x724f92Db3D82828A1DA7218C0115A6423D9CAcBC",
-    "UBIAddress": "0x55f68E96334116E5BA777b365b7E54E6Ec66246F",
+    "network": {
+        "name": "develop",
+        "chainID": 31337,
+        "URL": "http://127.0.0.1:8545/"
+    },
+    "PostaAddress": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "UBIAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "POHAddress": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     "pohApiBaseUrl":"https://api-kovan.poh.dev/"
 }

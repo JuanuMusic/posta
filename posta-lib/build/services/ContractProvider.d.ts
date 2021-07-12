@@ -2,6 +2,7 @@ import { Contract, ethers } from "ethers";
 export declare type EthersProviders = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc;
 export interface IContractProvider {
     config: IConfiguration;
+    ethersProvider: ethers.providers.BaseProvider;
     /**
     * Returns an instance of a contract for read only
     * @param contractAddress The address of the contract
@@ -27,11 +28,16 @@ export interface IContractProvider {
      * @returns
      */
     getPostaContractForRead(): Promise<Contract>;
+    getPohContractForRead(): Promise<Contract>;
     getUBIContractForRead(): Promise<Contract>;
     getUBIContractForWrite(address: string): Promise<Contract>;
 }
 export interface IConfiguration {
-    network: string;
+    network: {
+        URL: string;
+        chainID: number;
+        name: string;
+    };
     PostaAddress: string;
     POHAddress: string;
     UBIAddress: string;
@@ -49,6 +55,7 @@ export declare class ContractProvider implements IContractProvider {
     constructor(config: IConfiguration, provider: ethers.providers.JsonRpcProvider | ethers.providers.BaseProvider | undefined, contracts: IContractsDefinitions);
     _getSigner(signer: string): ethers.providers.JsonRpcSigner;
     get config(): IConfiguration;
+    get ethersProvider(): ethers.providers.BaseProvider;
     /**
      * Returns an instance of a contract for read only
      * @param contractAddress The address of the contract
@@ -67,6 +74,7 @@ export declare class ContractProvider implements IContractProvider {
      */
     getContractForWrite(contractAddress: string, abi: any, fromAddress: string): Promise<Contract>;
     getDummyPOHContractForWrite(fromAddress: string): Promise<Contract>;
+    getPohContractForRead(): Promise<Contract>;
     getPostaContractForWrite(fromAddress: string): Promise<Contract>;
     /**
      * Returns an instance of the PostaContract to execute read operations.

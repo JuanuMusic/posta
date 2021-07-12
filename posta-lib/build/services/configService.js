@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ethers_1 = require("ethers");
 // Change this to your local chain id
-var LOCAL_CHAIN_ID = 1337;
+var LOCAL_CHAIN_ID = 31337;
 var LOCAL_NETWORK_URL = "http://localhost:7545";
 var LOCAL_NETWORK_NAME = "develop";
 exports.default = {

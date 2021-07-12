@@ -1,6 +1,5 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { NoEthereumProviderError } from "@web3-react/injected-connector";
-import { WalletConnectConnectorArguments } from "@web3-react/walletconnect-connector";
 import { useEffect, useState } from "react";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import { injected } from "../connectors";

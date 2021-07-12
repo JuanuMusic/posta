@@ -1,15 +1,10 @@
-import { useWeb3React } from "@web3-react/core";
-import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostDisplay from "../components/PostDisplay";
 import useContractProvider from "../hooks/useContractProvider";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 
-interface IPostPageProps {
-  author: string;
-  tokenId: number;
-}
+
 
 export default function PostPage(props: any) {
   const [post, setPost] = useState<IPostaNFT>();

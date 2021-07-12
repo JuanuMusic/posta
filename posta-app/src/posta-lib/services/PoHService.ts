@@ -1,3 +1,4 @@
+import { IContractProvider } from "./ContractProvider";
 import { PohAPI, POHProfileModel } from "./PohAPI"
 
 // Cache profiles
@@ -23,7 +24,13 @@ const PohService = {
         // Cache human
         await ensureHumanIsCached(address);
         return _profilesCache[address];
+    },
+
+    async isRegistered(address: string, contractProvider: IContractProvider) {
+        const poh = await contractProvider.getPohContractForRead();
+        return await poh.isRegistered(address);
     }
+
 }
 
 export { PohService };

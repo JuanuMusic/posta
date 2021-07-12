@@ -103,7 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
-hardhat-proj/
+posta-contracts-old/
 .vscode/launch.json
 buil/
 posta-token-url-resolver/build/index.js

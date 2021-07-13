@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "localDeploy": "npx hardhat run --network localhost ./scripts/01_deploy_posta.ts",
-    "localUpgrade": "npx hardhat run --network localhost ./scripts/02_upgrade_posta_v2.ts"
+    "deploy:local:dummies": "npx hardhat run --network localhost ./scripts/00_deploy_dummy_contracts.ts",
+    "deploy:local": "npx hardhat run --network localhost ./scripts/01_deploy_posta.ts",
+    "upgrade:local": "npx hardhat run --network localhost ./scripts/02_upgrade_posta_v2.ts"
   },
   "author": "",
   "license": "ISC",

@@ -10,8 +10,8 @@ const HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
 // Contracts settings
 const POH_GOVERNOR = "0x2ad91063e489CC4009DF7feE45C25c8BE684Cf6a";
 const MAX_CHARS = 140;
-const BURN_PCT = 0.5;
-const TREASURY_PCT = 0.01;
+const DEFAULT_BURN_PCT = 0.5;
+const DEFAULT_TREASURY_PCT = 0.01;
 
 const POST_TEST_TEXT = "This is a test post"
 
@@ -20,7 +20,7 @@ const TO_WEI_BN = BigNumber.from(10).pow(18);
 
 
 async function initialize() {
-    const contracts = await utils.getContracts(POH_GOVERNOR, MAX_CHARS, ethers.utils.parseEther(BURN_PCT.toString()), ethers.utils.parseEther(TREASURY_PCT.toString()));
+    const contracts = await utils.getContracts(POH_GOVERNOR, MAX_CHARS, ethers.utils.parseEther(DEFAULT_BURN_PCT.toString()), ethers.utils.parseEther(DEFAULT_TREASURY_PCT.toString()));
     const actors = await utils.getActors();
     await contracts.poh.register(actors.HUMAN_1.getAddress());
     await contracts.poh.register(actors.HUMAN_2.getAddress());
@@ -133,21 +133,44 @@ describe("Posta", function () {
     describe("UBI Burn", async () => {
 
 
-        it("Should burn the correct percentage of UBI from the total supply on support given", async () => {
+        it("Should burn half of the UBIs when setting 0.5 as burnPCT when support is given", async () => {
+            
+            const burnPct = ethers.utils.parseEther("0.5");
+            await contracts.posta.setBurnPct(burnPct.toString());
+
             // Create a post
             const tokenId = await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
-
+            // Get the initial total UBI supply.
             const initialUBISupply = await contracts.ubi.totalSupply();
-
+            // Calculate support to give in weiUBI
             const ubiSupport = BigNumber.from(1).mul(TO_WEI_BN);
+            // Calculate expected value
+            const expected = initialUBISupply.sub(BigNumber.from(ethers.utils.parseEther("0.5")));
             await utils.supportPostFrom(actors.HUMAN_1, tokenId, ubiSupport, contracts);
 
             // Amount burn't is a function of the burnPCT property
-            const burnPct = await contracts.posta.getBurnPct();
-            const expectedBurnUBI = ubiSupport.div(TO_WEI_BN.div(burnPct));
-            const expectedUBISupply = initialUBISupply.sub(expectedBurnUBI);
             const newUbiSupply = await contracts.ubi.totalSupply();
-            expect(newUbiSupply.toString()).eq(expectedUBISupply.toString(), "Invalid UBI supply after burn");
+            expect(newUbiSupply.toString()).eq(expected.toString(), "Invalid UBI supply after burn");
+        });
+
+        it("Should burn a quarter of the UBIs when setting 0.25 as burnPCT when support is given", async () => {
+            
+            const burnPct = ethers.utils.parseEther("0.25");
+            await contracts.posta.setBurnPct(burnPct.toString());
+
+            // Create a post
+            const tokenId = await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            // Get the initial total UBI supply.
+            const initialUBISupply = await contracts.ubi.totalSupply();
+            // Calculate support to give in weiUBI
+            const ubiSupport = BigNumber.from("1").mul(TO_WEI_BN);
+            // Calculate expected return value ty
+            const expected = initialUBISupply.sub(BigNumber.from(ethers.utils.parseEther("0.25")));
+            await utils.supportPostFrom(actors.HUMAN_1, tokenId, ubiSupport, contracts);
+
+            // Amount burn't is a function of the burnPCT property
+            const newUbiSupply = await contracts.ubi.totalSupply();
+            expect(newUbiSupply.toString()).eq(expected.toString(), "Invalid UBI supply after burn");
         });
     });
 

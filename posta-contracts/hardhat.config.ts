@@ -28,7 +28,7 @@ module.exports = {
     },
     kovan: {
       url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [process.env.HOMER_2_PK]
+      accounts: [process.env.POSTA_DEPLOYER_PK]
     }
   },
 };

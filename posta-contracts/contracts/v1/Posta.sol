@@ -9,6 +9,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "../IProofOfHumanity.sol";
 import "./PostaStorage.sol";
+import "../PostaLib.sol";
 
 contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorage {
     
@@ -52,7 +53,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
         _safeMint(_msgSender(), newItemId);
 
         // Generate the post NFT storage data
-        PostaData memory post = PostaData({
+        PostaLib.PostaData memory post = PostaLib.PostaData({
             supportGiven: 0,
             supportersCount: 0
         });
@@ -77,7 +78,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
         return baseURI;
     }
 
-    function _setPost(uint256 tokenId, PostaData memory data) internal virtual tokenExists(tokenId) {
+    function _setPost(uint256 tokenId, PostaLib.PostaData memory data) internal virtual tokenExists(tokenId) {
      _posts[tokenId] = data;
     }
 
@@ -94,7 +95,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
         return _tokenCounter;
     }
 
-    function getPost(uint256 tokenId) public view virtual tokenExists(tokenId) returns (PostaData memory) {
+    function getPost(uint256 tokenId) public view virtual tokenExists(tokenId) returns (PostaLib.PostaData memory) {
         return _posts[tokenId];
     }
 

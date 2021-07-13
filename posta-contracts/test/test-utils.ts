@@ -12,8 +12,12 @@ export async function getContracts(pohGovernor: string, maxCharsPosta: number, b
     // Get contract factories
     const UBI = await ethers.getContractFactory("DummyUBI");
     const ProofOfHumanity = await ethers.getContractFactory("DummyProofOfHumanity");
+
+    const PostaLib = await ethers.getContractFactory("PostaLib");
+    const postaLib = await PostaLib.deploy();
+
     const Posta = await ethers.getContractFactory("Posta");
-    const PostaV2 = await ethers.getContractFactory("PostaV2");
+    const PostaV2 = await ethers.getContractFactory("PostaV2", { libraries: { PostaLib: postaLib.address } });
 
     // Deploy contracts
     const ubiContract = await UBI.deploy();
@@ -21,7 +25,7 @@ export async function getContracts(pohGovernor: string, maxCharsPosta: number, b
     // Deploy Posta
     const postaV1Contract = await upgrades.deployProxy(Posta, [pohContract.address, ubiContract.address, maxCharsPosta])
     // Upgrade Posta
-    const postaV2Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV2)
+    const postaV2Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV2, { unsafeAllowLinkedLibraries: true })
     await postaV2Contract.setBurnPct(burnPct);
     await postaV2Contract.setTreasuryPct(treasuryPct);
     return { ubi: ubiContract, poh: pohContract, posta: postaV2Contract };

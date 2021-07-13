@@ -2,18 +2,18 @@
 pragma solidity 0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-//import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "../IProofOfHumanity.sol";
 import "./PostaStorageV2.sol";
+import "../PostaLib.sol";
 
-contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorageV2 {
-    
-    using SafeMath for uint256;
-    //using Strings for uint256;
+interface IERC20Burnable {
+    function burn(uint256 amount) external;
+    function burnFrom(address account, uint256 amount) external;
+}
+
+contract PostaV2 is OwnableUpgradeable, ERC721Upgradeable, PostaStorageV2 {
 
     event NewPost(address indexed author, uint256 indexed tokenId, string value);
 
@@ -43,7 +43,7 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
         _safeMint(_msgSender(), newItemId);
 
         // Generate the post NFT storage data
-        PostaData memory post = PostaData({
+        PostaLib.PostaData memory post = PostaLib.PostaData({
             supportGiven: 0,
             supportersCount: 0
         });
@@ -68,7 +68,7 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
         return baseURI;
     }
 
-    function _setPost(uint256 tokenId, PostaData memory data) internal virtual tokenExists(tokenId) {
+    function _setPost(uint256 tokenId, PostaLib.PostaData memory data) internal virtual tokenExists(tokenId) {
      _posts[tokenId] = data;
     }
 
@@ -85,7 +85,7 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
         return _tokenCounter;
     }
 
-    function getPost(uint256 tokenId) public view virtual tokenExists(tokenId) returns (PostaData memory) {
+    function getPost(uint256 tokenId) public view virtual tokenExists(tokenId) returns (PostaLib.PostaData memory) {
         return _posts[tokenId];
     }
 
@@ -96,17 +96,17 @@ contract PostaV2 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaS
      */
     function support(uint256 tokenId, uint256 ubiAmount) public tokenExists(tokenId) {
         require(_msgSender() != ownerOf(tokenId), CANT_SUPPORT_SELF_CONTENT);
-        // ammount to burn
-        uint256 toBurn = ubiAmount.div((1*(10**18) / _burnPct));
-        require(toBurn > 0, "Posta: invalid ubi amount to burn");
-        
+
+        // Calculate amount to burn        
+        uint256 toBurn = PostaLib.getAmountToBurn(ubiAmount, _burnPct);
+
         // Burn the UBI on behalf of the caller.
-        ERC20Burnable(_ubi).burnFrom(_msgSender(), toBurn);
+        IERC20Burnable(_ubi).burnFrom(_msgSender(), toBurn);
         
         // Transfer remainder to posta creator
-        uint256 forCreator = ubiAmount.sub(toBurn);
+        uint256 forCreator = ubiAmount - toBurn;
         if(forCreator > 0) { 
-            ERC20(_ubi).transferFrom(_msgSender(), ownerOf(tokenId), forCreator);
+            IERC20(_ubi).transferFrom(_msgSender(), ownerOf(tokenId), forCreator);
         }
 
         // Add support based on ubi amount

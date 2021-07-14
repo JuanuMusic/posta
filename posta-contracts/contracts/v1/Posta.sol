@@ -63,7 +63,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
         _setPost(newItemId, post);
         
         // Update the token counter
-        _tokenCounter = _tokenCounter +1;
+        _tokenCounter = _tokenCounter + 1;
 
         emit NewPost(_msgSender(), newItemId, text);
 

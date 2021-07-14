@@ -25,7 +25,7 @@ async function getEthersProvider(
   }
 
   if (!provider) {
-    provider = ethers.getDefaultProvider("kovan");
+    provider = ethers.getDefaultProvider("kovan", {infura: process.env.REACT_APP_INFURA_PROJECT_ID, etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY});
   }
 
   // Handle network changes

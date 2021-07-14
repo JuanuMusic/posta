@@ -1,7 +1,7 @@
 import { Button, FormControl, InputGroup } from "react-bootstrap";
 import { useState } from "react";
 import { PostaService } from "../posta-lib";
-import useContractProvider from "../hooks/useContractProvider";
+import { useContractProvider } from "../contextProviders/ContractsProvider";
 
 interface IPostaControllerProps {
   owner: string;

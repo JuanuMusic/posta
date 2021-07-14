@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PostEditor from "../../components/PostEditor/PostEditor";
 import PostList from "../../components/PostList";
+import { useContractProvider } from "../../contextProviders/ContractsProvider";
 import { useHuman } from "../../contextProviders/HumanProvider";
-import useContractProvider from "../../hooks/useContractProvider";
 import { IPostaNFT, PostaService } from "../../posta-lib/services/PostaService";
 import HumanNotRegistered from "./components/HumanNotRegistered";
 
 export default function MainPage() {
-  console.log("Rendering MainPage")
   const human = useHuman();
   const [posts, setPosts] = useState<IPostaNFT[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
@@ -23,7 +22,6 @@ export default function MainPage() {
     try {
       // Get the last 10 posts
       const postList = await PostaService.getLatestPosts(10, contractProvider);
-      console.log(postList);
       // If list is not null, set to the state
       if (postList) setPosts(postList);
     } catch (error) {

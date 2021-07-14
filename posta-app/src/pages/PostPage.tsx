@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostDisplay from "../components/PostDisplay";
-import useContractProvider from "../hooks/useContractProvider";
+import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 
 

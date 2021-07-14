@@ -16,19 +16,16 @@ export async function getContracts(pohGovernor: string, maxCharsPosta: number, b
     const PostaLib = await ethers.getContractFactory("PostaLib");
     const postaLib = await PostaLib.deploy();
 
-    const Posta = await ethers.getContractFactory("Posta");
-    const PostaV2 = await ethers.getContractFactory("PostaV2", { libraries: { PostaLib: postaLib.address } });
+    const Posta = await ethers.getContractFactory("Posta", { libraries: { PostaLib: postaLib.address } });
 
     // Deploy contracts
     const ubiContract = await UBI.deploy();
     const pohContract = await ProofOfHumanity.deploy(pohGovernor, ubiContract.address);
     // Deploy Posta
-    const postaV1Contract = await upgrades.deployProxy(Posta, [pohContract.address, ubiContract.address, maxCharsPosta])
+    const postaV1Contract = await upgrades.deployProxy(Posta, [pohContract.address, ubiContract.address, maxCharsPosta, burnPct, treasuryPct], {unsafeAllowLinkedLibraries: true})
     // Upgrade Posta
-    const postaV2Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV2, { unsafeAllowLinkedLibraries: true })
-    await postaV2Contract.setBurnPct(burnPct);
-    await postaV2Contract.setTreasuryPct(treasuryPct);
-    return { ubi: ubiContract, poh: pohContract, posta: postaV2Contract };
+    // const postaV2Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV2, { unsafeAllowLinkedLibraries: true })
+    return { ubi: ubiContract, poh: pohContract, posta: postaV1Contract };
 
 
 }

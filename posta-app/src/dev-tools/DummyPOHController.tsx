@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import useContractProvider from "../hooks/useContractProvider";
+import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { useHuman } from "../contextProviders/HumanProvider";
 import { PohService } from "../posta-lib";
 

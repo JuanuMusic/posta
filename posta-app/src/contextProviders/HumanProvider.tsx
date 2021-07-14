@@ -1,9 +1,9 @@
 import { useWeb3React } from "@web3-react/core";
 import { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
-import useContractProvider from "../hooks/useContractProvider";
 import { PohService } from "../posta-lib";
 import { PohAPI, POHProfileModel } from "../posta-lib/services/PohAPI";
+import { useContractProvider } from "./ContractsProvider";
 
 const EMPTY_POH_PROFILE = { display_name: "", first_name: "", last_name: "" };
 
@@ -24,21 +24,19 @@ export default function HumanProvider({ children }: { children: any }) {
    * Executes when the web3 context changes
    */
   useEffect(() => {
-    console.log("Loading human account...");
     if (web3Context.error) {
       console.error("Web3 Context error:", web3Context.error.message);
     }
     if (!web3Context.account) return;
 
     loadHumanAccount(web3Context.account);
-  }, [web3Context]);
+  }, [web3Context, contractProvider]);
 
   /**
    * Try to load a human account from an address.
    * @param address
    */
   const loadHumanAccount = async (address: string) => {
-    console.log("Loading human account...");
     if (!contractProvider) return;
     setIsLoading(true);
     try {

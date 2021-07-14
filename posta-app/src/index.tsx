@@ -10,9 +10,9 @@ import { Web3ReactProvider } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
 import { BrowserRouter as Router } from "react-router-dom";
 import HumanProvider from "./contextProviders/HumanProvider";
+import ContractsProvider from "./contextProviders/ContractsProvider";
 
 function getLibrary(provider: any): Web3Provider {
-  console.log("LIBRARY PROVIDER", provider)
   const library = new Web3Provider(provider);
   library.pollingInterval = 12000;
   return library;
@@ -20,7 +20,8 @@ function getLibrary(provider: any): Web3Provider {
 
 ReactDOM.render(
   <React.StrictMode>
-      <Web3ReactProvider getLibrary={getLibrary}>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <ContractsProvider>
         <HumanProvider>
           <Router>
             <div className="text-light">
@@ -43,7 +44,8 @@ ReactDOM.render(
             </div> */}
           </Router>
         </HumanProvider>
-      </Web3ReactProvider>
+      </ContractsProvider>
+    </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

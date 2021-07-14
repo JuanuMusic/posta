@@ -18,11 +18,6 @@ const app = express();
 // Change this to your local chain id
 const LOCAL_CHAIN_ID = 1337;
 
-/**
-     * If env variable REACT_APP_NETWORK, returns getDefaultProvider(process.env.REACT_APP_NETWORK)
-     * If NODE_ENV is "development" use local network. Fallback: use "kovan".
-     * @returns 
-     */
 function getEthersProvider(): ethers.providers.BaseProvider {
 
     const provider = (process.env.NETWORK && ethers.getDefaultProvider(process.env.NETWORK, { infura: process.env.INFURA_PROJECT_ID })) ||
@@ -33,7 +28,7 @@ function getEthersProvider(): ethers.providers.BaseProvider {
 }
 
 function getConfig(): IConfiguration {
-    return process.env.NETWORK === "kovan" ? kovan : develop;
+    return require(`./config/${process.env.CONFIG}.json`) as IConfiguration;;
 }
 
 
@@ -46,7 +41,6 @@ app.get('/post/:tokenId', async (req, res) => {
     const logs = await PostaService.getPostLogs([tokenId], contractprovider);
     if (!logs || logs.length === 0) return res.status(404).send("Log not found");
     const log = logs[0];
-    console.log("THE LOGS", logs);
     const human = await PohService.getHuman(log.author);
     const retVal = {
         author: log.author,

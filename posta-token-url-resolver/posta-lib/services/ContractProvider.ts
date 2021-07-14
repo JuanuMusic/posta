@@ -69,6 +69,7 @@ export class ContractProvider implements IContractProvider {
     }
 
     _getSigner(signer: string) {
+        if(!this._provider) throw new Error("JsonRpcProvider not set");
         return (this._provider as ethers.providers.JsonRpcProvider).getSigner(signer);
 
     }

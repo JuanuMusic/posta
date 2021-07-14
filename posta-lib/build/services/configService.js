@@ -6,11 +6,6 @@ var LOCAL_CHAIN_ID = 31337;
 var LOCAL_NETWORK_URL = "http://localhost:7545";
 var LOCAL_NETWORK_NAME = "develop";
 exports.default = {
-    /**
-     * If env variable REACT_APP_NETWORK, returns getDefaultProvider(process.env.REACT_APP_NETWORK)
-     * If NODE_ENV is "development" use local network. Fallback: use "kovan".
-     * @returns
-     */
     getEthersProvider: function () {
         var provider = (process.env.DEFAULT_NETWORK && ethers_1.ethers.getDefaultProvider(process.env.DEFAULT_NETWORK)) ||
             (process.env.NODE_ENV === "development" ?

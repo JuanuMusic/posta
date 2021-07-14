@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { FormControl, Button, Card } from "react-bootstrap";
-import useContractProvider from "../../hooks/useContractProvider";
 import { IPostData, PostaService } from "../../posta-lib/services/PostaService";
 import { useHuman } from "../../contextProviders/HumanProvider";
 import PublishingIndicator from "./components/PublishingIndicator";
 import PostError from "./components/PostError";
+import { useContractProvider } from "../../contextProviders/ContractsProvider";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
@@ -20,8 +20,17 @@ export default function PostEditor(props: IPostEditorProps) {
   const [isLoading, setIsLoading] = useState(false);
   const contractProvider = useContractProvider();
   const human = useHuman();
+  const [maxChars, setMaxChars] = useState(140);
 
-  const MAX_CHARS = 140;
+  useEffect(() => {
+    async function loadMaxChars() {
+      if (contractProvider) {
+        setMaxChars(await PostaService.getMaxChars(contractProvider));
+      }
+    }
+
+    loadMaxChars();
+  }, [contractProvider]);
 
   // Update editor status
   useEffect(() => {
@@ -87,14 +96,14 @@ export default function PostEditor(props: IPostEditorProps) {
             rows={3}
             value={postText}
             onChange={(e) =>
-              e.target.value.length <= MAX_CHARS && setPostText(e.target.value)
+              e.target.value.length <= maxChars && setPostText(e.target.value)
             }
             disabled={!isEditorEnabled}
           ></FormControl>
         </Card.Body>
         <Card.Footer className="p-2">
           <div className="d-flex justify-content-between align-items-center my-0">
-            <div>{`${postText.length}/${MAX_CHARS}`}</div>
+            <div>{`${postText.length}/${maxChars}`}</div>
             <Button disabled={!isSendButtonEnabled} onClick={handleSendPost}>
               Send
             </Button>

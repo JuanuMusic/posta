@@ -9,9 +9,9 @@ import {
 import { Gem } from "react-bootstrap-icons";
 
 import { BigNumber, ethers, utils } from "ethers";
-import useContractProvider from "../hooks/useContractProvider";
 import { PostaService, UBIService } from "../posta-lib";
 import { useHuman } from "../contextProviders/HumanProvider";
+import { useContractProvider } from "../contextProviders/ContractsProvider";
 
 interface ISupportPostDialogProps extends IBasePostaProps {
   show: boolean;
@@ -28,6 +28,7 @@ function useUBIBalance(address: string) {
   
   const [currentUBIBalance, setCurrentUBIBalance] = useState(BigNumber.from(0));
   const contractProvider = useContractProvider();
+  
   
   useEffect(() => {
     async function getBalance() {

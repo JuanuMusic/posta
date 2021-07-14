@@ -49,6 +49,8 @@ var ContractProvider = /** @class */ (function () {
         this._contracts = contracts;
     }
     ContractProvider.prototype._getSigner = function (signer) {
+        if (!this._provider)
+            throw new Error("JsonRpcProvider not set");
         return this._provider.getSigner(signer);
     };
     Object.defineProperty(ContractProvider.prototype, "config", {

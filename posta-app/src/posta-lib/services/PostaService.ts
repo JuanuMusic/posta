@@ -5,6 +5,7 @@ import { POHProfileModel } from "./PohAPI";
 import { PohService } from "./PoHService";
 
 interface IPostaService {
+  getMaxChars(contractProvider: IContractProvider): Promise<number>;
   getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
   setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
   getPostLogs(tokenIds: number[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
@@ -45,6 +46,16 @@ const DEFAULT_CONFIRMATIONS = 5;
 
 const PostaService: IPostaService = {
   /**
+   * Get the max chars set on the contract
+   * @param contractProvider 
+   */
+  async getMaxChars(contractProvider: IContractProvider): Promise<number> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const maxChars = await postaContract.getMaxChars();
+    return maxChars;
+  },
+
+  /**
    * Gets the token URL with JSON metadata
    * @param tokenId 
    * @param provider 
@@ -64,7 +75,6 @@ const PostaService: IPostaService = {
   async setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void> {
     const postaContract = await contractProvider.getPostaContractForWrite(from);
     const tx = await postaContract.setBaseURI(baseUrl);
-    console.log("SET BASE URL TX", tx);
   },
 
   /**
@@ -181,7 +191,6 @@ const PostaService: IPostaService = {
    * @returns 
    */
   async buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT> {
-    console.log("Building post...", log);
     const postaContract = await contractProvider.getPostaContractForRead();
 
     const postNFT = await postaContract.getPost(log.tokenId);

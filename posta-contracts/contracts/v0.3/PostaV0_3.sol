@@ -6,20 +6,21 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../IProofOfHumanity.sol";
-import "./PostaStorage.sol";
+import "../v0.2/PostaStorage.sol";
 
-interface IERC20Burnable {
+interface IERC20Burnable is IERC20 {
     function burn(uint256 amount) external;
     function burnFrom(address account, uint256 amount) external;
 }
 
-contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorage {
+contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorage {
 
     event NewPost(address indexed author, uint256 indexed tokenId, string value);
 
     string constant HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
     string constant POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
     string constant CANT_SUPPORT_SELF_CONTENT = "CANT_SUPPORT_SELF_CONTENT";
+    string constant BURN_TREASURY_MUST_TOTAL_ONE = "BURN_TREASURY_MUST_TOTAL_ONE";
 
     /// Require that an address is a valid registered human.
     modifier isHuman(address _submission) {
@@ -31,17 +32,6 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
     modifier tokenExists(uint256 tokenId) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         _;
-    }
-
-    function initialize(address poh, address ubi, uint256 maxChars, uint256 burnPct, uint256 treasuryPct) public virtual initializer {
-        __ERC721_init("Posta","POSTA");
-        OwnableUpgradeable.__Ownable_init();
-        _tokenCounter = 0;
-        _poh = poh;
-        _ubi = ubi;
-        _maxChars = maxChars;
-        _burnPct = burnPct;
-        _treasuryPct =treasuryPct;
     }
 
     function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
@@ -89,15 +79,15 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
      */
     function support(uint256 tokenId, uint256 ubiAmount) public tokenExists(tokenId) {
         require(_msgSender() != ownerOf(tokenId), CANT_SUPPORT_SELF_CONTENT);
-        
         // Process support calcs
         (uint256 toBurn, uint256 forTreasury, uint256 forCreator) = _processSupport(ubiAmount);
 
+        IERC20Burnable ubiErc20 = IERC20Burnable(_ubi);
         // Burn the UBI on behalf of the caller.
-        if(toBurn > 0) IERC20Burnable(_ubi).burnFrom(_msgSender(), toBurn);
+        if(toBurn > 0) ubiErc20.burnFrom(_msgSender(), toBurn);
 
         // Send to treasury
-        if(forTreasury >0) require(false, "Posta Treasury not implemented. Set treasuryPct to 0");
+        if(forTreasury >0) ubiErc20.transferFrom(_msgSender(), address(this),forTreasury);
 
         // Transfer remaining to creator
         if(forCreator > 0) IERC20(_ubi).transferFrom(_msgSender(), ownerOf(tokenId), forCreator);
@@ -162,6 +152,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
 
     /** Set the percentage value of UBI to burn for each support given */
     function setBurnPct(uint256 burnPct) public onlyOwner {
+        require(burnPct + _treasuryPct <= 1*(10**18), BURN_TREASURY_MUST_TOTAL_ONE);
         _burnPct = burnPct;
     }
 
@@ -172,6 +163,7 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
 
     /** Set the percentage value of UBI to send to treasury for each support given */
     function setTreasuryPct(uint256 treasuryPct) public onlyOwner {
+        require(_burnPct + treasuryPct <= 1*(10**18), BURN_TREASURY_MUST_TOTAL_ONE);
         _treasuryPct = treasuryPct;
     }
 

@@ -1,11 +1,9 @@
 import { expect, util } from "chai";
 import { BigNumber } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, waffle } from "hardhat";
 import * as utils from "./test-utils";
 
-// Contracts revert codes
-const POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
-const HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
+
 
 // Contracts settings
 const POH_GOVERNOR = "0x2ad91063e489CC4009DF7feE45C25c8BE684Cf6a";
@@ -128,6 +126,39 @@ describe("Posta", function () {
             await expect(utils.supportPostFrom(actors.HUMAN_1, tokenId, ubiSupport, contracts)).to.be.reverted;
 
         })
+
+        it("Should add UBIs to NFT owner minus burn minus treasury", async () => {
+
+            // set burn pct
+            const burnPct = ethers.utils.parseEther("0.5");
+            await contracts.posta.setBurnPct(burnPct.toString());
+            
+            // set treasury pct
+            const treasuryPct = ethers.utils.parseEther("0.01");
+            await contracts.posta.setTreasuryPct(treasuryPct.toString());
+
+            // Create a post
+            const tokenId = await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+
+            // Get creator current UBI balance
+            const currentBalance = await contracts.ubi.balanceOf(actors.HUMAN_1.address);
+
+            // Support to be given to the post
+            const supportToGive = BigNumber.from(1).mul(TO_WEI_BN);
+
+            // Give support
+            await utils.supportPostFrom(actors.HUMAN_2, tokenId, supportToGive, contracts);
+
+            // Calculate how much should have been burned
+            const burned = supportToGive.div(ethers.utils.parseEther("1").div(burnPct));
+            // Calculate how much should have been sent to treasury
+            const treasury = supportToGive.div(ethers.utils.parseEther("1").div(treasuryPct));
+            // Get expected value of UBI that creator should have.
+            const expected = currentBalance.add(supportToGive.sub(burned).sub(treasury));
+            // Get the actual new UBI balance
+            const newCreatorUBIBalance= await contracts.ubi.balanceOf(actors.HUMAN_1.address);
+            await expect(expected.toString()).eq(newCreatorUBIBalance.toString(), "Invalid UBI received by creator");
+        });
     });
 
     describe("UBI Burn", async () => {
@@ -171,6 +202,30 @@ describe("Posta", function () {
             // Amount burn't is a function of the burnPCT property
             const newUbiSupply = await contracts.ubi.totalSupply();
             expect(newUbiSupply.toString()).eq(expected.toString(), "Invalid UBI supply after burn");
+        });
+    });
+
+    describe("Treasury", async () => {
+
+        it("Should give 1 percent of the UBIs when setting 0.01 as treasuryPct when support is given", async () => {
+            
+            const treasuryPct = ethers.utils.parseEther("0.01");
+            await contracts.posta.setTreasuryPct(treasuryPct.toString());
+
+            // Create a post
+            const tokenId = await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            // Get the initial total UBI supply.
+            const initialContractBalance = await contracts.ubi.balanceOf(contracts.posta.address);
+            // Calculate support to give in weiUBI
+            const ubiSupport = ethers.utils.parseEther("1");
+            await utils.supportPostFrom(actors.HUMAN_1, tokenId, ubiSupport, contracts);
+            // Get the initial total UBI supply.
+            const newContractBalance = await contracts.ubi.balanceOf(contracts.posta.address);
+            
+            // Calculate expected value
+            const expected = initialContractBalance.add(ubiSupport.div(ethers.utils.parseEther("1").div(treasuryPct)));
+            // Amount burn't is a function of the burnPCT property
+            expect(newContractBalance.toString()).eq(expected.toString(), "Invalid UBI supply after burn");
         });
     });
 

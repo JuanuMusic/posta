@@ -2,10 +2,7 @@ import { expect } from "chai";
 import * as utils from "./test-utils";
 import BN from "bn.js";
 import { ethers } from "ethers";
-
-// Contracts revert codes
-const POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
-const HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
+import testConstants from "./test-constants";
 
 // Contracts settings
 const POH_GOVERNOR = "0x2ad91063e489CC4009DF7feE45C25c8BE684Cf6a";
@@ -14,9 +11,6 @@ const BURN_PCT = 0.5;
 const TREASURY_PCT = 0;
 
 const POST_TEST_TEXT = "This is a test post"
-
-// HELPERS
-const TO_WEI_BN = new BN(10).pow(new BN(18));
 
 async function initialize() {
   const contracts = await utils.getContracts(POH_GOVERNOR, MAX_CHARS, ethers.utils.parseEther(BURN_PCT.toString()), ethers.utils.parseEther(TREASURY_PCT.toString()));
@@ -50,7 +44,7 @@ describe("Posta", function () {
       const nonHumanPosta = contracts.posta.connect(actors.NOT_REGISTERED_ADDRESS);
 
       // Try to publish should revert
-      await expect(nonHumanPosta.publishPost(POST_TEST_TEXT)).to.be.revertedWith(HUMAN_NOT_REGISTERED);
+      await expect(nonHumanPosta.publishPost(POST_TEST_TEXT)).to.be.revertedWith(testConstants.postaConstants.REVERT_HUMAN_NOT_REGISTERED);
     });
 
     /* Test NFT mint */
@@ -83,7 +77,7 @@ describe("Posta", function () {
 
       // Generate a string maxChards + 1 length
       const content = "*".repeat(maxChars + 1);
-      await expect(contracts.posta.publishPost(content)).to.be.revertedWith(POST_TEXT_TOO_LONG);
+      await expect(contracts.posta.publishPost(content)).to.be.revertedWith(testConstants.postaConstants.REVERT_POST_TEXT_TOO_LONG);
     });
 
   });

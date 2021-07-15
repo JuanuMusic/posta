@@ -48,13 +48,27 @@ export async function getActors() {
  * @param postaContract 
  * @returns 
  */
-export async function createPostFrom(account: Signer, content: string, postaContract: Contract): Promise<number> {
+export async function replyPostFrom(account: Signer, content: string, replyOftokenId: string, postaContract: Contract): Promise<void> {
     const humanPosta = postaContract.connect(account);
-    const receipt = await humanPosta.publishPost(content);
-    return receipt.value;
+    const transaction = await humanPosta.replyPost(content, replyOftokenId);
+    return transaction;
 }
 
-export async function supportPostFrom(account: Signer, postTokenId: number, amount: BigNumber, contracts: IContracts) {
+/**
+ * Creates a new post and returns the token ID
+ * @param account 
+ * @param content 
+ * @param postaContract 
+ * @returns 
+ */
+ export async function createPostFrom(account: Signer, content: string, postaContract: Contract): Promise<void> {
+    const humanPosta = postaContract.connect(account);
+    const transaction = await humanPosta.publishPost(content);
+    return transaction;
+}
+
+
+export async function supportPostFrom(account: Signer, postTokenId: string, amount: BigNumber, contracts: IContracts) {
     const human2Ubi = contracts.ubi.connect(account);
     const human2Posta = contracts.posta.connect(account);
     await human2Ubi.approve(contracts.posta.address, amount);

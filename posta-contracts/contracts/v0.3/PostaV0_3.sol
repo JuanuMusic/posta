@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../IProofOfHumanity.sol";
 import "../v0.2/PostaStorage.sol";
 
+//import "hardhat/console.sol";
+
 interface IERC20Burnable is IERC20 {
     function burn(uint256 amount) external;
     function burnFrom(address account, uint256 amount) external;
@@ -15,7 +17,7 @@ interface IERC20Burnable is IERC20 {
 
 contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorage {
 
-    event NewPost(address indexed author, uint256 indexed tokenId, string value);
+    event NewPost(address indexed author, uint256 indexed tokenId, uint256 indexed replyOfTokenId, string value);
 
     string constant HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
     string constant POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
@@ -34,8 +36,20 @@ contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, Post
         _;
     }
 
+
+    function replyPost(string memory text, uint256 tokenId) public tokenExists(tokenId) returns(uint256)  {
+        return _publishPost(text, tokenId);
+    }
+
     function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
+        return _publishPost(text, 0);
+    }
+
+    function _publishPost(string memory text, uint256 replyOfTokenId) private isHuman(_msgSender()) returns(uint256)  {
         require(bytes(text).length <= _maxChars, POST_TEXT_TOO_LONG);
+
+        // Update the token counter
+        _tokenCounter += 1;
 
         // Get the new token iD  
         uint256 newItemId = _tokenCounter;
@@ -51,15 +65,13 @@ contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, Post
 
         // Set the post dat to the token
         _setPost(newItemId, post);
-        
-        // Update the token counter
-        _tokenCounter = _tokenCounter + 1;
 
-        emit NewPost(_msgSender(), newItemId, text);
+        emit NewPost(_msgSender(), newItemId, replyOfTokenId, text);
 
         // Return the new token ID
         return newItemId;
     }
+
 
     function _processSupport(uint256 ubiAmount) private returns (uint256 toBurn, uint256 forTreasury, uint256 forCreator) {
         // Calculate amount to burn        

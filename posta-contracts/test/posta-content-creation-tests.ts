@@ -38,8 +38,7 @@ describe("Posta", function () {
 
     /* Test human only access */
     it("Should fail when user not Human tries to publish a Posta", async () => {
-      const PREFIX = "VM Exception while processing transaction: ";
-      
+
       // Connect not registered account
       const nonHumanPosta = contracts.posta.connect(actors.NOT_REGISTERED_ADDRESS);
 
@@ -49,19 +48,15 @@ describe("Posta", function () {
 
     /* Test NFT mint */
     it("Should correctly mint an NFT and update the tokenCounter", async () => {
-      expect(await contracts.poh.isRegistered(actors.HUMAN_1.getAddress()), "User is not registered on PoH");
-      
-      const tokenId = await contracts.posta.publishPost(POST_TEST_TEXT);
-      expect(tokenId.value.toString()).eq("0", "NFT was not correctly minted");
-
+      await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta)
       const tokenCounter = await contracts.posta.getTokenCounter();
       expect(tokenCounter.toString()).eq("1", "Invalid token counter value");
     });
 
     /* Test minted NFT ownership */
     it("Minted NFT should belong to publisher address", async () => {
-      const tokenId = await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
-      const owner = await contracts.posta.ownerOf(tokenId);
+      await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+      const owner = await contracts.posta.ownerOf("1");
       expect(owner).eq(await actors.HUMAN_1.getAddress(), "Invalid token owner");
     });
 
@@ -79,7 +74,15 @@ describe("Posta", function () {
       const content = "*".repeat(maxChars + 1);
       await expect(contracts.posta.publishPost(content)).to.be.revertedWith(testConstants.postaConstants.REVERT_POST_TEXT_TOO_LONG);
     });
-
   });
+
+  describe("Post Replies", async () => {
+    it("Should emit log with replied token id when replying", async () => {
+      await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+      await expect(utils.replyPostFrom(actors.HUMAN_2, POST_TEST_TEXT, "1", contracts.posta))
+        .to.emit(contracts.posta, "NewPost")
+        .withArgs(await actors.HUMAN_2.getAddress(), "2", "1", POST_TEST_TEXT);
+    })
+  })
 
 });

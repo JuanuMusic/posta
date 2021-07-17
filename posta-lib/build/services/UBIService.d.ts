@@ -8,6 +8,6 @@ declare const UBIService: {
      */
     balanceOf(address: string, contractProvider: IContractProvider): Promise<any>;
     /** Call to Start accruing UBI  */
-    startAccruing(address: string, contractProvider: IContractProvider): Promise<void>;
+    startAccruing(address: string, contractProvider: IContractProvider): Promise<any>;
 };
 export { UBIService };

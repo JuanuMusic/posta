@@ -12,9 +12,15 @@ import configProvider from "../config/configProvider";
 const contractsDefinitions: IContractsDefinitions = {
   UBIContract: require("../contracts/contracts/DummyUBI.sol/DummyUBI.json"),
   POHContract: require("../contracts/contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
-  PostaContract: require("../contracts/contracts/v1/Posta.sol/Posta.json"),
+  //PostaContract: require("../contracts/contracts/v0.2/Posta.sol/Posta.json"),
+  PostaContract: require("../contracts/contracts/v0.3/PostaV0_3.sol/PostaV0_3.json"),
 };
 
+/**
+ * Returns the ethers provider based on the .env and config.json
+ * @param webProvider 
+ * @returns 
+ */
 async function getEthersProvider(
   webProvider: any | undefined = undefined
 ): Promise<ethers.providers.BaseProvider> {
@@ -25,7 +31,20 @@ async function getEthersProvider(
   }
 
   if (!provider) {
-    provider = ethers.getDefaultProvider("kovan", {infura: process.env.REACT_APP_INFURA_PROJECT_ID, etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY});
+    if (process.env.REACT_APP_CONFIG === "kovan") {
+      provider = ethers.getDefaultProvider("kovan", {
+        infura: process.env.REACT_APP_INFURA_PROJECT_ID,
+        etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY,
+      });
+    } else if (process.env.REACT_APP_CONFIG === "develop") {
+      const config = configProvider.getConfig();
+      provider = new ethers.providers.JsonRpcProvider(config.network.URL, {
+        chainId: config.network.chainID,
+        name: config.network.name,
+      });
+    } else {
+      provider = ethers.getDefaultProvider();
+    }
   }
 
   // Handle network changes
@@ -37,6 +56,7 @@ async function getEthersProvider(
       window.location.reload();
     }
   });
+
   return provider;
 }
 

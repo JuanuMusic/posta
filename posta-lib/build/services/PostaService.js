@@ -99,12 +99,13 @@ var PostaService = {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
-                        filter = postaContract.filters.NewPost(null, tokenIds);
+                        filter = postaContract.filters.NewPost(null, tokenIds.map(function (id) { return parseInt(id, 10); }), null);
                         return [4 /*yield*/, postaContract.queryFilter(filter)];
                     case 2:
                         logs = _a.sent();
                         if (!logs)
                             return [2 /*return*/, null];
+                        console.log("LOGS", logs);
                         return [4 /*yield*/, Promise.all(logs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
                                 var block;
                                 return __generator(this, function (_a) {
@@ -113,12 +114,12 @@ var PostaService = {
                                         case 1:
                                             block = _a.sent();
                                             return [2 /*return*/, {
-                                                    author: log.args && log.args.length >= 3 && log.args[0],
-                                                    tokenId: log.args && log.args.length >= 3 && log.args[1],
+                                                    author: log.args && log.args.author,
+                                                    tokenId: log.args && log.args.tokenId,
                                                     // Extract text from log object
-                                                    content: log.args && log.args.length >= 3 && log.args[2],
+                                                    content: log.args && log.args.value,
                                                     // Tweet date comes from block timestamp
-                                                    blockTime: block && new Date(block.timestamp * 1000) || new Date(0)
+                                                    blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
                                                 }];
                                     }
                                 });
@@ -176,7 +177,7 @@ var PostaService = {
                     case 2:
                         tx = _a.sent();
                         if (confirmations === 0)
-                            return [2 /*return*/];
+                            return [2 /*return*/, tx];
                         return [4 /*yield*/, tx.wait(confirmations || DEFAULT_CONFIRMATIONS)];
                     case 3: return [2 /*return*/, _a.sent()];
                     case 4:
@@ -197,36 +198,30 @@ var PostaService = {
      */
     publishPost: function (postData, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
-            var postaContract, tx, error_2;
+            var postaContract;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, contractProvider.getPostaContractForWrite(postData.author)];
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForWrite(postData.author)];
                     case 1:
                         postaContract = _a.sent();
-                        return [4 /*yield*/, postaContract.publishPost(postData.text)];
-                    case 2:
-                        tx = _a.sent();
-                        return [2 /*return*/, { tx: tx }];
-                    case 3:
-                        error_2 = _a.sent();
-                        return [2 /*return*/, { tx: null, error: error_2 }];
-                    case 4: return [2 /*return*/];
+                        if (!postData.replyOfTokenId) return [3 /*break*/, 3];
+                        return [4 /*yield*/, postaContract.replyPost(postData.text, postData.replyOfTokenId)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                    case 3: return [4 /*yield*/, postaContract.publishPost(postData.text)];
+                    case 4: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     },
     /**
-     * Get the latest posts
-     * @param provider
-     * @param maxRecords Max number of records to fetch.
-     * @returns
-     */
+    * Get the latest posts
+    * @param provider
+    * @param maxRecords Max number of records to fetch.
+    * @returns
+    */
     getLatestPosts: function (maxRecords, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
-            var postaContract, bnCounter, counter, tokenIds, i, postLogs, postsNFTs;
-            var _this = this;
+            var postaContract, bnCounter, counter, tokenIds, i, postsNFTs;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
@@ -238,10 +233,31 @@ var PostaService = {
                         counter = bnCounter.toNumber();
                         tokenIds = [];
                         for (i = counter - 1; i >= Math.max(counter - maxRecords, 0); i--) {
-                            tokenIds.unshift(i);
+                            tokenIds.unshift(i.toString());
                         }
-                        return [4 /*yield*/, PostaService.getPostLogs(tokenIds, contractProvider)];
+                        return [4 /*yield*/, PostaService.getPosts(tokenIds, contractProvider)];
                     case 3:
+                        postsNFTs = _a.sent();
+                        // Return the list of nfts posts
+                        return [2 /*return*/, (postsNFTs && postsNFTs.sort(function (a, b) { return parseInt(a.tokenId, 10) > parseInt(b.tokenId, 10) ? -1 : 1; })) || null];
+                }
+            });
+        });
+    },
+    /**
+     * Returns a list of already built posts from a list of token ids
+     * @param tokenIds
+     * @param contractProvider
+     * @returns
+     */
+    getPosts: function (tokenIds, contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postLogs, postsNFTs;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, PostaService.getPostLogs(tokenIds, contractProvider)];
+                    case 1:
                         postLogs = _a.sent();
                         if (!postLogs)
                             return [2 /*return*/, null];
@@ -251,10 +267,30 @@ var PostaService = {
                                     case 1: return [2 /*return*/, _a.sent()];
                                 }
                             }); }); }))];
-                    case 4:
+                    case 2:
                         postsNFTs = _a.sent();
-                        // Return the list of nfts posts
-                        return [2 /*return*/, postsNFTs.sort(function (a, b) { return parseInt(a.tokenId, 10) > parseInt(b.tokenId, 10) ? -1 : 1; })];
+                        return [2 /*return*/, postsNFTs];
+                }
+            });
+        });
+    },
+    /**
+     * Returns the total number of tokens minted
+     * @param contractProvider
+     * @returns
+     */
+    getTokenCounter: function (contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postaContract, bnCounter;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 1:
+                        postaContract = _a.sent();
+                        return [4 /*yield*/, postaContract.getTokenCounter()];
+                    case 2:
+                        bnCounter = _a.sent();
+                        return [2 /*return*/, bnCounter.toString()];
                 }
             });
         });
@@ -267,7 +303,7 @@ var PostaService = {
      */
     buildPost: function (log, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
-            var postaContract, postNFT, tokenURI, human, error_3;
+            var postaContract, postNFT, tokenURI, human, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -289,10 +325,10 @@ var PostaService = {
                         human = _a.sent();
                         return [3 /*break*/, 7];
                     case 6:
-                        error_3 = _a.sent();
+                        error_2 = _a.sent();
                         // If fails, set human object
                         human = { display_name: "", first_name: "", last_name: "" };
-                        console.error(error_3);
+                        console.error(error_2);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/, {
                             author: log.author,
@@ -306,6 +342,28 @@ var PostaService = {
                             supportGiven: postNFT.supportGiven,
                             supportCount: postNFT.supportersCount,
                         }];
+                }
+            });
+        });
+    },
+    /**
+      * Returns the maxChars value on the posta contract
+      * @param tokenIds
+      * @param contractProvider
+      * @returns
+      */
+    getMaxChars: function (contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postaContract, maxChars;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 1:
+                        postaContract = _a.sent();
+                        return [4 /*yield*/, postaContract.getMaxChars()];
+                    case 2:
+                        maxChars = _a.sent();
+                        return [2 /*return*/, maxChars.toNumber()];
                 }
             });
         });

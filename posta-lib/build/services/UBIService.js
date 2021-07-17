@@ -73,7 +73,7 @@ var UBIService = {
                         return [4 /*yield*/, contract.startAccruing(address)];
                     case 2:
                         tx = _a.sent();
-                        return [2 /*return*/];
+                        return [2 /*return*/, tx];
                 }
             });
         });

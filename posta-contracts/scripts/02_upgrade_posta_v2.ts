@@ -1,20 +1,20 @@
 import { ethers, upgrades } from "hardhat";
 
 const KOVAN_PROXY_ADDRESS = "0xde4ABEdd6527e4DcBBd50221734Ff5A609bE275C";
-const LOCAL_PROXY_ADDRESS = "0x36fE32adFFF88891E56dB48f0B5d61E2bbD1e9fc"
+const LOCAL_PROXY_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
 
-
-const KOVAN_POSTALIB_ADDRESS = "0xAAeCD4c0045F7c798B2E76820281B2ff7026328b";
 async function main() {
   // Deploy Library
   // console.log("Deploying PostaLib...")
   // const PostaLib = await ethers.getContractFactory("PostaLib");
   // const postaLib = await PostaLib.deploy();
   // console.log("Posta Lib Address:", postaLib.address);
+  const [deployer] = await ethers.getSigners();
+  console.log("Upgrading POSTA with account:", deployer.address);
+  console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  console.log("Upgrading...")
-  const PostaV2 = await ethers.getContractFactory("PostaV2", { libraries: { PostaLib: KOVAN_POSTALIB_ADDRESS } });
-  await upgrades.upgradeProxy(KOVAN_PROXY_ADDRESS, PostaV2, { unsafeAllowLinkedLibraries: true });
+  const PostaV3 = await ethers.getContractFactory("PostaV0_3");
+  await upgrades.upgradeProxy(LOCAL_PROXY_ADDRESS, PostaV3);
   console.log("Posta upgraded to V2");
 }
 

@@ -1,4 +1,4 @@
-import { Card, Container, Jumbotron, Spinner } from "react-bootstrap";
+import { Card, Container, Spinner } from "react-bootstrap";
 
 interface IHumanNotRegisteredProps {
   isLoading: boolean;

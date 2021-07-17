@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../IProofOfHumanity.sol";
 import "../v0.2/PostaStorage.sol";
-
 //import "hardhat/console.sol";
 
 interface IERC20Burnable is IERC20 {
@@ -17,7 +16,8 @@ interface IERC20Burnable is IERC20 {
 
 contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaStorage {
 
-    event NewPost(address indexed author, uint256 indexed tokenId, uint256 indexed replyOfTokenId, string value);
+    event NewPost(address indexed author, uint256 indexed tokenId, string value);
+    event NewPostReply(address indexed author, uint256 indexed tokenId, uint256 indexed replyOfTokenId);
 
     string constant HUMAN_NOT_REGISTERED = "HUMAN_NOT_REGISTERED";
     string constant POST_TEXT_TOO_LONG = "POST_TEXT_TOO_LONG";
@@ -37,25 +37,28 @@ contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, Post
     }
 
 
-    function replyPost(string memory text, uint256 tokenId) public tokenExists(tokenId) returns(uint256)  {
-        return _publishPost(text, tokenId);
+    function replyPost(string memory text, uint256 tokenId) public isHuman(_msgSender()) tokenExists(tokenId) returns(uint256)  {
+        uint256 newTokenId = _publishPost(text);
+        emit NewPostReply(_msgSender(),newTokenId, tokenId);
+        return newTokenId;
     }
 
     function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
-        return _publishPost(text, 0);
+        return _publishPost(text);
     }
 
-    function _publishPost(string memory text, uint256 replyOfTokenId) private isHuman(_msgSender()) returns(uint256)  {
+    function _publishPost(string memory text) private isHuman(_msgSender()) returns(uint256)  {
         require(bytes(text).length <= _maxChars, POST_TEXT_TOO_LONG);
-
-        // Update the token counter
-        _tokenCounter += 1;
 
         // Get the new token iD  
         uint256 newItemId = _tokenCounter;
 
+        
         // Mint the NFT with the new ID
         _safeMint(_msgSender(), newItemId);
+        
+        // Update the token counter
+        _tokenCounter += 1;
 
         // Generate the post NFT storage data
         PostaData memory post = PostaData({
@@ -66,7 +69,8 @@ contract PostaV0_3 is Initializable, OwnableUpgradeable, ERC721Upgradeable, Post
         // Set the post dat to the token
         _setPost(newItemId, post);
 
-        emit NewPost(_msgSender(), newItemId, replyOfTokenId, text);
+        emit NewPost(_msgSender(), newItemId, text);
+
 
         // Return the new token ID
         return newItemId;

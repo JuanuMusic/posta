@@ -4,8 +4,6 @@ import PostDisplay from "../components/PostDisplay";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 
-
-
 export default function PostPage(props: any) {
   const [post, setPost] = useState<IPostaNFT>();
   const { tokenId } = useParams<{ tokenId: string }>();
@@ -15,20 +13,13 @@ export default function PostPage(props: any) {
   async function init() {
     if (!contractProvider) return;
     setIsLoading(true);
-    // Get the logs for this specific post
-    const log = await PostaService.getPostLogs(
-      [parseInt(tokenId, 10)],
-      contractProvider
-    );
-
-    console.log("LOG", log);
-
-    // If any logs, set the state
-    if (log && log.length > 0) {
-      const post = await PostaService.buildPost(log[0], contractProvider);
-      console.log("POST", post);
-      setPost(post);
+    
+    // Get the post with the specific token id
+    const post = await PostaService.getPosts([tokenId], contractProvider);
+    if (post && post.length > 0) {
+      setPost(post[0]);
     }
+
     setIsLoading(false);
   }
 
@@ -38,6 +29,7 @@ export default function PostPage(props: any) {
   }, [contractProvider]);
 
   const handleBurnUBIsClicked = () => console.log("TODO");
+  const handleReplyClicked = () => console.log("TODO");
 
   return (
     <>
@@ -45,8 +37,9 @@ export default function PostPage(props: any) {
         ? "Loading..."
         : (post && (
             <PostDisplay
-              postaNFT={post}
+              postOrId={post}
               onBurnUBIsClicked={handleBurnUBIsClicked}
+              onReplyClicked={handleReplyClicked}
             />
           )) ||
           "Not found"}

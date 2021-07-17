@@ -6,16 +6,17 @@ import { useHuman } from "../../contextProviders/HumanProvider";
 import PublishingIndicator from "./components/PublishingIndicator";
 import PostError from "./components/PostError";
 import { useContractProvider } from "../../contextProviders/ContractsProvider";
+//import PostDisplay from "../PostDisplay";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
+  isReplyOf?: string;
   onNewPostSent(stackId: number): void;
 }
 
 export default function PostEditor(props: IPostEditorProps) {
   const [publishError, setPublishError] = useState();
   const [postText, setPostText] = useState("");
-  const [isEditorEnabled, setIsEditorEnabled] = useState(false);
   const [isSendButtonEnabled, setIsSendButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const contractProvider = useContractProvider();
@@ -33,15 +34,10 @@ export default function PostEditor(props: IPostEditorProps) {
   }, [contractProvider]);
 
   // Update editor status
-  useEffect(() => {
-    setIsEditorEnabled(
-      !!human && !!human.profile && !!human.profile.registered && !isLoading
-    );
-  }, [human]);
 
   useEffect(() => {
     setIsSendButtonEnabled(
-      isEditorEnabled &&
+      !props.disabled &&
         typeof postText === "string" &&
         postText !== "" &&
         !isLoading
@@ -59,17 +55,18 @@ export default function PostEditor(props: IPostEditorProps) {
     const postData: IPostData = {
       text: postText,
       author: (human && human.profile && human.profile.eth_address) || "",
+      replyOfTokenId: props.isReplyOf
     };
 
+    console.log("SEDING POST WITH DQATA", postData);
     // Publish the tyweet through the Posta Service
-    const { tx, error } = await PostaService.publishPost(
-      postData,
-      contractProvider
-    );
-    if (!tx && error) {
+    try {
+      const tx = await PostaService.publishPost(postData, contractProvider);
+      const receipt = await tx.wait();
+      console.log("RECEIPT", receipt);
+    } catch (error) {
       setPublishError(error);
     }
-
     // Empty post text
     setPostText("");
     setIsLoading(false);
@@ -98,7 +95,7 @@ export default function PostEditor(props: IPostEditorProps) {
             onChange={(e) =>
               e.target.value.length <= maxChars && setPostText(e.target.value)
             }
-            disabled={!isEditorEnabled}
+            disabled={props.disabled}
           ></FormControl>
         </Card.Body>
         <Card.Footer className="p-2">

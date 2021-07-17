@@ -27,7 +27,6 @@ const PohAPI = {
             try {
 
                 const response = await pohApiInstance.get(`/profiles/${address}`);
-                console.log("RESPONSE", response.data)
                 return response.data;
             } catch (ex) {
 

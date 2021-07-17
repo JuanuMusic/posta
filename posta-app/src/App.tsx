@@ -47,11 +47,11 @@ export default function App(props: IAppProps) {
         </Row>
 
         {/* Control Dummy POH */}
-        {/* <Row>
+        <Row>
           <Col>
             <DummyPOHController />
           </Col>
-        </Row> */}
+        </Row>
 
         {/* Control Posta Contract */}
         <Row>

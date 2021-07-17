@@ -17,6 +17,7 @@ const UBIService = {
   async startAccruing(address: string, contractProvider: IContractProvider) {
     const contract = await contractProvider.getUBIContractForWrite(address);
     const tx = await contract.startAccruing(address);
+    return tx;
   }
 }
 

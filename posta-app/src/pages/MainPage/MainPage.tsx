@@ -41,7 +41,7 @@ export default function MainPage() {
       // Subscribe to NewPost evemt
       (await contractProvider.getPostaContractForRead()).on(
         "NewPost",
-        async (author: string, tokenId: number, value: string) => {
+        async (author: string, tokenId: string, value: string) => {
           console.log("NewPost received", author, tokenId, value);      
           const log = await PostaService.getPostLogs([tokenId], contractProvider);
           if(log && log.length > 0)

@@ -11,15 +11,20 @@ import {
 } from "react-bootstrap";
 import moment from "moment";
 
-import { FaFire, FaUsers } from "react-icons/fa";
+import { FaFire, FaReply, FaUsers } from "react-icons/fa";
 import { ethers } from "ethers";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
-import { IPostaNFT } from "../posta-lib/services/PostaService";
+import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 import { useHuman } from "../contextProviders/HumanProvider";
+import { useEffect, useState } from "react";
+import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { POINT_CONVERSION_COMPRESSED } from "constants";
+import PostReply from "./PostReply";
 
 interface IPostDisplayProps extends IBasePostaProps {
-  postaNFT: IPostaNFT;
-  onBurnUBIsClicked(tokenId: string): any;
+  postOrId: string | IPostaNFT;
+  onBurnUBIsClicked?(tokenId: string): any;
+  onReplyClicked?(tokenId: string): any;
 }
 
 interface IGiveSupportButtonProps {
@@ -30,98 +35,158 @@ interface IGiveSupportButtonProps {
 }
 
 export default function PostDisplay(props: IPostDisplayProps) {
+  const [postData, setPostData] = useState<IPostaNFT | null>(null);
+  const [showReply, setShowReply] = useState(false);
   const human = useHuman();
+  const contractProvider = useContractProvider();
 
   const handleBurnUBIsClicked = async () => {
-    props.onBurnUBIsClicked && props.onBurnUBIsClicked(props.postaNFT.tokenId);
+    postData &&
+      props.onBurnUBIsClicked &&
+      props.onBurnUBIsClicked(postData?.tokenId);
   };
 
+  const handleReplyClicked = async () => {
+    setShowReply(true);
+  };
+
+  // Load post effect
+  useEffect(() => {
+    async function loadPost() {
+      // If it's not string, assume it's a PostaNFT interface
+      if (
+        typeof props.postOrId !== "string" &&
+        !(props.postOrId instanceof String)
+      ) {
+        setPostData(props.postOrId);
+      }
+      // If contract provider is set
+      else if (contractProvider) {
+        // Get logs for the token
+        const postLogs = await PostaService.getPostLogs(
+          [props.postOrId as string],
+          contractProvider
+        );
+
+        if (postLogs && postLogs.length > 0) {
+          const data = await PostaService.buildPost(
+            postLogs[0],
+            contractProvider
+          );
+          setPostData(data);
+        }
+      }
+    }
+
+    loadPost();
+  }, [props.postOrId, contractProvider]);
+  console.log("POST DATA", postData);
   return (
-    <Card style={{ width: "100%", maxWidth: "700px" }} className="mx-auto">
-      <Card.Body className="px-1 py-2">
-        <Container>
-          <Row>
-            <Col className="d-flex">
-              {/* Profile Picture */}
-              <ProfilePicture imageUrl={props.postaNFT.authorImage} />
+    <>
+      {postData && <PostReply show={showReply} postReply={postData} />}
+      <Card style={{ width: "100%", maxWidth: "700px" }} className="mx-auto">
+        <Card.Body className="px-1 py-2">
+          <Container>
+            <Row>
+              <Col className="d-flex">
+                {/* Profile Picture */}
+                <ProfilePicture imageUrl={postData && postData.authorImage} />
 
-              <div className="flex-fill">
-                <div className="d-flex justify-content-between">
-                  {/* Human Name */}
-                  <a
-                    href={`${
-                      process.env.REACT_APP_HUMAN_PROFILE_BASE_URL
-                    }/${props.postaNFT.author.toLowerCase()}`}
-                    className="text-dark"
-                  >
-                    <strong>
-                      {props.postaNFT.authorDisplayName ||
-                        props.postaNFT.author}
-                    </strong>
-                  </a>{" "}
-                  {/* NFT ID */}
-                  <span className="text-muted">
+                <div className="flex-fill">
+                  <div className="d-flex justify-content-between">
+                    {/* Human Name */}
                     <a
-                      className="text-muted"
-                      target="_blank"
-                      href={props.postaNFT.tokenURI}
+                      href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${
+                        postData && postData.author.toLowerCase()
+                      }`}
+                      className="text-dark"
                     >
-                      $POSTA:{props.postaNFT.tokenId}
-                    </a>
-                  </span>
-                </div>
-                <blockquote className="blockquote mt-2 ml-2 mb-0">
-                  {/* Post Text */}
-                  <p className="post-text text-dark">
-                    {" "}
-                    {props.postaNFT.content || "..."}{" "}
-                  </p>
-                  {/* Post Date */}
-                  <footer className="blockquote-footer">
-                    <span className="fw-light">
-                      {moment(
-                        props.postaNFT.creationDate || new Date(0)
-                      ).format("MMMM Do YYYY, h:mm")}
+                      <strong>
+                        {postData &&
+                          (postData.authorDisplayName || postData.author)}
+                      </strong>
+                    </a>{" "}
+                    {/* NFT ID */}
+                    <span className="text-muted">
+                      <a
+                        className="text-muted"
+                        target="_blank"
+                        href={(postData && postData.tokenURI) || "#"}
+                      >
+                        $POSTA:{postData && postData.tokenId}
+                      </a>
                     </span>
-                  </footer>
-                </blockquote>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <hr className="my-2" />
-            </Col>
-          </Row>
-          <Row>
-            <Col className="d-flex align-items-start mt-2 mb-1">
-              <GiveSupportButton
-                className="align-self-center"
-                disabled={
-                  !human.profile.registered ||
-                  props.postaNFT.author === human.profile.eth_address
-                }
-                onClick={handleBurnUBIsClicked}
-                supportGiven={
-                  props.postaNFT.supportGiven &&
-                  ethers.utils.formatEther(props.postaNFT.supportGiven)
-                }
-              />
+                  </div>
+                  <blockquote className="blockquote mt-2 ml-2 mb-0">
+                    {/* Post Text */}
+                    <p className="post-text text-dark">
+                      {" "}
+                      {(postData && postData.content) || "..."}{" "}
+                    </p>
+                    {/* Post Date */}
+                    <footer className="blockquote-footer">
+                      <span className="fw-light">
+                        {postData &&
+                          moment(postData.creationDate || new Date(0)).format(
+                            "MMMM Do YYYY, h:mm"
+                          )}
+                      </span>
+                    </footer>
+                  </blockquote>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <hr className="my-2" />
+              </Col>
+            </Row>
+            <Row>
+              <Col className="d-flex justify-content-between align-items-start mt-2 mb-1">
+                <div className="d-flex alignt-items-start">
+                  <GiveSupportButton
+                    className="align-self-center"
+                    disabled={
+                      !human.profile.registered ||
+                      !postData ||
+                      postData.author === human.profile.eth_address
+                    }
+                    onClick={handleBurnUBIsClicked}
+                    supportGiven={
+                      (postData &&
+                        postData.supportGiven &&
+                        ethers.utils.formatEther(postData.supportGiven)) ||
+                      "0"
+                    }
+                  />
 
-              <SupportersCount
-                supporters={
-                  (props.postaNFT.supportCount &&
-                    props.postaNFT.supportCount.toString()) ||
-                  "0"
-                }
-              />
-              <div>metadata</div>
-            </Col>
-          </Row>
-        </Container>
-        {/* <Button variant="primary">Go somewhere</Button> */}
-      </Card.Body>
-    </Card>
+                  <SupportersCount
+                    supporters={
+                      (postData &&
+                        postData.supportCount &&
+                        postData.supportCount.toString()) ||
+                      "0"
+                    }
+                  />
+                  <div>metadata</div>
+                </div>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={handleReplyClicked}
+                >
+                  <div className="d-flex justify-content-around align-items-center">
+                    <FaReply />
+                    Reply
+                  </div>
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+          {/* <Button variant="primary">Go somewhere</Button> */}
+        </Card.Body>
+      </Card>
+    </>
   );
 }
 
@@ -165,7 +230,7 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           disabled={props.disabled}
           size="sm"
         >
-          <div className="d-flex justify-content-cente align-items-center">
+          <div className="d-flex justify-content-center align-items-center">
             <FaFire />
             <span>{props.supportGiven}</span>
           </div>

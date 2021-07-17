@@ -5,7 +5,7 @@ import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
 
 interface IPostListProps extends IBasePostaProps {
-  posts: IPostaNFT[];
+  posts?: Array<string | IPostaNFT>;
   isLoading: boolean;
 }
 
@@ -21,6 +21,10 @@ export default function PostList(props: IPostListProps) {
       postTokenId: tokenId,
     });
   };
+
+  const handleReplyClicked = async (tokenId: string) => {
+    console.log("REPLY TO ", tokenId);
+  }
 
   return (
     <>
@@ -38,14 +42,15 @@ export default function PostList(props: IPostListProps) {
         {props.isLoading ? (
           <LoadingList />
         ) : (
-          props.posts.map((postNFT, index) => (
+          props.posts && props.posts.map((postOrId, index) => (
             <Row key={index} className="justify-content-center">
               <Col>
                 <PostDisplay
-                  onBurnUBIsClicked={() =>
-                    handleBurnUBIsClicked(postNFT.tokenId)
+                onReplyClicked={(tokenId) => handleReplyClicked(tokenId)}
+                  onBurnUBIsClicked={(tokenId) =>
+                    handleBurnUBIsClicked(tokenId)
                   }
-                  postaNFT={postNFT}
+                  postOrId={postOrId}
                   {...props}
                 />
                 <hr />

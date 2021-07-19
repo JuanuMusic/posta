@@ -170,26 +170,19 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       {" "}
                       {(postData && postData.content) || "..."}{" "}
                     </p>
-
-                    {!props.hideSourcePost && postData?.replyOfTokenId && (
-                      <div>
-                        In Reply of
-                        {
-                          <PostDisplay
-                            hideSourcePost={true}
-                            condensed
-                            postOrId={postData?.replyOfTokenId}
-                          />
-                        }
-                      </div>
-                    )}
-                    {/* Post Date */}
-                    <footer
-                      className={`${
-                        props.condensed && "d-none"
-                      } blockquote-footer`}
-                    ></footer>
                   </blockquote>
+                  {postData?.replyOfTokenId && postData.replyOfTokenId.gt(0) && !props.hideSourcePost && (
+                    <div>
+                      <small className="text-dark">In Reply of</small>
+                      {
+                        <PostDisplay
+                          hideSourcePost={true}
+                          condensed
+                          postOrId={postData?.replyOfTokenId}
+                        />
+                      }
+                    </div>
+                  )}
                 </div>
               </Col>
             </Row>

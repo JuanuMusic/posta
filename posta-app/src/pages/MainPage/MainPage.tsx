@@ -69,7 +69,7 @@ export default function MainPage() {
     <Container>
       <Row>
         <Col>
-        {(human.profile.registered && !human.isLoading) && (<PostEditor onNewPostSent={onNewPostSent} />)}
+        {(human.profile.registered && !human.isLoading) && (<PostEditor showHeader={true} onNewPostSent={onNewPostSent} />)}
         {(!human.profile.registered) && (<HumanNotRegistered isLoading={human.isLoading} />)}
         </Col>
       </Row>

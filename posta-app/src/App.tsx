@@ -46,18 +46,18 @@ export default function App(props: IAppProps) {
         </Row>
 
         {/* Control Dummy POH */}
-        <Row>
+        {/* <Row>
           <Col>
             <DummyPOHController />
           </Col>
-        </Row>
+        </Row> */}
 
         {/* Control Posta Contract */}
-        <Row>
+        {/* <Row>
           <Col>
             <PostaController owner={web3Context.account || ""} />
           </Col>
-        </Row>
+        </Row> */}
 
         {/* Start accruing UBI Dummy */}
         {/* <Row>

@@ -14,6 +14,7 @@ import moment from "moment";
 import { FaFire, FaReply, FaUsers } from "react-icons/fa";
 import { BigNumber, ethers } from "ethers";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
+import { ReactComponent as BurningHeart } from "../assets/burning_heart.svg";
 import {
   IPostaNFT,
   PostaService,
@@ -291,8 +292,8 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           disabled={props.disabled}
           size="sm"
         >
-          <div className="d-flex justify-content-center align-items-center">
-            <FaFire />
+          <div className="d-flex justify-content-center align-items-center">            
+            <BurningHeart className={`flex-shrink-0 btn-icon mr-2 p-0 bg-transparent`} />
             <span>{props.supportGiven}</span>
           </div>
         </Button>

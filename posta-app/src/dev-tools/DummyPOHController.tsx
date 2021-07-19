@@ -1,7 +1,6 @@
 import { Button } from "react-bootstrap";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { useHuman } from "../contextProviders/HumanProvider";
-import { PohService } from "../posta-lib";
 
 export default function DummyPOHController(props: IBasePostaProps) {
   const contractProvider = useContractProvider();

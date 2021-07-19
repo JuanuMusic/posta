@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.0;
+pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 //import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../IProofOfHumanity.sol";
 import "./PostaStorage.sol";
 
@@ -47,6 +48,9 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
     function publishPost(string memory text) public isHuman(_msgSender()) returns(uint256)  {
         require(bytes(text).length <= _maxChars, POST_TEXT_TOO_LONG);
 
+        // Update the token counter
+        _tokenCounter = _tokenCounter + 1;
+        
         // Get the new token iD  
         uint256 newItemId = _tokenCounter;
 
@@ -62,8 +66,6 @@ contract Posta is Initializable, OwnableUpgradeable, ERC721Upgradeable, PostaSto
         // Set the post dat to the token
         _setPost(newItemId, post);
         
-        // Update the token counter
-        _tokenCounter = _tokenCounter + 1;
 
         emit NewPost(_msgSender(), newItemId, text);
 

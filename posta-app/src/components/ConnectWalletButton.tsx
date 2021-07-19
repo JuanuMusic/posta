@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHuman } from "../contextProviders/HumanProvider";
+import truncateTextMiddle from "../utils/textHelpers";
 import ConnectWalletDialog from "./ConnectWalletDialog";
 
-function getAddressForDisplay(address: string) {
-  return (
-    address.substring(0, 4) + "..." + address.substring(address.length - 4)
-  );
-}
 export default function ConnectWalletButton(props: any) {
   const human = useHuman();
   const [isConnectDialogVisible, setIsConnectDialogVisible] = useState(false);
@@ -20,7 +16,7 @@ export default function ConnectWalletButton(props: any) {
           {human && !human.isLoading && human.profile && human.profile.registered
             ? `Connected as ${
                 human.profile?.display_name
-              } (${getAddressForDisplay(human.profile.eth_address || "")})`
+              } (${truncateTextMiddle(4, human.profile.eth_address || "", 4)})`
             : "Connect as Human"}
         </Button>
       </div>

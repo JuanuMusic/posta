@@ -6,11 +6,14 @@ import { useHuman } from "../../contextProviders/HumanProvider";
 import PublishingIndicator from "./components/PublishingIndicator";
 import PostError from "./components/PostError";
 import { useContractProvider } from "../../contextProviders/ContractsProvider";
+import { BigNumber } from "ethers";
 //import PostDisplay from "../PostDisplay";
 
 interface IPostEditorProps extends IBasePostaProps {
   disabled?: boolean;
-  isReplyOf?: string;
+  replyOfTokenId?: BigNumber;
+  showHeader?: boolean;
+  borderless?: boolean;
   onNewPostSent(stackId: number): void;
 }
 
@@ -55,16 +58,16 @@ export default function PostEditor(props: IPostEditorProps) {
     const postData: IPostData = {
       text: postText,
       author: (human && human.profile && human.profile.eth_address) || "",
-      replyOfTokenId: props.isReplyOf
+      replyOfTokenId: props.replyOfTokenId
     };
 
-    console.log("SEDING POST WITH DQATA", postData);
     // Publish the tyweet through the Posta Service
     try {
       const tx = await PostaService.publishPost(postData, contractProvider);
-      const receipt = await tx.wait();
-      console.log("RECEIPT", receipt);
+      console.log("Transaction", tx);
     } catch (error) {
+      console.error(JSON.stringify(error))
+      console.error(error.stack)
       setPublishError(error);
     }
     // Empty post text
@@ -75,12 +78,12 @@ export default function PostEditor(props: IPostEditorProps) {
 
   return (
     <Container className="p-0">
-      <Card bg="dark" border="secondary">
+      <Card bg="dark" border={props.borderless ? "border-0" : "secondary"}>
         {/* Loading Indicator */}
         {isLoading && <PublishingIndicator />}
         {/* Publish error */}
         {publishError && <PostError error={publishError} />}
-        <Card.Header className="py-0">
+        <Card.Header className={`${(!props.showHeader && "d-none") || ""} py-0`}>
           <p className="lead my-2">
             Hi {human && human.profile && human.profile?.display_name}!
           </p>
@@ -100,7 +103,7 @@ export default function PostEditor(props: IPostEditorProps) {
         </Card.Body>
         <Card.Footer className="p-2">
           <div className="d-flex justify-content-between align-items-center my-0">
-            <div>{`${postText.length}/${maxChars}`}</div>
+            <div className="text-light">{`${postText.length}/${maxChars}`}</div>
             <Button disabled={!isSendButtonEnabled} onClick={handleSendPost}>
               Send
             </Button>

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostaService = void 0;
+var ethers_1 = require("ethers");
 var PoHService_1 = require("./PoHService");
 var DEFAULT_CONFIRMATIONS = 5;
 var PostaService = {
@@ -99,13 +111,12 @@ var PostaService = {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
-                        filter = postaContract.filters.NewPost(null, tokenIds.map(function (id) { return parseInt(id, 10); }), null);
+                        filter = postaContract.filters.NewPost(null, tokenIds.map(function (id) { return parseInt(id, 10); }));
                         return [4 /*yield*/, postaContract.queryFilter(filter)];
                     case 2:
                         logs = _a.sent();
                         if (!logs)
                             return [2 /*return*/, null];
-                        console.log("LOGS", logs);
                         return [4 /*yield*/, Promise.all(logs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
                                 var block;
                                 return __generator(this, function (_a) {
@@ -127,6 +138,51 @@ var PostaService = {
                     case 3:
                         retVal = _a.sent();
                         return [2 /*return*/, retVal];
+                }
+            });
+        });
+    },
+    /**
+     * Returns an array of logs that belong to replies to a given post.
+     * @param forTokenId Token ID of the posxt for which to retrieve replies
+     * @param contractProvider
+     */
+    getPostRepliesLogs: function (forTokenId, contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postaContract, filter, repliesLogs, retVal;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 1:
+                        postaContract = _a.sent();
+                        filter = postaContract.filters.NewPostReply(null, parseInt(forTokenId));
+                        return [4 /*yield*/, postaContract.queryFilter(filter)];
+                    case 2:
+                        repliesLogs = _a.sent();
+                        if (!repliesLogs || repliesLogs.length === 0)
+                            return [2 /*return*/, null];
+                        return [4 /*yield*/, Promise.all(repliesLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
+                                var sourcePostLogs;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            if (!log.args) return [3 /*break*/, 2];
+                                            return [4 /*yield*/, PostaService.getPostLogs([log.args.tokenId], contractProvider)];
+                                        case 1:
+                                            sourcePostLogs = _a.sent();
+                                            if (!sourcePostLogs) {
+                                                console.warn("Couldn't find post logs of source post " + forTokenId);
+                                                return [2 /*return*/, null];
+                                            }
+                                            return [2 /*return*/, __assign(__assign({}, sourcePostLogs[0]), { replyOfTokenId: ethers_1.BigNumber.from(forTokenId) })];
+                                        case 2: return [2 /*return*/, { author: "", content: "", tokenId: ethers_1.BigNumber.from(0), replyOfTokenId: ethers_1.BigNumber.from(forTokenId), blockTime: new Date(0) }];
+                                    }
+                                });
+                            }); }))];
+                    case 3:
+                        retVal = _a.sent();
+                        return [2 /*return*/, retVal.filter(function (e) { return !!e; })];
                 }
             });
         });
@@ -232,7 +288,7 @@ var PostaService = {
                         bnCounter = _a.sent();
                         counter = bnCounter.toNumber();
                         tokenIds = [];
-                        for (i = counter - 1; i >= Math.max(counter - maxRecords, 0); i--) {
+                        for (i = counter; i > Math.max(counter - maxRecords, 0); i--) {
                             tokenIds.unshift(i.toString());
                         }
                         return [4 /*yield*/, PostaService.getPosts(tokenIds, contractProvider)];
@@ -306,9 +362,7 @@ var PostaService = {
             var postaContract, postNFT, tokenURI, human, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        console.log("Building post...", log);
-                        return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getPost(log.tokenId)];

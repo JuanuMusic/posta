@@ -80,8 +80,8 @@ describe("Posta", function () {
     it("Should emit log with replied token id when replying", async () => {
       await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
       await expect(utils.replyPostFrom(actors.HUMAN_2, POST_TEST_TEXT, "1", contracts.posta))
-        .to.emit(contracts.posta, "NewPost")
-        .withArgs(await actors.HUMAN_2.getAddress(), "2", "1", POST_TEST_TEXT);
+        .to.emit(contracts.posta, "NewPostReply")
+        .withArgs("2", "1");
     })
   })
 

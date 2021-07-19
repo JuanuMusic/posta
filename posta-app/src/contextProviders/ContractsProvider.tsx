@@ -10,10 +10,10 @@ import {
 import configProvider from "../config/configProvider";
 
 const contractsDefinitions: IContractsDefinitions = {
-  UBIContract: require("../contracts/contracts/DummyUBI.sol/DummyUBI.json"),
-  POHContract: require("../contracts/contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
-  //PostaContract: require("../contracts/contracts/v0.2/Posta.sol/Posta.json"),
-  PostaContract: require("../contracts/contracts/v0.3/PostaV0_3.sol/PostaV0_3.json"),
+  UBIContract: require("../contracts/DummyUBI.sol/DummyUBI.json"),
+  POHContract: require("../contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
+  //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
+  PostaContract: require("../contracts/v0.3/PostaV0_3.sol/PostaV0_3.json"),
 };
 
 /**

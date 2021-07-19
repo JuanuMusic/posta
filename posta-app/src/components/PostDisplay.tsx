@@ -12,19 +12,27 @@ import {
 import moment from "moment";
 
 import { FaFire, FaReply, FaUsers } from "react-icons/fa";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { ReactComponent as POHLogo } from "../assets/poh.svg";
-import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
+import {
+  IPostaNFT,
+  PostaService,
+  PostLogs,
+} from "../posta-lib/services/PostaService";
 import { useHuman } from "../contextProviders/HumanProvider";
 import { useEffect, useState } from "react";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
 import PostReply from "./PostReply";
+import truncateTextMiddle from "../utils/textHelpers";
 
 interface IPostDisplayProps extends IBasePostaProps {
-  postOrId: string | IPostaNFT;
+  postOrId: BigNumber | IPostaNFT;
   onBurnUBIsClicked?(tokenId: string): any;
   onReplyClicked?(tokenId: string): any;
+  condensed?: boolean;
+  hideSourcePost?: boolean;
+  borderless?: boolean;
 }
 
 interface IGiveSupportButtonProps {
@@ -37,34 +45,45 @@ interface IGiveSupportButtonProps {
 export default function PostDisplay(props: IPostDisplayProps) {
   const [postData, setPostData] = useState<IPostaNFT | null>(null);
   const [showReply, setShowReply] = useState(false);
+  const [repliesLogs, setRepliesLogs] = useState<PostLogs[] | null>(null);
   const human = useHuman();
   const contractProvider = useContractProvider();
 
   const handleBurnUBIsClicked = async () => {
     postData &&
       props.onBurnUBIsClicked &&
-      props.onBurnUBIsClicked(postData?.tokenId);
+      props.onBurnUBIsClicked(postData?.tokenId.toString());
   };
 
   const handleReplyClicked = async () => {
     setShowReply(true);
   };
 
+  const refreshRepliesCount = async () => {
+    if (!contractProvider || !postData) return;
+    try {
+      const postLogs = await PostaService.getPostRepliesLogs(
+        postData.tokenId,
+        contractProvider
+      );
+      setRepliesLogs(postLogs);
+    } catch (error) {
+      console.error("ERROR LOADING POST REPLIES", error);
+    }
+  };
+
   // Load post effect
   useEffect(() => {
     async function loadPost() {
       // If it's not string, assume it's a PostaNFT interface
-      if (
-        typeof props.postOrId !== "string" &&
-        !(props.postOrId instanceof String)
-      ) {
-        setPostData(props.postOrId);
+      if ((props.postOrId as IPostaNFT).content) {
+        setPostData(props.postOrId as IPostaNFT);
       }
       // If contract provider is set
       else if (contractProvider) {
         // Get logs for the token
         const postLogs = await PostaService.getPostLogs(
-          [props.postOrId as string],
+          [props.postOrId as BigNumber],
           contractProvider
         );
 
@@ -80,42 +99,70 @@ export default function PostDisplay(props: IPostDisplayProps) {
 
     loadPost();
   }, [props.postOrId, contractProvider]);
-  console.log("POST DATA", postData);
+
+  useEffect(() => {
+    if (postData) {
+      refreshRepliesCount();
+    }
+  }, [postData]);
+
   return (
     <>
-      {postData && <PostReply show={showReply} postReply={postData} />}
-      <Card style={{ width: "100%", maxWidth: "700px" }} className="mx-auto">
+      {postData && (
+        <PostReply
+          show={showReply}
+          postReply={postData}
+          onClose={() => setShowReply(false)}
+        />
+      )}
+      <Card
+        style={{ width: "100%", maxWidth: "700px" }}
+        className={"mx-auto " + (props.borderless && "border-0")}
+      >
         <Card.Body className="px-1 py-2">
           <Container>
             <Row>
               <Col className="d-flex">
                 {/* Profile Picture */}
-                <ProfilePicture imageUrl={postData && postData.authorImage} />
+                <ProfilePicture
+                  size={props.condensed ? AvatarSize.Small : AvatarSize.Regular}
+                  imageUrl={postData && postData.authorImage}
+                />
 
                 <div className="flex-fill">
                   <div className="d-flex justify-content-between">
-                    {/* Human Name */}
-                    <a
-                      href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${
-                        postData && postData.author.toLowerCase()
-                      }`}
-                      className="text-dark"
-                    >
-                      <strong>
+                    <div className="d-flex justify-content-start align-items-center">
+                      {/* Human Name */}
+                      <a
+                        href={`${
+                          process.env.REACT_APP_HUMAN_PROFILE_BASE_URL
+                        }/${postData && postData.author.toLowerCase()}`}
+                        className="text-dark"
+                      >
+                        <h6 className="m-0">
+                          {postData &&
+                            (postData.authorDisplayName ||
+                              truncateTextMiddle(4, postData.author, 4))}
+                        </h6>
+                      </a>{" "}
+                      <small className="text-muted ml-2">
+                        {" - "}
                         {postData &&
-                          (postData.authorDisplayName || postData.author)}
-                      </strong>
-                    </a>{" "}
+                          moment(postData.blockTime || new Date(0)).format(
+                            "MMMM Do YYYY, h:mm"
+                          )}
+                      </small>
+                    </div>
                     {/* NFT ID */}
-                    <span className="text-muted">
+                    <h6 className={`${props.condensed && "d-none"} text-muted`}>
                       <a
                         className="text-muted"
                         target="_blank"
                         href={(postData && postData.tokenURI) || "#"}
                       >
-                        $POSTA:{postData && postData.tokenId}
+                        $POSTA:{postData && postData.tokenId.toString()}
                       </a>
-                    </span>
+                    </h6>{" "}
                   </div>
                   <blockquote className="blockquote mt-2 ml-2 mb-0">
                     {/* Post Text */}
@@ -123,25 +170,35 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       {" "}
                       {(postData && postData.content) || "..."}{" "}
                     </p>
+
+                    {!props.hideSourcePost && postData?.replyOfTokenId && (
+                      <div>
+                        In Reply of
+                        {
+                          <PostDisplay
+                            hideSourcePost={true}
+                            condensed
+                            postOrId={postData?.replyOfTokenId}
+                          />
+                        }
+                      </div>
+                    )}
                     {/* Post Date */}
-                    <footer className="blockquote-footer">
-                      <span className="fw-light">
-                        {postData &&
-                          moment(postData.creationDate || new Date(0)).format(
-                            "MMMM Do YYYY, h:mm"
-                          )}
-                      </span>
-                    </footer>
+                    <footer
+                      className={`${
+                        props.condensed && "d-none"
+                      } blockquote-footer`}
+                    ></footer>
                   </blockquote>
                 </div>
               </Col>
             </Row>
-            <Row>
+            <Row className={(props.condensed && "d-none") || ""}>
               <Col>
                 <hr className="my-2" />
               </Col>
             </Row>
-            <Row>
+            <Row className={(props.condensed && "d-none") || ""}>
               <Col className="d-flex justify-content-between align-items-start mt-2 mb-1">
                 <div className="d-flex alignt-items-start">
                   <GiveSupportButton
@@ -149,7 +206,8 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     disabled={
                       !human.profile.registered ||
                       !postData ||
-                      postData.author === human.profile.eth_address
+                      postData.author.toLowerCase() ===
+                        human.profile.eth_address?.toLowerCase()
                     }
                     onClick={handleBurnUBIsClicked}
                     supportGiven={
@@ -168,18 +226,28 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       "0"
                     }
                   />
-                  <div>metadata</div>
                 </div>
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={handleReplyClicked}
-                >
-                  <div className="d-flex justify-content-around align-items-center">
-                    <FaReply />
-                    Reply
-                  </div>
-                </Button>
+                <div>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={handleReplyClicked}
+                    disabled={!human.profile.registered}
+                  >
+                    <div className="d-flex justify-content-around align-items-center">
+                      <FaReply />
+                      Reply
+                    </div>
+                  </Button>
+                  {repliesLogs && repliesLogs.length > 0 && (
+                    <a
+                      href={`/post/${postData?.tokenId}`}
+                      className="ml-2 text-secondary"
+                    >
+                      Replies {repliesLogs && `(${repliesLogs.length})`}
+                    </a>
+                  )}
+                </div>
               </Col>
             </Row>
           </Container>
@@ -240,12 +308,20 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
   );
 }
 
-function ProfilePicture(props: any) {
+enum AvatarSize {
+  Small = "avatar-sm",
+  Regular = "avatar",
+}
+
+function ProfilePicture(props: { size: AvatarSize; imageUrl?: string | null }) {
+  const avatarClass = props.size || "avatar";
   return (
     (props.imageUrl && (
-      <img className="avatar mr-2" src={props.imageUrl} />
+      <img className={`${avatarClass} mr-2`} src={props.imageUrl} />
     )) || (
-      <POHLogo className="flex-shrink-0 avatar mr-2 text-secondary p-1 bg-secondary" />
+      <POHLogo
+        className={`flex-shrink-0 ${avatarClass} mr-2 text-secondary p-1 bg-secondary`}
+      />
     )
   );
 }

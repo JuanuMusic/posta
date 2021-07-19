@@ -3,9 +3,10 @@ import SupportPostDialog from "./SupportPostDialog";
 import PostDisplay from "./PostDisplay";
 import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
+import { BigNumber } from "ethers";
 
 interface IPostListProps extends IBasePostaProps {
-  posts?: Array<string | IPostaNFT>;
+  posts?: Array<BigNumber | IPostaNFT>;
   isLoading: boolean;
 }
 

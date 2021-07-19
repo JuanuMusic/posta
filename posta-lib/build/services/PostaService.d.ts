@@ -5,6 +5,12 @@ interface IPostaService {
     getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
     setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
     getPostLogs(tokenIds: string[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
+    /**
+     * Returns an array of logs that belong to replies to a given post.
+     * @param tokenId Token ID of the posxt for which to retrieve replies
+     * @param contractProvider
+     */
+    getPostRepliesLogs(tokenId: string, contractProvider: IContractProvider): Promise<PostLogs[] | null>;
     giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
     publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<TransactionResponse>;
     getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
@@ -38,9 +44,10 @@ export interface IPostData {
 }
 export interface PostLogs {
     author: string;
-    blockTime: Date;
-    content: string;
     tokenId: BigNumber;
+    content: string;
+    blockTime: Date;
+    replyOfTokenId?: BigNumber;
 }
 export interface IPostaNFT {
     authorImage: string | undefined;

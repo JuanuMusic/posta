@@ -50,11 +50,11 @@ export default function HumanProvider({ children }: { children: any }) {
       const registeredProfile = await PohAPI.profiles.getByAddress(address);
       
       // If profile is not registered, warn and set to empty POH profile.
-      if (!isRegistered || !registeredProfile) {
+      if (!registeredProfile) {
         console.warn(
           "Address",
           address,
-          "not registered as human",
+          "might not be registered as human. Profile was not found",
           registeredProfile
         );
         setProfile({

@@ -1,3 +1,4 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal } from "react-bootstrap";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
 import PostDisplay from "./PostDisplay";
@@ -6,7 +7,7 @@ import PostEditor from "./PostEditor/PostEditor";
 interface IPostReplyProps {
   onClose?(): any;
   show: boolean;
-  postReply: IPostaNFT
+  postReply: IPostaNFT;
 }
 
 export default function PostReply(props: IPostReplyProps) {
@@ -14,20 +15,23 @@ export default function PostReply(props: IPostReplyProps) {
     props.onClose && props.onClose();
   };
 
-  console.log("postReply", props.postReply)
   return (
-    <Modal show={props.show} onHide={handleClose} centered>
-      <Modal.Header>
-        <Modal.Title>
-          <PostDisplay postOrId={props.postReply} />
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <PostEditor
-          onNewPostSent={() => console.log("Post replied")}
-          isReplyOf={props.postReply.tokenId}
+    <Modal show={props.show} onHide={handleClose} centered className="m-0 p-0">
+      <Modal.Header className="m-0 p-0 d-flex">
+        <PostDisplay
+          borderless={true}
+          hideSourcePost={true}
+          condensed={true}
+          postOrId={props.postReply}
         />
-        )
+      </Modal.Header>
+      <Modal.Body className="m-0 p-1 bg-dark">
+        <PostEditor
+          borderless={true}
+          showHeader={false}
+          onNewPostSent={() => props.onClose && props.onClose()}
+          replyOfTokenId={props.postReply.tokenId}
+        />
       </Modal.Body>
     </Modal>
   );

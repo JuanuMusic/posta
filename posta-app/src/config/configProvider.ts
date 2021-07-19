@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { IConfiguration } from "../posta-lib/services/ContractProvider";
 
 // // Change this to your local chain id

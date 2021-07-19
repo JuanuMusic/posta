@@ -5,6 +5,7 @@ import "@nomiclabs/hardhat-waffle";
 import '@openzeppelin/hardhat-upgrades';
 import "hardhat-gas-reporter"
 import "hardhat-contract-sizer";
+import "@nomiclabs/hardhat-etherscan";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -24,7 +25,7 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
  */
 module.exports = {
   solidity: {
-    version: "0.8.0",
+    version: "0.8.2",
     settings: {
       optimizer: {
         enabled: true,
@@ -43,8 +44,11 @@ module.exports = {
     kovan: {
       url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [process.env.POSTA_DEPLOYER_PK],
-      gas: "auto"
+      loggingEnabled: true
     }
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_KEY
   },
   contractSizer: {
     runOnCompile: true

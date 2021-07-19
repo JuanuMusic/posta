@@ -6,6 +6,7 @@ const KOVAN_POH_ADDRESS = "0x73BCCE92806BCe146102C44c4D9c3b9b9D745794";
 
 const LOCAL_UBI_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const LOCAL_POH_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
 const MAX_CHARS = "280";
 const BURN_PCT = "0";
 const TREASURY_PCT = "0";
@@ -18,8 +19,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Posta = await ethers.getContractFactory("Posta");
-  const postaContract = await upgrades.deployProxy(Posta, [LOCAL_POH_ADDRESS, LOCAL_UBI_ADDRESS, MAX_CHARS, ethers.utils.parseEther(BURN_PCT).toString(), ethers.utils.parseEther(TREASURY_PCT).toString()])
-  await postaContract.setBurnPct(ethers.utils.parseEther("0.5").toString());
+  const postaContract = await upgrades.deployProxy(Posta, [KOVAN_POH_ADDRESS, KOVAN_UBI_ADDRESS, MAX_CHARS, ethers.utils.parseEther(BURN_PCT).toString(), ethers.utils.parseEther(TREASURY_PCT).toString()])
   const owner = await postaContract.owner();
   console.log("OWNER", owner);
 

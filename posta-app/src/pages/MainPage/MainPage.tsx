@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PostEditor from "../../components/PostEditor/PostEditor";
@@ -22,6 +23,7 @@ export default function MainPage() {
     try {
       // Get the last 10 posts
       const postList = await PostaService.getLatestPosts(10, contractProvider);
+      console.log("POST LIST", postList)
       // If list is not null, set to the state
       if (postList) setPosts(postList);
     } catch (error) {
@@ -41,9 +43,9 @@ export default function MainPage() {
       // Subscribe to NewPost evemt
       (await contractProvider.getPostaContractForRead()).on(
         "NewPost",
-        async (author: string, tokenId: string, value: string) => {
+        async (author: string, tokenId: number, value: string) => {
           console.log("NewPost received", author, tokenId, value);      
-          const log = await PostaService.getPostLogs([tokenId], contractProvider);
+          const log = await PostaService.getPostLogs([BigNumber.from(tokenId)], contractProvider);
           if(log && log.length > 0)
             appendPost(await PostaService.buildPost(log[0], contractProvider));
         }
@@ -60,6 +62,8 @@ export default function MainPage() {
   const onNewPostSent = (stackId: number) => {
     refreshLatestPosts();
   };
+
+  console.log("HUMAN", human)
 
   return (
     <Container>

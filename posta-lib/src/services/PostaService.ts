@@ -5,7 +5,6 @@ import { POHProfileModel } from "./PohAPI";
 import { PohService } from "./PoHService";
 
 import { TransactionResponse } from "@ethersproject/abstract-provider/lib"
-import { logRoles } from "@testing-library/react";
 
 interface IPostaService {
   getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;

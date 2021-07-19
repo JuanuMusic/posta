@@ -2,69 +2,95 @@ import { BigNumber, ethers } from "ethers";
 import express from "express";
 // import { PostaService, PohService, ContractProvider } from "./posta-lib/index"
 import dotenv from "dotenv";
-import develop from "./config/develop.json";
-import kovan from "./config/kovan.json";
 
-import PostaContract from './contracts/Posta.json';
-import UBIContract from './contracts/IUBI.json';
-import DummyPOHContract from './contracts/DummyProofOfHumanity.json';
+
 import { ContractProvider, PohService, PostaService } from "./posta-lib";
 import { IConfiguration } from "./posta-lib/services/ContractProvider";
+import { IContractsDefinitions } from "posta-lib/services/ContractProvider";
 
 dotenv.config();
-
 const app = express();
+
+const config = require(`./config/${process.env.CONFIG}.json`) as IConfiguration;
+
+import IUBI from "./contracts/IUBI.sol/IUBI.json";
+import IProofOfHumanity from "./contracts/IProofOfHumanity.sol/IProofOfHumanity.json";
+import PostaV0_3 from "./contracts/v0.3/PostaV0_3.sol/PostaV0_3.json";
+
 
 // Change this to your local chain id
 const LOCAL_CHAIN_ID = 1337;
 
-function getEthersProvider(): ethers.providers.BaseProvider {
+/**
+ * Returns the ethers provider based on the .env and config.json
+ * @param webProvider 
+ * @returns 
+ */
+async function getEthersProvider(
+  webProvider: any | undefined = undefined
+): Promise<ethers.providers.BaseProvider> {
+  let provider: ethers.providers.BaseProvider | undefined;
+  // If a web provider is passed, connect to it
+  if (webProvider) {
+    provider = new ethers.providers.Web3Provider(webProvider);
+  }
 
-    const provider = (process.env.NETWORK && ethers.getDefaultProvider(process.env.NETWORK, { infura: process.env.INFURA_PROJECT_ID })) ||
-        (process.env.NODE_ENV === "development" ?
-            new ethers.providers.JsonRpcProvider("http://localhost:7545", { chainId: LOCAL_CHAIN_ID, name: "develop" }) :
-            ethers.getDefaultProvider("kovan", { infura: process.env.INFURA_PROJECT_ID }));
-    return provider;
+  if (!provider) {
+    if (process.env.CONFIG === "kovan") {
+      provider = ethers.getDefaultProvider("kovan", {
+        infura: process.env.INFURA_PROJECT_ID,
+        etherscan: process.env.ETHERSCAN_API_KEY,
+      });
+    } else if (process.env.CONFIG === "develop") {
+      provider = new ethers.providers.JsonRpcProvider(config.network.URL, {
+        chainId: config.network.chainID,
+        name: config.network.name,
+      });
+    } else {
+      provider = ethers.getDefaultProvider();
+    }
+  }
+
+  return provider;
 }
 
-function getConfig(): IConfiguration {
-    return require(`./config/${process.env.CONFIG}.json`) as IConfiguration;;
-}
+
+async function initialize() {
+  const provider = await getEthersProvider();
+  const contractprovider = new ContractProvider(config, provider, { PostaContract: PostaV0_3, UBIContract: IUBI, POHContract: IProofOfHumanity });
 
 
-const provider = getEthersProvider();
-const contractprovider = new ContractProvider(getConfig(), provider, { PostaContract, UBIContract, POHContract: DummyPOHContract });
 
-app.get('/post/:tokenId', async (req, res) => {
-    const tokenId = parseInt(req.params.tokenId, 10); // tokenId from url param
+  app.get('/post/:tokenId', async (req, res) => {
+    const tokenId = BigNumber.from(req.params.tokenId); // tokenId from url param
     // Get the logs for the token
     const logs = await PostaService.getPostLogs([tokenId], contractprovider);
     if (!logs || logs.length === 0) return res.status(404).send("Log not found");
     const log = logs[0];
     const human = await PohService.getHuman(log.author);
     const retVal = {
-        author: log.author,
-        blockTime: log.blockTime,
-        content: log.content,
-        name: `PSTA:${tokenId} by ${human && human.display_name || "UNKNOWN"}`,
-        external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`
+      author: log.author,
+      blockTime: log.blockTime,
+      content: log.content,
+      name: `PSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
+      external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`,
+      replyOfTokenId: log.replyOfTokenId
     }
 
     res.status(200).send(JSON.stringify(retVal));
 
-})
+  })
 
-app.get('/', (req, res) => {
+  app.get('/', (req, res) => {
     res.send('Hi!');
-})
+  })
 
-async function initialize() {
+  const PORT = process.env.PORT;
 
 
-    const PORT = process.env.PORT;
-    app.listen(PORT, () => {
-        console.log(`The application is listening on port ${PORT}!`);
-    })
+  app.listen(PORT, () => {
+    console.log(`The application is listening on port ${PORT}!`);
+  })
 }
 
 

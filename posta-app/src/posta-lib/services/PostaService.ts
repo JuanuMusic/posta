@@ -5,7 +5,6 @@ import { POHProfileModel } from "./PohAPI";
 import { PohService } from "./PoHService";
 
 import { TransactionResponse } from "@ethersproject/abstract-provider/lib"
-import { logRoles } from "@testing-library/react";
 
 interface IPostaService {
   getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
@@ -311,7 +310,7 @@ const PostaService: IPostaService = {
     }
     return {
       author: log.author,
-      authorDisplayName: (human && human.display_name) || log.author,
+      authorDisplayName: (human && human.display_name) || "",
       authorFullName: (human && (human.first_name + " " + human.last_name)) || log.author,
       authorImage: human && human.photo,
       content: log.content,

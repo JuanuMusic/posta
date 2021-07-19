@@ -11,7 +11,9 @@ import { IContractsDefinitions } from "posta-lib/services/ContractProvider";
 dotenv.config();
 const app = express();
 
-const config = require(`./config/${process.env.CONFIG}.json`) as IConfiguration;
+import kovanConfig from "./config/kovan.json";
+import developConfig from "./config/develop.json";
+const config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig) as IConfiguration;
 
 import IUBI from "./contracts/IUBI.sol/IUBI.json";
 import IProofOfHumanity from "./contracts/IProofOfHumanity.sol/IProofOfHumanity.json";
@@ -74,7 +76,7 @@ async function initialize() {
       content: log.content,
       name: `PSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
       external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`,
-      replyOfTokenId: log.replyOfTokenId
+      replyOfTokenId: log.replyOfTokenId?.toNumber()
     }
 
     res.status(200).send(JSON.stringify(retVal));

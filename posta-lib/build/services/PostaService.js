@@ -111,27 +111,41 @@ var PostaService = {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
-                        filter = postaContract.filters.NewPost(null, tokenIds.map(function (id) { return parseInt(id, 10); }));
+                        filter = postaContract.filters.NewPost(null, tokenIds.map(function (id) { return id.toNumber(); }));
                         return [4 /*yield*/, postaContract.queryFilter(filter)];
                     case 2:
                         logs = _a.sent();
                         if (!logs)
                             return [2 /*return*/, null];
                         return [4 /*yield*/, Promise.all(logs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
-                                var block;
+                                var block, replyOfTokenId, isReplyFilter, isReplyLogs, retItm;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, log.getBlock()];
                                         case 1:
                                             block = _a.sent();
-                                            return [2 /*return*/, {
-                                                    author: log.args && log.args.author,
-                                                    tokenId: log.args && log.args.tokenId,
-                                                    // Extract text from log object
-                                                    content: log.args && log.args.value,
-                                                    // Tweet date comes from block timestamp
-                                                    blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
-                                                }];
+                                            replyOfTokenId = ethers_1.BigNumber.from(0);
+                                            if (!log.args) return [3 /*break*/, 3];
+                                            isReplyFilter = postaContract.filters.NewPostReply([log.args.tokenId.toNumber()], null);
+                                            return [4 /*yield*/, postaContract.queryFilter(isReplyFilter)];
+                                        case 2:
+                                            isReplyLogs = _a.sent();
+                                            // if logs are found, set the token id of the source post
+                                            if (isReplyLogs && isReplyLogs.length > 0) {
+                                                replyOfTokenId = isReplyLogs[0].args && isReplyLogs[0].args.replyOfTokenId;
+                                            }
+                                            _a.label = 3;
+                                        case 3:
+                                            retItm = {
+                                                author: log.args && log.args.author,
+                                                tokenId: log.args && log.args.tokenId,
+                                                // Extract text from log object
+                                                content: log.args && log.args.value,
+                                                // Tweet date comes from block timestamp
+                                                blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0),
+                                                replyOfTokenId: replyOfTokenId
+                                            };
+                                            return [2 /*return*/, retItm];
                                     }
                                 });
                             }); }))];
@@ -156,12 +170,13 @@ var PostaService = {
                     case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
-                        filter = postaContract.filters.NewPostReply(null, parseInt(forTokenId));
+                        filter = postaContract.filters.NewPostReply(null, [forTokenId.toNumber()]);
                         return [4 /*yield*/, postaContract.queryFilter(filter)];
                     case 2:
                         repliesLogs = _a.sent();
-                        if (!repliesLogs || repliesLogs.length === 0)
+                        if (!repliesLogs || repliesLogs.length === 0) {
                             return [2 /*return*/, null];
+                        }
                         return [4 /*yield*/, Promise.all(repliesLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () {
                                 var sourcePostLogs;
                                 return __generator(this, function (_a) {
@@ -176,7 +191,9 @@ var PostaService = {
                                                 return [2 /*return*/, null];
                                             }
                                             return [2 /*return*/, __assign(__assign({}, sourcePostLogs[0]), { replyOfTokenId: ethers_1.BigNumber.from(forTokenId) })];
-                                        case 2: return [2 /*return*/, { author: "", content: "", tokenId: ethers_1.BigNumber.from(0), replyOfTokenId: ethers_1.BigNumber.from(forTokenId), blockTime: new Date(0) }];
+                                        case 2: 
+                                        // If no args on the log, just return an object with empty data
+                                        return [2 /*return*/, { author: "", content: "", tokenId: ethers_1.BigNumber.from(0), replyOfTokenId: forTokenId, blockTime: new Date(0) }];
                                     }
                                 });
                             }); }))];
@@ -289,13 +306,13 @@ var PostaService = {
                         counter = bnCounter.toNumber();
                         tokenIds = [];
                         for (i = counter; i > Math.max(counter - maxRecords, 0); i--) {
-                            tokenIds.unshift(i.toString());
+                            tokenIds.unshift(ethers_1.BigNumber.from(i));
                         }
                         return [4 /*yield*/, PostaService.getPosts(tokenIds, contractProvider)];
                     case 3:
                         postsNFTs = _a.sent();
                         // Return the list of nfts posts
-                        return [2 /*return*/, (postsNFTs && postsNFTs.sort(function (a, b) { return parseInt(a.tokenId, 10) > parseInt(b.tokenId, 10) ? -1 : 1; })) || null];
+                        return [2 /*return*/, (postsNFTs && postsNFTs.sort(function (a, b) { return a.tokenId.gt(b.tokenId) ? -1 : 1; })) || null];
                 }
             });
         });
@@ -315,6 +332,7 @@ var PostaService = {
                     case 0: return [4 /*yield*/, PostaService.getPostLogs(tokenIds, contractProvider)];
                     case 1:
                         postLogs = _a.sent();
+                        console.log("GET POSTS", postLogs);
                         if (!postLogs)
                             return [2 /*return*/, null];
                         return [4 /*yield*/, Promise.all(postLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
@@ -384,17 +402,20 @@ var PostaService = {
                         human = { display_name: "", first_name: "", last_name: "" };
                         console.error(error_2);
                         return [3 /*break*/, 7];
-                    case 7: return [2 /*return*/, {
+                    case 7: 
+                    // Return data
+                    return [2 /*return*/, {
                             author: log.author,
                             authorDisplayName: (human && human.display_name) || log.author,
                             authorFullName: (human && (human.first_name + " " + human.last_name)) || log.author,
                             authorImage: human && human.photo,
                             content: log.content,
-                            tokenId: log.tokenId.toString(),
+                            tokenId: log.tokenId,
                             tokenURI: tokenURI,
-                            creationDate: new Date(log.blockTime),
+                            blockTime: new Date(log.blockTime),
                             supportGiven: postNFT.supportGiven,
                             supportCount: postNFT.supportersCount,
+                            replyOfTokenId: log.replyOfTokenId
                         }];
                 }
             });

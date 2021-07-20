@@ -2,16 +2,16 @@ import { BigNumber } from "ethers";
 import { IContractProvider } from "./ContractProvider";
 import { TransactionResponse } from "@ethersproject/abstract-provider/lib";
 interface IPostaService {
-    getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
+    getTokenUrl(tokenId: BigNumber, contractProvider: IContractProvider): Promise<string>;
     setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
-    getPostLogs(tokenIds: string[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
+    getPostLogs(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
     /**
      * Returns an array of logs that belong to replies to a given post.
-     * @param tokenId Token ID of the posxt for which to retrieve replies
+     * @param forTokenId Token ID of the posxt for which to retrieve replies
      * @param contractProvider
      */
-    getPostRepliesLogs(tokenId: string, contractProvider: IContractProvider): Promise<PostLogs[] | null>;
-    giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
+    getPostRepliesLogs(forTokenId: BigNumber, contractProvider: IContractProvider): Promise<PostLogs[] | null>;
+    giveSupport(tokenID: BigNumber, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
     publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<TransactionResponse>;
     getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
     requestBurnApproval(from: string, amount: BigNumber, contractProvider: IContractProvider): Promise<void>;
@@ -28,7 +28,7 @@ interface IPostaService {
       * @param contractProvider
       * @returns
       */
-    getPosts(tokenIds: string[], contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
+    getPosts(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
     /**
       * Returns the maxChars value on the posta contract
       * @param tokenIds
@@ -40,7 +40,7 @@ interface IPostaService {
 export interface IPostData {
     author: string;
     text: string;
-    replyOfTokenId?: string;
+    replyOfTokenId?: BigNumber;
 }
 export interface PostLogs {
     author: string;
@@ -49,15 +49,12 @@ export interface PostLogs {
     blockTime: Date;
     replyOfTokenId?: BigNumber;
 }
-export interface IPostaNFT {
+export interface IPostaNFT extends PostLogs {
     authorImage: string | undefined;
     authorDisplayName: string;
     authorFullName: string;
-    author: string;
     content: string;
-    tokenId: string;
     tokenURI: string;
-    creationDate: Date;
     supportGiven: BigNumber;
     supportCount: BigNumber;
 }

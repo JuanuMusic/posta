@@ -7,7 +7,7 @@ import { PohService } from "./PoHService";
 import { TransactionResponse } from "@ethersproject/abstract-provider/lib"
 
 interface IPostaService {
-  getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string>;
+  getTokenUrl(tokenId: BigNumber, contractProvider: IContractProvider): Promise<string>;
   setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
   getPostLogs(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
   /**
@@ -16,7 +16,7 @@ interface IPostaService {
    * @param contractProvider 
    */
   getPostRepliesLogs(forTokenId: BigNumber, contractProvider: IContractProvider): Promise<PostLogs[] | null>;
-  giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
+  giveSupport(tokenID: BigNumber, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
   publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<TransactionResponse>;
   getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
   requestBurnApproval(from: string, amount: BigNumber, contractProvider: IContractProvider): Promise<void>;
@@ -80,7 +80,7 @@ const PostaService: IPostaService = {
    * @param tokenId 
    * @param provider 
    */
-  async getTokenUrl(tokenId: string, contractProvider: IContractProvider): Promise<string> {
+  async getTokenUrl(tokenId: BigNumber, contractProvider: IContractProvider): Promise<string> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const uri = await postaContract.tokenURI(tokenId);
     return uri;
@@ -155,14 +155,13 @@ const PostaService: IPostaService = {
     const repliesLogs = await postaContract.queryFilter(filter);
 
     if (!repliesLogs || repliesLogs.length === 0) {
-      console.log("No reply logs found for ", forTokenId.toString())
       return null;
     }
+    // Load each log
     const retVal = await Promise.all(repliesLogs.map(async log => {
 
-      console.log(log);
-
       if (log.args) {
+        
         // Get the actual post and add the tokenId of the source post
         const sourcePostLogs = await PostaService.getPostLogs([log.args.tokenId], contractProvider);
         if (!sourcePostLogs) {
@@ -176,6 +175,7 @@ const PostaService: IPostaService = {
         };
       }
 
+      // If no args on the log, just return an object with empty data
       return { author: "", content: "", tokenId: BigNumber.from(0), replyOfTokenId: forTokenId, blockTime: new Date(0) }
 
     }));
@@ -203,7 +203,7 @@ const PostaService: IPostaService = {
    * @param from Human burning their UBIs.
    * @param provider Web3Provider
    */
-  async giveSupport(tokenID: string, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined) {
+  async giveSupport(tokenID: BigNumber, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined) {
 
     try {
       // Give support using the Posta contract (which burns half of the UBI)
@@ -253,7 +253,6 @@ const PostaService: IPostaService = {
 
     // Build the posts
     const postsNFTs = await PostaService.getPosts(tokenIds, contractProvider);
-    console.log("LATEST POSTS", postsNFTs);
 
     // Return the list of nfts posts
     return (postsNFTs && postsNFTs.sort((a, b) => a.tokenId.gt(b.tokenId) ? - 1 : 1)) || null;
@@ -296,10 +295,11 @@ const PostaService: IPostaService = {
    */
   async buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT> {
     const postaContract = await contractProvider.getPostaContractForRead();
-    console.log("Building with log", log)
+    // Get post data from contract and URI
     const postNFT = await postaContract.getPost(log.tokenId);
     const tokenURI = await postaContract.tokenURI(log.tokenId);
 
+    // Get the human that wrote the post
     let human: POHProfileModel;
     try {
       human = await PohService.getHuman(log.author)
@@ -308,6 +308,8 @@ const PostaService: IPostaService = {
       human = { display_name: "", first_name: "", last_name: "" };
       console.error(error);
     }
+
+    // Return data
     return {
       author: log.author,
       authorDisplayName: (human && human.display_name) || log.author,

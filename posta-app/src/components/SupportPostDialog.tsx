@@ -15,7 +15,7 @@ import { useContractProvider } from "../contextProviders/ContractsProvider";
 
 interface ISupportPostDialogProps extends IBasePostaProps {
   show: boolean;
-  postTokenId: string;
+  postTokenId: BigNumber;
   onClose?(): any;
 }
 
@@ -130,7 +130,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
     <Modal show={props.show} onHide={handleClose} centered>
       <Modal.Header>
         <Modal.Title>
-          Support Post <span className="muted">({props.postTokenId})</span>
+          Support Post <span className="muted">({props.postTokenId.toString()})</span>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

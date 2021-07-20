@@ -26,10 +26,10 @@ import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
 import PostReply from "./PostReply";
 import truncateTextMiddle from "../utils/textHelpers";
+import SupportPostDialog from "./SupportPostDialog";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postOrId: BigNumber | IPostaNFT;
-  onBurnUBIsClicked?(tokenId: string): any;
   onReplyClicked?(tokenId: string): any;
   condensed?: boolean;
   hideSourcePost?: boolean;
@@ -47,14 +47,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const [postData, setPostData] = useState<IPostaNFT | null>(null);
   const [showReply, setShowReply] = useState(false);
   const [repliesLogs, setRepliesLogs] = useState<PostLogs[] | null>(null);
+  const [showSupportPostDialog, setShowSupportPostDialog] = useState(false);
   const human = useHuman();
   const contractProvider = useContractProvider();
-
-  const handleBurnUBIsClicked = async () => {
-    postData &&
-      props.onBurnUBIsClicked &&
-      props.onBurnUBIsClicked(postData?.tokenId.toString());
-  };
 
   const handleReplyClicked = async () => {
     setShowReply(true);
@@ -71,6 +66,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
     } catch (error) {
       console.error("ERROR LOADING POST REPLIES", error);
     }
+
   };
 
   // Load post effect
@@ -101,6 +97,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
     loadPost();
   }, [props.postOrId, contractProvider]);
 
+  // Refresh replies count
   useEffect(() => {
     if (postData) {
       refreshRepliesCount();
@@ -109,6 +106,13 @@ export default function PostDisplay(props: IPostDisplayProps) {
 
   return (
     <>
+      {postData && postData.tokenId && (
+        <SupportPostDialog
+          show={showSupportPostDialog}
+          postTokenId={postData?.tokenId}
+          onClose={() => setShowSupportPostDialog(false)}
+        />
+      )}
       {postData && (
         <PostReply
           show={showReply}
@@ -172,18 +176,20 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       {(postData && postData.content) || "..."}{" "}
                     </p>
                   </blockquote>
-                  {postData?.replyOfTokenId && postData.replyOfTokenId.gt(0) && !props.hideSourcePost && (
-                    <div>
-                      <small className="text-dark">In Reply of</small>
-                      {
-                        <PostDisplay
-                          hideSourcePost={true}
-                          condensed
-                          postOrId={postData?.replyOfTokenId}
-                        />
-                      }
-                    </div>
-                  )}
+                  {postData?.replyOfTokenId &&
+                    postData.replyOfTokenId.gt(0) &&
+                    !props.hideSourcePost && (
+                      <div>
+                        <small className="text-dark">In Reply of</small>
+                        {
+                          <PostDisplay
+                            hideSourcePost={true}
+                            condensed
+                            postOrId={postData?.replyOfTokenId}
+                          />
+                        }
+                      </div>
+                    )}
                 </div>
               </Col>
             </Row>
@@ -203,7 +209,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       postData.author.toLowerCase() ===
                         human.profile.eth_address?.toLowerCase()
                     }
-                    onClick={handleBurnUBIsClicked}
+                    onClick={() => setShowSupportPostDialog(true)}
                     supportGiven={
                       (postData &&
                         postData.supportGiven &&
@@ -292,8 +298,10 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           disabled={props.disabled}
           size="sm"
         >
-          <div className="d-flex justify-content-center align-items-center">            
-            <BurningHeart className={`flex-shrink-0 btn-icon mr-2 p-0 bg-transparent`} />
+          <div className="d-flex justify-content-center align-items-center">
+            <BurningHeart
+              className={`flex-shrink-0 btn-icon mr-2 p-0 bg-transparent`}
+            />
             <span>{props.supportGiven}</span>
           </div>
         </Button>

@@ -45,15 +45,12 @@ export default function PostPage(props: any) {
   const handleReplyClicked = () => console.log("TODO");
 
   const loadPostReplies = async () => {
-    console.log("Loading post replies...");
     if (!contractProvider) return;
     //  Get replies logs
     const postRepliesLogs = await PostaService.getPostRepliesLogs(
       BigNumber.from(tokenId),
       contractProvider
     );
-
-    console.log("******* REPLIES LOGS", postRepliesLogs);
 
     if (postRepliesLogs && postRepliesLogs.length > 0)
       setPostReplies(postRepliesLogs);
@@ -69,7 +66,6 @@ export default function PostPage(props: any) {
               <div className="mb-4">
                 <PostDisplay
                   postOrId={post}
-                  onBurnUBIsClicked={handleBurnUBIsClicked}
                   onReplyClicked={handleReplyClicked}
                 />
               </div>

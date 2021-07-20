@@ -122,10 +122,10 @@ export default function PostDisplay(props: IPostDisplayProps) {
       )}
       <Card
         style={{ width: "100%", maxWidth: "700px" }}
-        className={"mx-auto " + (props.borderless && "border-0")}
+        className={"mx-auto p-0 " + (props.borderless && "border-0")}
       >
-        <Card.Body className="px-1 py-2">
-          <Container>
+        <Card.Body className="p-0">
+          <Container  className="p-1">
             <Row>
               <Col className="d-flex">
                 {/* Profile Picture */}
@@ -135,7 +135,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                 />
 
                 <div className="flex-fill">
-                  <div className="d-flex justify-content-between">
+                  <div className="d-flex justify-content-between mb-0">
                     <div className="d-flex justify-content-start align-items-center">
                       {/* Human Name */}
                       <a
@@ -159,19 +159,21 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       </small>
                     </div>
                     {/* NFT ID */}
-                    <h6 className={`${props.condensed && "d-none"} text-muted`}>
+                    <h6 className={`text-muted`}>
                       <a
                         className="text-muted"
                         target="_blank"
                         href={(postData && postData.tokenURI) || "#"}
                       >
+                        {props.condensed ? (<small>
                         $POSTA:{postData && postData.tokenId.toString()}
+                        </small>) : <>$POSTA:{postData && postData.tokenId.toString()}</>}
                       </a>
                     </h6>{" "}
                   </div>
-                  <blockquote className="blockquote mt-2 ml-2 mb-0">
+                  <blockquote className="blockquote my-0 ml-0">
                     {/* Post Text */}
-                    <p className="post-text text-dark">
+                    <p className="post-text text-dark mb-1">
                       {" "}
                       {(postData && postData.content) || "..."}{" "}
                     </p>
@@ -179,8 +181,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                   {postData?.replyOfTokenId &&
                     postData.replyOfTokenId.gt(0) &&
                     !props.hideSourcePost && (
-                      <div>
-                        <small className="text-dark">In Reply of</small>
+                      <div className="mt-2">
                         {
                           <PostDisplay
                             hideSourcePost={true}
@@ -270,7 +271,7 @@ function SupportersCount(props: any) {
     >
       <div className="d-inline-flex text-dark align-self-center justify-content-center px-2 mx-2">
         <FaUsers className="align-self-center mr-2" />
-        <span>{props.supporters} supporters</span>
+        <small>{props.supporters} supporters</small>
       </div>
     </OverlayTrigger>
   );
@@ -296,13 +297,14 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           variant="outline-danger"
           onClick={props.onClick}
           disabled={props.disabled}
+          className="p-0 m-0"
           size="sm"
         >
           <div className="d-flex justify-content-center align-items-center">
             <BurningHeart
-              className={`flex-shrink-0 btn-icon mr-2 p-0 bg-transparent`}
+              className={`btn-icon my-0 mx-0 p-0 bg-transparent`}
             />
-            <span>{props.supportGiven}</span>
+            <span className={"mr-1"}>{props.supportGiven}</span>
           </div>
         </Button>
       </div>

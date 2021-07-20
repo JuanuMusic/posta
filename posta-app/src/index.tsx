@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.scss";
 //import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 // Importing the Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.scss";
 import "./App.scss";
 import App from "./App";
 import { Web3ReactProvider } from "@web3-react/core";

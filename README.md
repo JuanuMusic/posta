@@ -1,7 +1,15 @@
 # POSTA 📢
 A twitter-like social network for Human Beings only!
 
-## Preface  (Why Posta)?
+## Key Features
+- Decentralized
+- Censorship resistant
+- Each posta is minted as an NFTs owned by the creator
+- NFTs are compatible with NFT markets such as OpenSea
+- Content ownership by default (owners can be held accountable for their content)
+
+
+## Why Posta?
 **Social Networks**🌎 are a great evolution of Human Society to socialize through the internet. One of the fundamental problems of the current state, is that they are fully centralized. All the data and content generated through them, is collected and managed by the owners of the service.
 
 Another problem is the amount of fake profiles that can be generated 🦹‍♂️, making social networks untrustworthy about the authors of the content.

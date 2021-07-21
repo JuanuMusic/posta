@@ -42,7 +42,6 @@ export default function PostPage(props: any) {
   }, [tokenId, contractProvider]);
 
   const handleBurnUBIsClicked = () => console.log("TODO");
-  const handleReplyClicked = () => console.log("TODO");
 
   const loadPostReplies = async () => {
     if (!contractProvider) return;
@@ -66,7 +65,6 @@ export default function PostPage(props: any) {
               <div className="mb-4">
                 <PostDisplay
                   postOrId={post}
-                  onReplyClicked={handleReplyClicked}
                 />
               </div>
               {postReplies &&

@@ -56,7 +56,8 @@ export default function MainPage() {
   }, [contractProvider]);
 
   const appendPost = (post: IPostaNFT) => {
-    setPosts([...posts, post]);
+    posts.push(post);
+    setPosts(posts);
   }
 
   const onNewPostSent = (stackId: number) => {

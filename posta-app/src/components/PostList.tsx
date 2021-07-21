@@ -10,10 +10,6 @@ interface IPostListProps extends IBasePostaProps {
 
 export default function PostList(props: IPostListProps) {
 
-  const handleReplyClicked = async (tokenId: string) => {
-    console.log("REPLY TO ", tokenId);
-  }
-
   return (
     <>
       <Container>
@@ -24,7 +20,6 @@ export default function PostList(props: IPostListProps) {
             <Row key={index} className="justify-content-center">
               <Col>
                 <PostDisplay
-                onReplyClicked={(tokenId) => handleReplyClicked(tokenId)}
                   postOrId={postOrId}
                   {...props}
                 />

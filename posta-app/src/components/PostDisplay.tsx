@@ -31,7 +31,7 @@ import Skeleton from "react-loading-skeleton";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postOrId: BigNumber | IPostaNFT;
-  onReplyClicked?(tokenId: string): any;
+  //onReplyClicked?(tokenId: string): any;
   condensed?: boolean;
   hideSourcePost?: boolean;
   borderless?: boolean;
@@ -243,6 +243,16 @@ export default function PostDisplay(props: IPostDisplayProps) {
                   />
                 </div>
                 <div>
+                  {repliesLogs && repliesLogs.length > 0 && (
+                    <a
+                      href={`/post/${postData?.tokenId}`}
+                      className="mr-2 text-secondary"
+                    >
+                      <small>
+                        Replies {repliesLogs && `(${repliesLogs.length})`}
+                      </small>
+                    </a>
+                  )}
                   <Button
                     variant="outline-primary"
                     size="sm"
@@ -250,20 +260,10 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     disabled={!human.profile.registered}
                   >
                     <div className="d-flex justify-content-around align-items-center">
-                      <FaReply />
+                      <FaReply className="mr-1" />
                       Reply
                     </div>
                   </Button>
-                  {repliesLogs && repliesLogs.length > 0 && (
-                    <a
-                      href={`/post/${postData?.tokenId}`}
-                      className="ml-2 text-secondary"
-                    >
-                      <small>
-                        Replies {repliesLogs && `(${repliesLogs.length})`}
-                      </small>
-                    </a>
-                  )}
                 </div>
               </Col>
             </Row>

@@ -44,6 +44,12 @@ interface IPostaService {
     * @returns 
     */
   getMaxChars(contractProvider: IContractProvider): Promise<number>;
+
+  /**
+   * Returns the burn % set on the contract.
+   * @param contractProvider 
+   */
+  getBurnPct(contractProvider: IContractProvider): Promise<BigNumber>;
 }
 
 export interface IPostData {
@@ -113,10 +119,10 @@ const PostaService: IPostaService = {
     if (!logs) return null
     const retVal = await Promise.all(logs.map(async log => {
       const block = await log.getBlock();
-      
+
       // Default replyof is 0 (non existing token)
       let replyOfTokenId: BigNumber = BigNumber.from(0);
-      
+
       // Check if it's a reply 
       if (log.args) {
         const isReplyFilter = postaContract.filters.NewPostReply([log.args.tokenId.toNumber()], null);
@@ -161,7 +167,7 @@ const PostaService: IPostaService = {
     const retVal = await Promise.all(repliesLogs.map(async log => {
 
       if (log.args) {
-        
+
         // Get the actual post and add the tokenId of the source post
         const sourcePostLogs = await PostaService.getPostLogs([log.args.tokenId], contractProvider);
         if (!sourcePostLogs) {
@@ -335,6 +341,13 @@ const PostaService: IPostaService = {
     const postaContract = await contractProvider.getPostaContractForRead();
     const maxChars = await postaContract.getMaxChars();
     return maxChars.toNumber();
+  },
+
+
+  async getBurnPct(contractProvider: IContractProvider): Promise<BigNumber> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const burnPct = await postaContract.getBurnPct();
+    return burnPct;
   }
 
 

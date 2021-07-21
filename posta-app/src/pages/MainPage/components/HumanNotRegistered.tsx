@@ -26,7 +26,7 @@ export default function HumanNotRegistered(props: IHumanNotRegisteredProps) {
             </Card>
           </div>
         )}
-        <Container className="text-light m-4">
+        <Container className="text-light p-4">
           <h2 className="text-warning">Prove your humanity</h2>
           <p>
             It looks like you are not registered on Kovan's Proof of Humanity. Go to <a href="https://app-kovan.poh.dev/" className="text-warning">Kovans's Proof of Humanity</a> and register your rightfully owned Kovan identity.<br />

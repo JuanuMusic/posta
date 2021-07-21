@@ -27,6 +27,7 @@ import { POINT_CONVERSION_COMPRESSED } from "constants";
 import PostReply from "./PostReply";
 import truncateTextMiddle from "../utils/textHelpers";
 import SupportPostDialog from "./SupportPostDialog";
+import Skeleton from "react-loading-skeleton";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postOrId: BigNumber | IPostaNFT;
@@ -48,6 +49,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const [showReply, setShowReply] = useState(false);
   const [repliesLogs, setRepliesLogs] = useState<PostLogs[] | null>(null);
   const [showSupportPostDialog, setShowSupportPostDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const human = useHuman();
   const contractProvider = useContractProvider();
 
@@ -66,12 +68,12 @@ export default function PostDisplay(props: IPostDisplayProps) {
     } catch (error) {
       console.error("ERROR LOADING POST REPLIES", error);
     }
-
   };
 
   // Load post effect
   useEffect(() => {
     async function loadPost() {
+      setIsLoading(true);
       // If it's not string, assume it's a PostaNFT interface
       if ((props.postOrId as IPostaNFT).content) {
         setPostData(props.postOrId as IPostaNFT);
@@ -92,6 +94,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
           setPostData(data);
         }
       }
+      setIsLoading(false);
     }
 
     loadPost();
@@ -125,7 +128,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
         className={"mx-auto p-0 " + (props.borderless && "border-0")}
       >
         <Card.Body className="p-0">
-          <Container  className="p-1">
+          <Container className="p-1">
             <Row>
               <Col className="d-flex">
                 {/* Profile Picture */}
@@ -144,11 +147,15 @@ export default function PostDisplay(props: IPostDisplayProps) {
                         }/${postData && postData.author.toLowerCase()}`}
                         className="text-dark"
                       >
-                        <h6 className="m-0">
-                          {postData &&
-                            (postData.authorDisplayName ||
-                              truncateTextMiddle(4, postData.author, 4))}
-                        </h6>
+                        {isLoading ? (
+                          <Skeleton className="w-25" />
+                        ) : (
+                          <h6 className="m-0">
+                            {postData &&
+                              (postData.authorDisplayName ||
+                                truncateTextMiddle(4, postData.author, 4))}
+                          </h6>
+                        )}
                       </a>{" "}
                       <small className="text-muted ml-2">
                         {" - "}
@@ -165,17 +172,24 @@ export default function PostDisplay(props: IPostDisplayProps) {
                         target="_blank"
                         href={(postData && postData.tokenURI) || "#"}
                       >
-                        {props.condensed ? (<small>
-                        $POSTA:{postData && postData.tokenId.toString()}
-                        </small>) : <>$POSTA:{postData && postData.tokenId.toString()}</>}
+                        {props.condensed ? (
+                          <small>
+                            $POSTA:{postData && postData.tokenId.toString()}
+                          </small>
+                        ) : (
+                          <>$POSTA:{postData && postData.tokenId.toString()}</>
+                        )}
                       </a>
                     </h6>{" "}
                   </div>
                   <blockquote className="blockquote my-0 ml-0">
                     {/* Post Text */}
                     <p className="post-text text-dark mb-1">
-                      {" "}
-                      {(postData && postData.content) || "..."}{" "}
+                      {isLoading ? (
+                        <Skeleton count={2} />
+                      ) : (
+                        <>{(postData && postData.content) || "..."}</>
+                      )}
                     </p>
                   </blockquote>
                   {postData?.replyOfTokenId &&
@@ -245,7 +259,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       href={`/post/${postData?.tokenId}`}
                       className="ml-2 text-secondary"
                     >
-                      Replies {repliesLogs && `(${repliesLogs.length})`}
+                      <small>
+                        Replies {repliesLogs && `(${repliesLogs.length})`}
+                      </small>
                     </a>
                   )}
                 </div>
@@ -301,9 +317,7 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           size="sm"
         >
           <div className="d-flex justify-content-center align-items-center">
-            <BurningHeart
-              className={`btn-icon my-0 mx-0 p-0 bg-transparent`}
-            />
+            <BurningHeart className={`btn-icon my-0 mx-0 p-0 bg-transparent`} />
             <span className={"mr-1"}>{props.supportGiven}</span>
           </div>
         </Button>

@@ -105,5 +105,5 @@ dist
 
 posta-contracts-old/
 .vscode/launch.json
-buil/
-posta-token-url-resolver/build/index.js
+posta-token-url-resolver/build/
+posta-lib/build/

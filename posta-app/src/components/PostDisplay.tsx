@@ -157,7 +157,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                           </h6>
                         )}
                       </a>{" "}
-                      <small className="text-muted ml-2">
+                      <small className="post-date text-muted ml-2">
                         {" - "}
                         {postData &&
                           moment(postData.blockTime || new Date(0)).format(

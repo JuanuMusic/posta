@@ -1,3 +1,6 @@
+$card-border-radius: 1px;
+$btn-border-radius: 0px;
+
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 .App {
@@ -81,9 +84,13 @@ h1 {
 }
 
 .blockquote {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 h6 {
   font-size: 0.9rem;
+}
+
+.post-date {
+  font-size: 0.8rem;
 }

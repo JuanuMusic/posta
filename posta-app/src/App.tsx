@@ -1,6 +1,6 @@
 import Container from "react-bootstrap/Container";
 
-import { Col, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { Switch, Route } from "react-router-dom";
 import PostPage from "./pages/PostPage";
 
@@ -10,38 +10,47 @@ import SuperHeader from "./components/SuperHeader";
 import DummyPOHController from "./dev-tools/DummyPOHController";
 import PostaController from "./dev-tools/PostaController";
 import { useWeb3React } from "@web3-react/core";
+import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
 interface IAppProps {}
 
 export default function App(props: IAppProps) {
-
   const web3Context = useWeb3React();
 
   return (
     <>
-      <Container className="p-3" style={{ maxWidth: "750px" }}>
+      <Container>
         <Row>
-          <Col className="d-flex flex-row-reverse">
-            <SuperHeader />
+          <Col md={8}>
+            <Container>
+              <Row>
+                <Col className="d-flex flex-row-reverse">
+                  <SuperHeader />
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <AppHeader className="mb-4" />
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Switch>
+                    <Route path="/post/:tokenId">
+                      <PostPage />
+                    </Route>
+                    <Route path="/">
+                      <MainPage />
+                    </Route>
+                  </Switch>
+                </Col>
+              </Row>
+            </Container>
           </Col>
-        </Row>
-        <Row>
-          <Col>
-            <AppHeader className="mb-4" />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Switch>
-              <Route path="/post/:tokenId">
-                <PostPage />
-              </Route>
-              <Route path="/">
-                <MainPage />
-              </Route>
-            </Switch>
+          <Col md={4}>
+            <RecentSupporters className="mt-5" />
           </Col>
         </Row>
 

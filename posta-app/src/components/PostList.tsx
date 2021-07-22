@@ -1,7 +1,8 @@
 import PostDisplay from "./PostDisplay";
 import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
-import { IPostaNFT } from "../posta-lib/services/PostaService";
+import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 import { BigNumber } from "ethers";
+import { useEffect } from "react";
 
 interface IPostListProps extends IBasePostaProps {
   posts?: Array<BigNumber | IPostaNFT>;
@@ -17,13 +18,12 @@ export default function PostList(props: IPostListProps) {
           <LoadingList />
         ) : (
           props.posts && props.posts.map((postOrId, index) => (
-            <Row key={index} className="justify-content-center">
+            <Row key={index} className="justify-content-center my-3">
               <Col>
                 <PostDisplay
                   postOrId={postOrId}
                   {...props}
                 />
-                <hr />
               </Col>
             </Row>
           ))

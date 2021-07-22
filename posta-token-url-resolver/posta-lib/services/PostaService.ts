@@ -50,6 +50,13 @@ interface IPostaService {
    * @param contractProvider 
    */
   getBurnPct(contractProvider: IContractProvider): Promise<BigNumber>;
+
+  /**
+   * Returns a list with the top recent supporters
+   * @param max The max number of top supporters to retrieve.
+   * @param contractProvider 
+   */
+  getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupporterLog[] | null>;
 }
 
 export interface IPostData {
@@ -348,8 +355,38 @@ const PostaService: IPostaService = {
     const postaContract = await contractProvider.getPostaContractForRead();
     const burnPct = await postaContract.getBurnPct();
     return burnPct;
-  }
+  },
 
+  /**
+   * Returns a list with the top recent supporters
+   * @param max The max number of top supporters to retrieve.
+   * @param contractProvider 
+   */
+  async getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupporterLog[] | null> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const filter = postaContract.filters.SupportGiven(null, null);
+    let logs = await postaContract.queryFilter(filter);
+
+
+    if (!logs) return null
+    if (logs.length > max) logs = logs.slice(0, 10);
+    const retVal = await Promise.all(logs.map(async log => {
+      const block = await log.getBlock();
+
+      const retItm = {
+        tokenId: log.args && log.args.tokenId,
+        supporter: log.args && log.args.supporter,
+        // Extract text from log object
+        amount: log.args && log.args.amount,
+        // Tweet date comes from block timestamp
+        blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
+      };
+
+      return retItm;
+    }));
+
+    return retVal;
+  }
 
 }
 

@@ -130,7 +130,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
     <Modal show={props.show} onHide={handleClose} centered>
       <Modal.Header>
         <Modal.Title>
-          Support Post <span className="muted">({props.postTokenId.toString()})</span>
+          <h5>Support $POSTA:{props.postTokenId.toString()}</h5>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

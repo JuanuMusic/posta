@@ -21,7 +21,7 @@ export default function PostPage(props: any) {
     setIsLoading(true);
 
     // Get the post with the specific token id
-    const post = await PostaService.getPosts([BigNumber.from(tokenId)], contractProvider);
+    const post = await PostaService.getPosts(null, [BigNumber.from(tokenId)], contractProvider);
     if (post && post.length > 0) {
       setPost(post[0]);
     }
@@ -71,7 +71,7 @@ export default function PostPage(props: any) {
                 postReplies.map((replyLog) => {
                   return (
                     <div className="px-5 py-1">
-                      <PostDisplay postOrId={replyLog.tokenId} />
+                      <PostDisplay postOrId={replyLog.tokenId} hideSourcePost={true} />
                     </div>
                   );
                 })}

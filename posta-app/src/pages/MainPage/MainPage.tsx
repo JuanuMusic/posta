@@ -45,7 +45,7 @@ export default function MainPage() {
         "NewPost",
         async (author: string, tokenId: number, value: string) => {
           console.log("NewPost received", author, tokenId, value);      
-          const log = await PostaService.getPostLogs([BigNumber.from(tokenId)], contractProvider);
+          const log = await PostaService.getPostLogs(null, [BigNumber.from(tokenId)], contractProvider);
           if(log && log.length > 0)
             appendPost(await PostaService.buildPost(log[0], contractProvider));
         }

@@ -13,7 +13,6 @@ import moment from "moment";
 
 import { FaFire, FaReply, FaUsers } from "react-icons/fa";
 import { BigNumber, ethers } from "ethers";
-import { ReactComponent as POHLogo } from "../assets/poh.svg";
 import { ReactComponent as BurningHeart } from "../assets/burning_heart.svg";
 import {
   IPostaNFT,
@@ -25,9 +24,11 @@ import { useEffect, useState } from "react";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
 import PostReply from "./PostReply";
-import truncateTextMiddle from "../utils/textHelpers";
+import { truncateTextMiddle } from "../utils/textHelpers";
 import SupportPostDialog from "./SupportPostDialog";
 import Skeleton from "react-loading-skeleton";
+import { Link } from "react-router-dom";
+import ProfilePicture, { AvatarSize } from "./ProfilePicture";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postOrId: BigNumber | IPostaNFT;
@@ -46,7 +47,7 @@ interface IGiveSupportButtonProps {
 
 export default function PostDisplay(props: IPostDisplayProps) {
   const [postData, setPostData] = useState<IPostaNFT | null>(null);
-  const [showReply, setShowReply] = useState(false);
+  const [isReplyDialogVisible, setIsReplyDialogVisible] = useState(false);
   const [repliesLogs, setRepliesLogs] = useState<PostLogs[] | null>(null);
   const [showSupportPostDialog, setShowSupportPostDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const contractProvider = useContractProvider();
 
   const handleReplyClicked = async () => {
-    setShowReply(true);
+    setIsReplyDialogVisible(true);
   };
 
   const refreshRepliesCount = async () => {
@@ -82,6 +83,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
       else if (contractProvider) {
         // Get logs for the token
         const postLogs = await PostaService.getPostLogs(
+          null,
           [props.postOrId as BigNumber],
           contractProvider
         );
@@ -118,9 +120,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
       )}
       {postData && (
         <PostReply
-          show={showReply}
+          show={isReplyDialogVisible}
           postReply={postData}
-          onClose={() => setShowReply(false)}
+          onClose={() => setIsReplyDialogVisible(false)}
         />
       )}
       <Card
@@ -141,10 +143,8 @@ export default function PostDisplay(props: IPostDisplayProps) {
                   <div className="d-flex justify-content-between mb-0">
                     <div className="d-flex justify-content-start align-items-center">
                       {/* Human Name */}
-                      <a
-                        href={`${
-                          process.env.REACT_APP_HUMAN_PROFILE_BASE_URL
-                        }/${postData && postData.author.toLowerCase()}`}
+                      <Link
+                        to={`/human/${postData?.author.toLowerCase()}`}
                         className="text-dark"
                       >
                         {isLoading ? (
@@ -156,7 +156,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                                 truncateTextMiddle(4, postData.author, 4))}
                           </h6>
                         )}
-                      </a>{" "}
+                      </Link>{" "}
                       <small className="post-date text-muted ml-2">
                         {" - "}
                         {postData &&
@@ -174,7 +174,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       >
                         {props.condensed ? (
                           <small>
-                            $POSTA:{postData && postData.tokenId.toString()}
+                            $POSTA:
+                            {(postData && postData.tokenId.toString()) ||
+                              props.postOrId.toString()}
                           </small>
                         ) : (
                           <>$POSTA:{postData && postData.tokenId.toString()}</>
@@ -197,11 +199,13 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     !props.hideSourcePost && (
                       <div className="mt-2">
                         {
-                          <PostDisplay
-                            hideSourcePost={true}
-                            condensed
-                            postOrId={postData?.replyOfTokenId}
-                          />
+                          <Link to={`/post/${postData?.replyOfTokenId}`}>
+                            <PostDisplay
+                              hideSourcePost={true}
+                              condensed
+                              postOrId={postData?.replyOfTokenId}
+                            />
+                          </Link>
                         }
                       </div>
                     )}
@@ -323,23 +327,5 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
         </Button>
       </div>
     </OverlayTrigger>
-  );
-}
-
-enum AvatarSize {
-  Small = "avatar-sm",
-  Regular = "avatar",
-}
-
-function ProfilePicture(props: { size: AvatarSize; imageUrl?: string | null }) {
-  const avatarClass = props.size || "avatar";
-  return (
-    (props.imageUrl && (
-      <img className={`${avatarClass} mr-2`} src={props.imageUrl} />
-    )) || (
-      <POHLogo
-        className={`flex-shrink-0 ${avatarClass} mr-2 text-secondary p-1 bg-secondary`}
-      />
-    )
   );
 }

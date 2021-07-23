@@ -35,7 +35,7 @@ export default function PostList(props: IPostListProps) {
 
 function LoadingList() {
   return (
-    <Container className="d-flex justify-content-center align-items-center">
+    <Container className="d-flex justify-content-center align-items-center mt-5">
       <Card>
         <Card.Body className="text-dark d-flex justify-content-center align-items-center">
           <Spinner animation="border" className="mr-2" /> Loading Postas...

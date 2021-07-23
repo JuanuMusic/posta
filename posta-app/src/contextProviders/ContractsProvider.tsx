@@ -13,7 +13,7 @@ const contractsDefinitions: IContractsDefinitions = {
   UBIContract: require("../contracts/DummyUBI.sol/DummyUBI.json"),
   POHContract: require("../contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
   //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
-  PostaContract: require("../contracts/v0.4/PostaV0_4.sol/PostaV0_4.json"),
+  PostaContract: require("../contracts/v0.5/PostaV0_5.sol/PostaV0_5.json"),
 };
 
 /**

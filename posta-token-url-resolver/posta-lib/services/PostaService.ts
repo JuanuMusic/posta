@@ -9,7 +9,7 @@ import { TransactionResponse } from "@ethersproject/abstract-provider/lib"
 interface IPostaService {
   getTokenUrl(tokenId: BigNumber, contractProvider: IContractProvider): Promise<string>;
   setBaseURI(from: string, baseUrl: string, contractProvider: IContractProvider): Promise<void>;
-  getPostLogs(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<PostLogs[] | null>;
+  getPostLogs(authors: string[] | null, tokenIds: BigNumber[] | null, contractProvider: IContractProvider): Promise<PostLogs[] | null>;
   /**
    * Returns an array of logs that belong to replies to a given post.
    * @param forTokenId Token ID of the posxt for which to retrieve replies
@@ -35,7 +35,7 @@ interface IPostaService {
     * @param contractProvider 
     * @returns 
     */
-  getPosts(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
+  getPosts(humans: string[] | null, tokenIds: BigNumber[] | null, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
 
   /**
     * Returns the maxChars value on the posta contract
@@ -56,7 +56,14 @@ interface IPostaService {
    * @param max The max number of top supporters to retrieve.
    * @param contractProvider 
    */
-  getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupporterLog[] | null>;
+  getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupportGivenLog[] | null>;
+
+  /**
+   * Returns a list of posts authored by a specific human.
+   * @param human 
+   * @param contractProvider 
+   */
+  getPostsBy(human: string, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
 }
 
 export interface IPostData {
@@ -112,14 +119,15 @@ const PostaService: IPostaService = {
   },
 
   /**
-   * Returns an array with the posts logs to build the posts.
-   * @param tokenIds 
+   * Returns an array with the posts logs to search for to build the posts.
+   * @param authors Array of human addresses to fetch posts.
+   * @param tokenIds Array of token IDs to fetch posts.
    * @param provider 
    * @returns 
    */
-  async getPostLogs(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<PostLogs[] | null> {
+  async getPostLogs(authors: string[] | null, tokenIds: BigNumber[] | null, contractProvider: IContractProvider): Promise<PostLogs[] | null> {
     const postaContract = await contractProvider.getPostaContractForRead();
-    const filter = postaContract.filters.NewPost(null, tokenIds.map(id => id.toNumber()));
+    const filter = postaContract.filters.NewPost(authors || null, tokenIds && tokenIds.map(id => id.toNumber()) || null);
     const logs = await postaContract.queryFilter(filter);
 
 
@@ -157,6 +165,8 @@ const PostaService: IPostaService = {
     return retVal;
   },
 
+
+
   /**
    * Returns an array of logs that belong to replies to a given post.
    * @param forTokenId Token ID of the posxt for which to retrieve replies
@@ -176,7 +186,7 @@ const PostaService: IPostaService = {
       if (log.args) {
 
         // Get the actual post and add the tokenId of the source post
-        const sourcePostLogs = await PostaService.getPostLogs([log.args.tokenId], contractProvider);
+        const sourcePostLogs = await PostaService.getPostLogs(null, [log.args.tokenId], contractProvider);
         if (!sourcePostLogs) {
           console.warn(`Couldn't find post logs of source post ${forTokenId}`)
           return null;
@@ -265,7 +275,7 @@ const PostaService: IPostaService = {
     }
 
     // Build the posts
-    const postsNFTs = await PostaService.getPosts(tokenIds, contractProvider);
+    const postsNFTs = await PostaService.getPosts(null, tokenIds, contractProvider);
 
     // Return the list of nfts posts
     return (postsNFTs && postsNFTs.sort((a, b) => a.tokenId.gt(b.tokenId) ? - 1 : 1)) || null;
@@ -277,10 +287,9 @@ const PostaService: IPostaService = {
    * @param contractProvider 
    * @returns 
    */
-  async getPosts(tokenIds: BigNumber[], contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
+  async getPosts(humans: string[] | null, tokenIds: BigNumber[] | null, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
     // Get logs for all token ids
-    const postLogs = await PostaService.getPostLogs(tokenIds, contractProvider);
-    console.log("GET POSTS", postLogs);
+    const postLogs = await PostaService.getPostLogs(humans, tokenIds, contractProvider);
     if (!postLogs) return null;
 
 
@@ -362,7 +371,7 @@ const PostaService: IPostaService = {
    * @param max The max number of top supporters to retrieve.
    * @param contractProvider 
    */
-  async getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupporterLog[] | null> {
+  async getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupportGivenLog[] | null> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const filter = postaContract.filters.SupportGiven(null, null);
     let logs = await postaContract.queryFilter(filter);
@@ -378,6 +387,8 @@ const PostaService: IPostaService = {
         supporter: log.args && log.args.supporter,
         // Extract text from log object
         amount: log.args && log.args.amount,
+        burnt: log.args && log.args.burnt,
+        treasury: log.args && log.args.treasury,
         // Tweet date comes from block timestamp
         blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
       };
@@ -386,6 +397,15 @@ const PostaService: IPostaService = {
     }));
 
     return retVal;
+  },
+
+  /**
+   * Returns a list of posts authored by a specific human.
+   * @param human 
+   * @param contractProvider 
+   */
+  async getPostsBy(human: string, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
+    return await PostaService.getPosts([human],null, contractProvider);
   }
 
 }

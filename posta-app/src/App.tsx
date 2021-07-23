@@ -11,6 +11,7 @@ import DummyPOHController from "./dev-tools/DummyPOHController";
 import PostaController from "./dev-tools/PostaController";
 import { useWeb3React } from "@web3-react/core";
 import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
+import HumanPage from "./pages/HumanPage";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -40,6 +41,9 @@ export default function App(props: IAppProps) {
                   <Switch>
                     <Route path="/post/:tokenId">
                       <PostPage />
+                    </Route>
+                    <Route path="/human/:humanAddress">
+                      <HumanPage />
                     </Route>
                     <Route path="/">
                       <MainPage />

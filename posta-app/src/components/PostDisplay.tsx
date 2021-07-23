@@ -150,24 +150,23 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       {/* Human Name */}
                       <Link
                         to={`/human/${postData?.author.toLowerCase()}`}
-                        className="text-dark"
+                        className="text-dark align-middle"
                       >
-                        {isLoading ? (
-                          <Skeleton className="w-25" />
-                        ) : (
-                          <h6 className="m-0">
-                            {postData &&
-                              (postData.authorDisplayName ||
-                                truncateTextMiddle(4, postData.author, 4))}
-                          </h6>
-                        )}
-                      </Link>{" "}
-                      <small className="post-date text-muted ml-2">
+                        <h6 className="m-0">
+                          {postData &&
+                            (postData.authorDisplayName ||
+                              truncateTextMiddle(4, postData.author, 4))}
+                        </h6>
+                      </Link>
+                      <small className="post-date ml-1 text-muted align-middle">
                         {" - "}
-                        {postData &&
+                        {postData && postData.blockTime ? (
                           moment(postData.blockTime || new Date(0)).format(
                             "MMMM Do YYYY, h:mm"
-                          )}
+                          )
+                        ) : (
+                          <Skeleton />
+                        )}
                       </small>
                     </div>
                     {/* NFT ID */}
@@ -193,7 +192,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     {/* Post Text */}
                     <p className="post-text text-dark mb-1">
                       {isLoading ? (
-                        <Skeleton count={2} />
+                        <Skeleton />
                       ) : (
                         <>{(postData && postData.content) || "..."}</>
                       )}
@@ -204,7 +203,10 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     !props.hideSourcePost && (
                       <div className="mt-2">
                         {
-                          <div onClick={handleOnPostDisplayClick} className="cursor-pointer">
+                          <div
+                            onClick={handleOnPostDisplayClick}
+                            className="cursor-pointer"
+                          >
                             <PostDisplay
                               hideSourcePost={true}
                               condensed
@@ -236,7 +238,10 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       "0"
                     }
                   />
-                  <Link to={`/post/${postData?.tokenId}/supporters`}>
+                  <Link
+                    to={`/post/${postData?.tokenId}/supporters`}
+                    className="align-middle"
+                  >
                     <SupportersCount
                       supporters={
                         (postData &&
@@ -251,7 +256,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                   {repliesLogs && repliesLogs.length > 0 && (
                     <Link
                       to={`/post/${postData?.tokenId}`}
-                      className="mr-2 text-secondary"
+                      className="mr-2 text-secondary align-middle"
                     >
                       <small>
                         Replies {repliesLogs && `(${repliesLogs.length})`}
@@ -286,13 +291,15 @@ function SupportersCount(props: any) {
       placement="bottom"
       overlay={
         <Tooltip id="supporters_hint">
-          Number of humans that gave support to this post.
+          how many humans supported this post
         </Tooltip>
       }
     >
-      <div className="d-inline-flex text-dark align-self-center justify-content-center px-2 mx-2">
+      <div className="d-inline-flex text-dark align-self-center justify-content-center px-2 mx-2 align-middle">
         <FaUsers className="align-self-center mr-2" />
-        <small>{props.supporters} supporters</small>
+        <small style={{ fontSize: "0.7rem" }}>
+          {props.supporters} supporters
+        </small>
       </div>
     </OverlayTrigger>
   );
@@ -318,11 +325,10 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
           variant="outline-danger"
           onClick={props.onClick}
           disabled={props.disabled}
-          className="p-0 m-0"
           size="sm"
         >
-          <div className="d-flex justify-content-center align-items-center">
-            <BurningHeart className={`btn-icon my-0 mx-0 p-0 bg-transparent`} />
+          <div className="d-flex justify-content-center align-items-center ml-1">
+            <BurningHeart className={`btn-icon bg-transparent mr-1`} />
             <span className={"mr-1"}>{props.supportGiven}</span>
           </div>
         </Button>

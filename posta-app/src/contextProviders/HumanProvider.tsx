@@ -4,6 +4,7 @@ import { createContext, useState } from "react";
 import { PohService } from "../posta-lib";
 import { PohAPI, POHProfileModel } from "../posta-lib/services/PohAPI";
 import { useContractProvider } from "./ContractsProvider";
+import { injected } from "../connectors";
 
 const EMPTY_POH_PROFILE = { display_name: "", first_name: "", last_name: "" };
 
@@ -27,7 +28,11 @@ export default function HumanProvider({ children }: { children: any }) {
     if (web3Context.error) {
       console.error("Web3 Context error:", web3Context.error.message);
     }
-    if (!web3Context.account) return;
+
+    if (!web3Context.account) {
+      if(window.ethereum) web3Context.activate(injected);
+      return;
+    };
 
     loadHumanAccount(web3Context.account);
   }, [web3Context, contractProvider]);

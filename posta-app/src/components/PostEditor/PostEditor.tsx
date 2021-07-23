@@ -78,16 +78,14 @@ export default function PostEditor(props: IPostEditorProps) {
 
   return (
     <Container className="p-0">
+      {props.showHeader && (<p className="my-2">
+            Hi {human && human.profile && human.profile?.display_name}!
+          </p>)}
       <Card bg="dark" border={props.borderless ? "border-0" : "secondary"}>
         {/* Loading Indicator */}
         {isLoading && <PublishingIndicator />}
         {/* Publish error */}
         {publishError && <PostError error={publishError} />}
-        <Card.Header className={`${(!props.showHeader && "d-none") || ""} py-0`}>
-          <p className="lead my-2">
-            Hi {human && human.profile && human.profile?.display_name}!
-          </p>
-        </Card.Header>
         <Card.Body className="p-0">
           <FormControl
             style={{ borderRadius: 0 }}
@@ -105,7 +103,7 @@ export default function PostEditor(props: IPostEditorProps) {
           <div className="d-flex justify-content-between align-items-center my-0">
             <div className="text-light">{`${postText.length}/${maxChars}`}</div>
             <Button disabled={!isSendButtonEnabled} onClick={handleSendPost}>
-              Send
+              Post forever
             </Button>
           </div>
         </Card.Footer>

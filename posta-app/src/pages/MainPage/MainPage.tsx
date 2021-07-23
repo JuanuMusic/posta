@@ -33,32 +33,38 @@ export default function MainPage() {
     setIsLoadingPosts(false);
   };
 
+  async function onNewPost(author: string, tokenId: BigNumber, value: string) {
+    if (!contractProvider) return;
+    const newPost = await PostaService.getPosts(
+      null,
+      [tokenId],
+      contractProvider
+    );
+    if (newPost && newPost.length > 0) appendPost(newPost[0]);
+  }
+
   useEffect(() => {
     async function onContractProviderChanged() {
       if (!contractProvider) return;
-      
+
       // Refresh the latest posts
       await refreshLatestPosts();
-      
+
+      const contract = await contractProvider.getPostaContractForRead();
       // Subscribe to NewPost evemt
-      (await contractProvider.getPostaContractForRead()).on(
-        "NewPost",
-        async (author: string, tokenId: number, value: string) => {
-          console.log("NewPost received", author, tokenId, value);      
-          const log = await PostaService.getPostLogs(null, [BigNumber.from(tokenId)], contractProvider);
-          if(log && log.length > 0)
-            appendPost(await PostaService.buildPost(log[0], contractProvider));
-        }
-      );
+      contract.on("NewPost", onNewPost);
+
+      return () => contract.off("NewPost", onNewPost);
     }
 
     onContractProviderChanged();
   }, [contractProvider]);
 
   const appendPost = (post: IPostaNFT) => {
-    posts.push(post);
-    setPosts(posts);
-  }
+    const newValue = posts.concat([post]);
+    setPosts(newValue);
+    console.log("NEW VALUE", newValue);
+  };
 
   const onNewPostSent = (stackId: number) => {
     refreshLatestPosts();
@@ -68,11 +74,19 @@ export default function MainPage() {
     <Container>
       <Row>
         <Col>
-        {(human.profile.registered && !human.isLoading) && (<PostEditor showHeader={true} onNewPostSent={onNewPostSent} />)}
-        {(!human.profile.registered) && (<HumanNotRegistered isLoading={human.isLoading} />)}
+          {human.profile.registered && !human.isLoading && (
+            <PostEditor showHeader={true} onNewPostSent={onNewPostSent} />
+          )}
+          {!human.profile.registered && (
+            <HumanNotRegistered isLoading={human.isLoading} />
+          )}
         </Col>
       </Row>
-      <Row><Col><hr className="bg-secondary mx-2 my-3" /></Col></Row>
+      <Row>
+        <Col>
+          <hr className="bg-secondary mx-2 my-3" />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <PostList posts={posts} isLoading={isLoadingPosts} />

@@ -1,4 +1,4 @@
-import{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FormControl,
   InputGroup,
@@ -25,15 +25,13 @@ interface ISupportPostDialogProps extends IBasePostaProps {
  * @returns
  */
 function useUBIBalance(address: string) {
-  
   const [currentUBIBalance, setCurrentUBIBalance] = useState(BigNumber.from(0));
   const contractProvider = useContractProvider();
-  
-  
+
   useEffect(() => {
     async function getBalance() {
       if (!address) return;
-      if(!contractProvider) return;
+      if (!contractProvider) return;
       const balance = await UBIService.balanceOf(address, contractProvider);
       // Update the current UBI balance.
       setCurrentUBIBalance(balance);
@@ -59,7 +57,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
   };
 
   const handleApproveBurn = async () => {
-    if(!contractProvider) return;
+    if (!contractProvider) return;
     if (amount) {
       setIsApproving(true);
       const parsedAmount = utils.parseEther(amount);
@@ -84,7 +82,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
    * Send  request to burn UBIs. First approves the ammount and then burns it.
    */
   const handleGiveUBISupport = async () => {
-    if(!contractProvider) return;
+    if (!contractProvider) return;
     if (amount) {
       const parsedAmount = utils.parseEther(amount);
 
@@ -157,7 +155,7 @@ function SupportPostDialog(props: ISupportPostDialogProps) {
           disabled={!_isApproveButtonEnabled()}
           onClick={handleApproveBurn}
         >
-          Approve{" "}
+          <span>{isApproving ? "Approving..." : "Approve"}</span>
           {isApproving && (
             <Spinner animation="border" variant="light" size="sm" />
           )}

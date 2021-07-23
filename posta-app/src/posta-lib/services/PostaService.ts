@@ -343,8 +343,8 @@ const PostaService: IPostaService = {
     // Return data
     return {
       author: log.author,
-      authorDisplayName: (human && human.display_name) || log.author,
-      authorFullName: (human && (human.first_name + " " + human.last_name)) || log.author,
+      authorDisplayName: (human && human.display_name),
+      authorFullName: (human && (human.first_name + " " + human.last_name)),
       authorImage: human && human.photo,
       content: log.content,
       tokenId: log.tokenId,

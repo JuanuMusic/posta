@@ -32,7 +32,7 @@ export default function SuperHeader(props: any) {
       >
         <FaGithub size={12} className="text-light" />
       </a>
-      <small>| UBI burn factor: {burnPct && ethers.utils.formatEther(burnPct)}</small>
+      <small>| UBI burn factor: {burnPct && ethers.utils.formatEther(burnPct)} | </small>
     </div>
   );
 }

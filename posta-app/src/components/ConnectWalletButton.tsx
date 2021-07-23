@@ -14,12 +14,13 @@ export default function ConnectWalletButton(props: any) {
         <Button
           variant="warning"
           onClick={() => setIsConnectDialogVisible(true)}
+          className="py-1 px-1"
         >
           {human &&
           !human.isLoading &&
           human.profile &&
           human.profile.registered
-            ? `Connected as ${
+            ? `${
                 human.profile?.display_name
               } (${truncateTextMiddle(4, human.profile.eth_address || "", 4)})`
             : "Connect as Human"}

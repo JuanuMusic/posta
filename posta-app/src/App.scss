@@ -1,5 +1,11 @@
 $card-border-radius: 1px;
 $btn-border-radius: 0px;
+$btn-border-radius-sm: 0px;
+$btn-padding-y-sm: 2px;
+$btn-padding-x-sm: 2px;
+$btn-font-size-sm: 0.7rem;
+//$btn-line-height-sm:
+//$btn-border-radius-sm:
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 
@@ -86,8 +92,9 @@ h1 {
 }
 
 .btn-icon {
-  width:30px;
-  height: 30px;
+  width: 12px;
+  height: 12px;
+  
 }
 
 .icon-sm {
@@ -104,9 +111,13 @@ h6 {
 }
 
 .post-date {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.tooltip {
+  font-size: 0.65rem;
 }

@@ -20,9 +20,11 @@ const PohService = {
      * @param address 
      * @returns 
      */
-    async getHuman(address: string) {
+    async getHuman(address: string, contractProvider: IContractProvider) {
+        // Resolve in case it's an ens name
+        const resolvedAddress = address.toLowerCase().endsWith(".eth") ? await contractProvider.ethersProvider.resolveName(address) : address;
         // Cache human
-        await ensureHumanIsCached(address);
+        await ensureHumanIsCached(resolvedAddress);
         return _profilesCache[address];
     },
 

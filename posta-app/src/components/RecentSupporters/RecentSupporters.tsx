@@ -21,7 +21,7 @@ export default function RecentSupporters(props: any) {
         10,
         contractProvider
       );
-      setLastSupporters(supporters);
+      supporters && setLastSupporters(supporters.sort((supportA, supportB) => supportB.blockTime.getTime() - supportA.blockTime.getTime()));
     }
 
     refreshLastSupporters();
@@ -29,7 +29,7 @@ export default function RecentSupporters(props: any) {
 
   return (
     <Card className={props.className + " bg-dark"}>
-      <Card.Header className="p-1">
+      <Card.Header className="p-1 bg-dark v">
         <h6>Recent Supporters</h6>
       </Card.Header>
       <Card.Body className="p-1 bg-secondary">
@@ -67,7 +67,7 @@ function SupportItem({ support }: { support: SupportGivenLog }) {
           <span className="font-weight-bold">
             {ethers.utils.formatEther(support.burnt.toString())}
           </span>{" "}
-          $UBI on
+          $UBI on{" "}
           <Link to={`/post/${support.tokenId.toString()}`}>
             $POSTA:{support.tokenId.toString()}
           </Link>

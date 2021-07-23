@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, Event } from "ethers";
 
 import { IContractProvider } from "./ContractProvider";
 import { POHProfileModel } from "./PohAPI";
@@ -21,6 +21,7 @@ interface IPostaService {
   getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
   requestBurnApproval(from: string, amount: BigNumber, contractProvider: IContractProvider): Promise<void>;
   buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT>;
+  buildSupportLog(log: Event): Promise<SupportGivenLog>;
 
   /**
    * Returns the total number of tokens minted
@@ -57,6 +58,14 @@ interface IPostaService {
    * @param contractProvider 
    */
   getLastSupporters(max: number, contractProvider: IContractProvider): Promise<SupportGivenLog[] | null>;
+
+  /**
+   * Returns an array with the supporters of a post up to a max number of logs.
+   * @param tokenId 
+   * @param max 
+   * @param contractProvider 
+   */
+  getSupportersOf(tokenId: BigNumber, max: number, contractProvider: IContractProvider): Promise<SupportGivenLog[] | null>;
 
   /**
    * Returns a list of posts authored by a specific human.
@@ -324,7 +333,7 @@ const PostaService: IPostaService = {
     // Get the human that wrote the post
     let human: POHProfileModel;
     try {
-      human = await PohService.getHuman(log.author)
+      human = await PohService.getHuman(log.author, contractProvider);
     } catch (error) {
       // If fails, set human object
       human = { display_name: "", first_name: "", last_name: "" };
@@ -379,24 +388,26 @@ const PostaService: IPostaService = {
 
     if (!logs) return null
     if (logs.length > max) logs = logs.slice(0, 10);
-    const retVal = await Promise.all(logs.map(async log => {
-      const block = await log.getBlock();
-
-      const retItm = {
-        tokenId: log.args && log.args.tokenId,
-        supporter: log.args && log.args.supporter,
-        // Extract text from log object
-        amount: log.args && log.args.amount,
-        burnt: log.args && log.args.burnt,
-        treasury: log.args && log.args.treasury,
-        // Tweet date comes from block timestamp
-        blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
-      };
-
-      return retItm;
-    }));
+    const retVal = await Promise.all(logs.map(PostaService.buildSupportLog));
 
     return retVal;
+  },
+
+  async buildSupportLog(log: Event) {
+    const block = await log.getBlock();
+
+    const retItm = {
+      tokenId: log.args && log.args.tokenId,
+      supporter: log.args && log.args.supporter,
+      // Extract text from log object
+      amount: log.args && log.args.amount,
+      burnt: log.args && log.args.burnt,
+      treasury: log.args && log.args.treasury,
+      // Tweet date comes from block timestamp
+      blockTime: (block && new Date(block.timestamp * 1000)) || new Date(0)
+    };
+
+    return retItm;
   },
 
   /**
@@ -405,7 +416,25 @@ const PostaService: IPostaService = {
    * @param contractProvider 
    */
   async getPostsBy(human: string, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
-    return await PostaService.getPosts([human],null, contractProvider);
+    return await PostaService.getPosts([human], null, contractProvider);
+  },
+
+  /**
+   * Returns an array with the supporters of a post up to a max number of logs.
+   * @param tokenId 
+   * @param max 
+   * @param contractProvider 
+   */
+  async getSupportersOf(tokenId: BigNumber, max: number, contractProvider: IContractProvider): Promise<SupportGivenLog[] | null> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const filter = postaContract.filters.SupportGiven([tokenId], null);
+    let logs = await postaContract.queryFilter(filter);
+
+    if (!logs) return null
+    if (logs.length > max) logs = logs.slice(0, 10);
+    const retVal = await Promise.all(logs.map(PostaService.buildSupportLog));
+
+    return retVal;
   }
 
 }

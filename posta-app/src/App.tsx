@@ -12,6 +12,7 @@ import PostaController from "./dev-tools/PostaController";
 import { useWeb3React } from "@web3-react/core";
 import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
 import HumanPage from "./pages/HumanPage";
+import SupportersPage from "./pages/SupportersPage";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -39,6 +40,9 @@ export default function App(props: IAppProps) {
               <Row>
                 <Col>
                   <Switch>
+                    <Route path="/post/:tokenId/supporters">
+                      <SupportersPage />
+                    </Route>
                     <Route path="/post/:tokenId">
                       <PostPage />
                     </Route>

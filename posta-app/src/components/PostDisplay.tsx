@@ -27,7 +27,7 @@ import PostReply from "./PostReply";
 import { truncateTextMiddle } from "../utils/textHelpers";
 import SupportPostDialog from "./SupportPostDialog";
 import Skeleton from "react-loading-skeleton";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ProfilePicture, { AvatarSize } from "./ProfilePicture";
 
 interface IPostDisplayProps extends IBasePostaProps {
@@ -53,6 +53,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const [isLoading, setIsLoading] = useState(false);
   const human = useHuman();
   const contractProvider = useContractProvider();
+  const history = useHistory();
 
   const handleReplyClicked = async () => {
     setIsReplyDialogVisible(true);
@@ -108,6 +109,10 @@ export default function PostDisplay(props: IPostDisplayProps) {
       refreshRepliesCount();
     }
   }, [postData]);
+
+  function handleOnPostDisplayClick() {
+    history.push(`/post/${postData?.replyOfTokenId}`);
+  }
 
   return (
     <>
@@ -199,26 +204,21 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     !props.hideSourcePost && (
                       <div className="mt-2">
                         {
-                          <Link to={`/post/${postData?.replyOfTokenId}`}>
+                          <div onClick={handleOnPostDisplayClick} className="cursor-pointer">
                             <PostDisplay
                               hideSourcePost={true}
                               condensed
                               postOrId={postData?.replyOfTokenId}
                             />
-                          </Link>
+                          </div>
                         }
                       </div>
                     )}
                 </div>
               </Col>
             </Row>
-            <Row className={(props.condensed && "d-none") || ""}>
-              <Col>
-                <hr className="my-2" />
-              </Col>
-            </Row>
-            <Row className={(props.condensed && "d-none") || ""}>
-              <Col className="d-flex justify-content-between align-items-start mt-2 mb-1">
+            <Row className={((props.condensed && "d-none") || "") + " mt-2"}>
+              <Col className="d-flex justify-content-between align-items-start">
                 <div className="d-flex alignt-items-start">
                   <GiveSupportButton
                     className="align-self-center"
@@ -236,26 +236,27 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       "0"
                     }
                   />
-
-                  <SupportersCount
-                    supporters={
-                      (postData &&
-                        postData.supportCount &&
-                        postData.supportCount.toString()) ||
-                      "0"
-                    }
-                  />
+                  <Link to={`/post/${postData?.tokenId}/supporters`}>
+                    <SupportersCount
+                      supporters={
+                        (postData &&
+                          postData.supportCount &&
+                          postData.supportCount.toString()) ||
+                        "0"
+                      }
+                    />
+                  </Link>
                 </div>
                 <div>
                   {repliesLogs && repliesLogs.length > 0 && (
-                    <a
-                      href={`/post/${postData?.tokenId}`}
+                    <Link
+                      to={`/post/${postData?.tokenId}`}
                       className="mr-2 text-secondary"
                     >
                       <small>
                         Replies {repliesLogs && `(${repliesLogs.length})`}
                       </small>
-                    </a>
+                    </Link>
                   )}
                   <Button
                     variant="outline-primary"

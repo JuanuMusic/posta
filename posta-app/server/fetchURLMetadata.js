@@ -58,9 +58,7 @@ function fetchURLMetadata(url) {
         var response, root, metas, title, description, image;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    console.log("Fetching URL", url);
-                    return [4 /*yield*/, axios_1.default.get(url)];
+                case 0: return [4 /*yield*/, axios_1.default.get(url)];
                 case 1:
                     response = _a.sent();
                     root = node_html_parser_1.parse(response.data);
@@ -69,7 +67,7 @@ function fetchURLMetadata(url) {
                     description = getValueFromTags(metas, "description");
                     image = getValueFromTags(metas, "image");
                     return [2 /*return*/, {
-                            title: title || "", description: "", image: ""
+                            title: title || "", description: description || "", image: image || ""
                         }];
             }
         });

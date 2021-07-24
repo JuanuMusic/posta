@@ -7,12 +7,7 @@ interface IUrlPreviewerProps {
 }
 
 export default function UrlPreviewer(props: IUrlPreviewerProps) {
-  const [metadata, setMetadata] = useState<URLMetadata | null>({
-    title: "A nice title",
-    description:
-      " RThe description is always important as long as is not too long",
-    image: "https://i.ytimg.com/vi/1y6K3eq1KOw/maxresdefault.jpg",
-  });
+  const [metadata, setMetadata] = useState<URLMetadata | null>(null);
 
   useEffect(() => {
     async function loadPreview() {
@@ -20,7 +15,7 @@ export default function UrlPreviewer(props: IUrlPreviewerProps) {
       setMetadata(newMetadata);
     }
 
-    //if (props.url) loadPreview();
+    if (props.url) loadPreview();
   }, [props.url]);
 
   return (

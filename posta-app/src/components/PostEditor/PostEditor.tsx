@@ -7,6 +7,7 @@ import PublishingIndicator from "./components/PublishingIndicator";
 import PostError from "./components/PostError";
 import { useContractProvider } from "../../contextProviders/ContractsProvider";
 import { BigNumber } from "ethers";
+import ProfilePicture, { AvatarSize } from "../ProfilePicture";
 //import PostDisplay from "../PostDisplay";
 
 interface IPostEditorProps extends IBasePostaProps {
@@ -58,7 +59,7 @@ export default function PostEditor(props: IPostEditorProps) {
     const postData: IPostData = {
       text: postText,
       author: (human && human.profile && human.profile.eth_address) || "",
-      replyOfTokenId: props.replyOfTokenId
+      replyOfTokenId: props.replyOfTokenId,
     };
 
     // Publish the tyweet through the Posta Service
@@ -66,8 +67,8 @@ export default function PostEditor(props: IPostEditorProps) {
       const tx = await PostaService.publishPost(postData, contractProvider);
       console.log("Transaction", tx);
     } catch (error) {
-      console.error(JSON.stringify(error))
-      console.error(error.stack)
+      console.error(JSON.stringify(error));
+      console.error(error.stack);
       setPublishError(error);
     }
     // Empty post text
@@ -77,11 +78,21 @@ export default function PostEditor(props: IPostEditorProps) {
   };
 
   return (
-    <Container className="p-0">
-      {props.showHeader && (<p className="my-2">
+    <div className="d-flex p-0">
+      <Card
+        bg="dark"
+        border={props.borderless ? "border-0" : "secondary"}
+        className="w-100"
+      >
+        {props.showHeader && (
+          <small className="m-2">
+            <ProfilePicture
+              imageUrl={human && human.profile.photo}
+              size={AvatarSize.Small}
+            />{" "}
             Hi {human && human.profile && human.profile?.display_name}!
-          </p>)}
-      <Card bg="dark" border={props.borderless ? "border-0" : "secondary"}>
+          </small>
+        )}
         {/* Loading Indicator */}
         {isLoading && <PublishingIndicator />}
         {/* Publish error */}
@@ -108,6 +119,6 @@ export default function PostEditor(props: IPostEditorProps) {
           </div>
         </Card.Footer>
       </Card>
-    </Container>
+    </div>
   );
 }

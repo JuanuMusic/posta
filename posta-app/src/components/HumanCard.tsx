@@ -26,7 +26,10 @@ export default function HumanCard(props: HumanCardProps) {
   async function loadHumanData() {
     if (!contractProvider || !props.humanAddress) return;
     setIsLoading(true);
-    const human = await PohService.getHuman(props.humanAddress, contractProvider);
+    const human = await PohService.getHuman(
+      props.humanAddress,
+      contractProvider
+    );
     setCurrentHuman(human);
     setIsLoading(false);
   }
@@ -41,37 +44,51 @@ export default function HumanCard(props: HumanCardProps) {
 
   return (
     <Card className={props.className || ""}>
-      <Card.Body className={"d-flex" + (props.condensed && " py-1")}>
+      <Card.Body
+        className={
+          "d-flex justify-content-center align-items-center " +
+          (props.condensed && "p-1")
+        }
+      >
         <ProfilePicture
           size={props.condensed ? AvatarSize.Small : AvatarSize.Large}
           imageUrl={currentHuman && currentHuman.photo}
         />
         <div>
-          {props.condensed ?  (<h6 className="text-dark mb-0">
-          {isLoading ? (
-              <Skeleton />
-            ) : (
-              currentHuman && currentHuman.display_name
-            )}
-          </h6>) :
-          (<h4 className="text-dark mb-0">
-            {isLoading ? (
-              <Skeleton />
-            ) : (
-              currentHuman && currentHuman.display_name
-            )}
-          </h4>)}
-          <small>
-            <a
-              href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${currentHuman?.eth_address}`}
-              className="text-dark"
-              target="_blank"
-            >
-              View on Proof of Humanity
-            </a>
-          </small>
+          <HumanNameDisplay
+            condensed={props.condensed}
+            name={(currentHuman && currentHuman.display_name) || ""}
+            isLoading={isLoading}
+          />
+          {!props.condensed && (
+            <small>
+              <a
+                href={`${process.env.REACT_APP_HUMAN_PROFILE_BASE_URL}/${currentHuman?.eth_address}`}
+                className="text-dark"
+                target="_blank"
+              >
+                View on Proof of Humanity
+              </a>
+            </small>
+          )}
         </div>
       </Card.Body>
     </Card>
+  );
+}
+
+function HumanNameDisplay(props: {
+  name: string;
+  condensed?: boolean;
+  isLoading?: boolean;
+}) {
+  return props.condensed ? (
+    <h6 className="text-dark mb-0">
+      {props.isLoading ? <Skeleton /> : props.name}
+    </h6>
+  ) : (
+    <h4 className="text-dark mb-0">
+      {props.isLoading ? <Skeleton /> : props.name}
+    </h4>
   );
 }

@@ -22,11 +22,7 @@ function getValueFromTags(tags: HTMLElement[], type: "title" | "description" | "
     return null;
 }
 
-
-
-
 export async function fetchURLMetadata(url: string): Promise<URLMetadata> {
-    console.log("Fetching URL", url);
     const response = await axios.get(url);
     const root = parse(response.data);
     const metas = root.querySelectorAll("meta");

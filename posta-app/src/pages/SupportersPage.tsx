@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import HumanCard from "../components/HumanCard";
 import PostDisplay from "../components/PostDisplay/PostDisplay";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
@@ -33,7 +33,7 @@ function SupportersPage(props: any) {
       <Row>
         <Col className="d-flex">
           {humanAddresses &&
-            humanAddresses.map((address, index) => <HumanCard condensed className="my-1" humanAddress={address} key={index} />)}
+            humanAddresses.map((address, index) => <Link to={`/human/${address}`} ><HumanCard condensed className="m-1" humanAddress={address} key={index} /></Link>)}
         </Col>
       </Row>
     </Container>

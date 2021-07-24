@@ -29,8 +29,8 @@ export default function RecentSupporters(props: any) {
 
   return (
     <Card className={props.className + " bg-dark"}>
-      <Card.Header className="p-1 bg-dark v">
-        <h6>Recent Supporters</h6>
+      <Card.Header className="p-1 bg-dark">
+        <h6 className="m-0">Recent Supporters</h6>
       </Card.Header>
       <Card.Body className="p-1 bg-secondary">
         <ListGroup variant="flush" className="my-1">

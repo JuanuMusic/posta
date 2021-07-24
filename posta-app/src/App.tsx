@@ -13,6 +13,7 @@ import { useWeb3React } from "@web3-react/core";
 import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
 import HumanPage from "./pages/HumanPage";
 import SupportersPage from "./pages/SupportersPage";
+import ContractSettings from "./components/ContractSettings";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 
@@ -25,7 +26,7 @@ export default function App(props: IAppProps) {
     <>
       <Container>
         <Row>
-          <Col md={8}>
+          <Col md={8} lg={9}>
             <Container>
               <Row>
                 <Col className="d-flex flex-row-reverse">
@@ -57,8 +58,11 @@ export default function App(props: IAppProps) {
               </Row>
             </Container>
           </Col>
-          <Col md={4}>
-            <RecentSupporters className="mt-5 d-none d-sm-none d-md-block" />
+          <Col md={4} lg={3}>
+            <div className="d-none d-sm-none d-md-block">
+              <ContractSettings className="mt-5" />
+              <RecentSupporters className="mt-2" />
+            </div>
           </Col>
         </Row>
 

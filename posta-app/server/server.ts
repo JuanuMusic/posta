@@ -1,22 +1,96 @@
 import path from 'path';
 import express from 'express';
 import { fetchURLMetadata } from './fetchURLMetadata';
+import { BigNumber, ethers } from "ethers";
+import { PostaService, PohService, ContractProvider } from "./posta-lib";
+import kovanConfig from "./config/kovan.json";
+import developConfig from "./config/develop.json";
+import { IConfiguration, IContractsDefinitions } from './posta-lib/services/ContractProvider';
+const config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig) as IConfiguration;
+
 const app = express();
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '..', 'build');
 app.use(express.static(publicPath));
 
 
-app.get('/preview', async function (req, res) {
-    if(!req.query || !req.query.url) return res.status(400).send();
-    const metadata = await fetchURLMetadata(req.query.url as string);
-    return res.status(200).send({metadata: metadata});
-});
+/**
+ * Returns the ethers provider based on the .env and config.json
+ * @param webProvider 
+ * @returns 
+ */
+async function getEthersProvider(
+    webProvider: any | undefined = undefined
+): Promise<ethers.providers.BaseProvider> {
+    let provider: ethers.providers.BaseProvider | undefined;
+    // If a web provider is passed, connect to it
+    if (webProvider) {
+        provider = new ethers.providers.Web3Provider(webProvider);
+    }
 
-// app.get('/post/**', function (req, res) {
-//     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
-// });
+    if (!provider) {
+        if (process.env.CONFIG === "kovan") {
+            provider = ethers.getDefaultProvider("kovan", {
+                infura: process.env.INFURA_PROJECT_ID,
+                etherscan: process.env.ETHERSCAN_API_KEY,
+            });
+        } else if (process.env.CONFIG === "develop") {
+            provider = new ethers.providers.JsonRpcProvider(config.network.URL, {
+                chainId: config.network.chainID,
+                name: config.network.name,
+            });
+        } else {
+            provider = ethers.getDefaultProvider();
+        }
+    }
 
-app.listen(port, () => {
-    console.log(`Server is up on port ${port}. =)`);
-});
+    return provider;
+}
+
+const contractsDefinitions: IContractsDefinitions = {
+    UBIContract: require("../contracts/DummyUBI.sol/DummyUBI.json"),
+    POHContract: require("../contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
+    //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
+    PostaContract: require("../contracts/v0.6/PostaV0_6.sol/PostaV0_6.json"),
+};
+async function initialize() {
+    const provider = await getEthersProvider();
+    const contractprovider = new ContractProvider(config, provider, contractsDefinitions);
+
+    app.get('/post/:tokenId', async (req, res) => {
+        const tokenId = BigNumber.from(req.params.tokenId); // tokenId from url param
+        // Get the logs for the token
+        const logs = await PostaService.getPostLogs(null, [tokenId], contractprovider);
+        if (!logs || logs.length === 0) return res.status(404).send("Log not found");
+        const log = logs[0];
+        const human = await PohService.getHuman(log.author, cm);
+        const retVal = {
+            author: log.author,
+            blockTime: log.blockTime,
+            content: log.content,
+            name: `$POSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
+            external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`,
+            replyOfTokenId: log.replyOfTokenId?.toNumber()
+        }
+
+        res.status(200).send(JSON.stringify(retVal));
+
+    })
+
+    app.get('/preview', async function (req, res) {
+        if (!req.query || !req.query.url) return res.status(400).send();
+        const metadata = await fetchURLMetadata(req.query.url as string);
+        return res.status(200).send({ metadata: metadata });
+    });
+
+    // app.get('/post/**', function (req, res) {
+    //     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    // });
+
+    app.listen(port, () => {
+        console.log(`Server is up on port ${port}. =)`);
+    });
+}
+
+
+initialize();

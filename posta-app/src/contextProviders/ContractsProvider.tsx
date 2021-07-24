@@ -13,7 +13,7 @@ const contractsDefinitions: IContractsDefinitions = {
   UBIContract: require("../contracts/DummyUBI.sol/DummyUBI.json"),
   POHContract: require("../contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
   //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
-  PostaContract: require("../contracts/v0.5/PostaV0_5.sol/PostaV0_5.json"),
+  PostaContract: require("../contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
 };
 
 /**
@@ -35,6 +35,7 @@ async function getEthersProvider(
       provider = ethers.getDefaultProvider("kovan", {
         infura: process.env.REACT_APP_INFURA_PROJECT_ID,
         etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY,
+        alchemy: process.env.REACT_APP_ALCHEMY_API_KEY
       });
     } else if (process.env.REACT_APP_CONFIG === "develop") {
       const config = configProvider.getConfig();

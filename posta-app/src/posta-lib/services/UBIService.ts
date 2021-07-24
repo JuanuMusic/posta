@@ -8,9 +8,16 @@ const UBIService = {
    * @returns 
    */
   async balanceOf(address: string, contractProvider: IContractProvider) {
-    if(!address) throw new Error(`Invalid address ${address}`);
-    const contract = await contractProvider.getUBIContractForRead();
-    return await contract.balanceOf(address);
+    try {
+      if (!address) throw new Error(`Invalid address ${address}`);
+      const contract = await contractProvider.getUBIContractForRead();
+      return await contract.balanceOf(address);
+    }
+    catch (error) {
+      console.error("Error getting UBI balance", error.message);
+      console.error(error.stack);
+      return 0;
+    }
   },
 
   /** Call to Start accruing UBI  */

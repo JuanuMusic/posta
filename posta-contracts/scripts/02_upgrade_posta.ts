@@ -3,6 +3,8 @@ import { ethers, upgrades } from "hardhat";
 const KOVAN_PROXY_ADDRESS = "0x0C5E8C6F974D2E2Ac8FF59b12d61b85E0bdfcC8b";
 const LOCAL_PROXY_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
 
+const contractName = "PostaV0_7";
+
 async function main() {
   // Deploy Library
   // console.log("Deploying PostaLib...")
@@ -10,12 +12,12 @@ async function main() {
   // const postaLib = await PostaLib.deploy();
   // console.log("Posta Lib Address:", postaLib.address);
   const [deployer] = await ethers.getSigners();
-  console.log("Upgrading POSTA with account:", deployer.address);
+  console.log("Upgrading POSTA to  with account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const PostaV4 = await ethers.getContractFactory("PostaV0_4");
-  await upgrades.upgradeProxy(KOVAN_PROXY_ADDRESS, PostaV4);
-  console.log("Posta upgraded to V4");
+  const postaContractFactory = await ethers.getContractFactory(contractName);
+  await upgrades.upgradeProxy(KOVAN_PROXY_ADDRESS, postaContractFactory);
+  console.log("Posta upgraded to",contractName);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

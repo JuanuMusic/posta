@@ -53,6 +53,12 @@ interface IPostaService {
   getBurnPct(contractProvider: IContractProvider): Promise<BigNumber>;
 
   /**
+   * Returns the factor to send to for reasury when support is given.
+   * @param contractProvider 
+   */
+  getTreasuryPct(contractProvider: IContractProvider): Promise<BigNumber>;
+
+  /**
    * Returns a list with the top recent supporters
    * @param max The max number of top supporters to retrieve.
    * @param contractProvider 
@@ -372,6 +378,12 @@ const PostaService: IPostaService = {
   async getBurnPct(contractProvider: IContractProvider): Promise<BigNumber> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const burnPct = await postaContract.getBurnPct();
+    return burnPct;
+  },
+
+  async getTreasuryPct(contractProvider: IContractProvider): Promise<BigNumber> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const burnPct = await postaContract.getTreasuryPct();
     return burnPct;
   },
 

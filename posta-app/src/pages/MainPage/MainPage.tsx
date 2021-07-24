@@ -23,7 +23,7 @@ export default function MainPage() {
     try {
       // Get the last 10 posts
       const postList = await PostaService.getLatestPosts(10, contractProvider);
-
+      console.log("postList", postList)
       // If list is not null, set to the state
       if (postList) setPosts(postList);
     } catch (error) {

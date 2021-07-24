@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IERC20Burnable",
-  "sourceName": "contracts/v0.4/PostaV0_4.sol",
+  "sourceName": "contracts/v0.6/PostaV0_6.sol",
   "abi": [
     {
       "anonymous": false,

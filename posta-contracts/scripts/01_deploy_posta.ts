@@ -8,8 +8,8 @@ const LOCAL_UBI_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const LOCAL_POH_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 const MAX_CHARS = "280";
-const BURN_PCT = "0";
-const TREASURY_PCT = "0";
+const BURN_PCT = "0.5";
+const TREASURY_PCT = "0.01";
 async function main() {
   // const PostaLib = await ethers.getContractFactory("PostaLib");
   // const postaLib = await PostaLib.deploy();

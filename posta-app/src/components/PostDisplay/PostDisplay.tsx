@@ -134,7 +134,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
 
     const hoursAgo = now.diff(blockTime, "hours");
     if (hoursAgo < 1) {
-      return `${secondsAgo}min ago`;
+      return `${minutesAgo}min ago`;
     }
 
     // If it was today returns just the time

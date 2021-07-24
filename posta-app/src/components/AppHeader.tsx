@@ -5,8 +5,8 @@ export default function AppHeader(props: any) {
     <div {...props}>
       <div className="d-flex justify-content-between align-items-center m-0">
         <div>
-          <h1>
-            <a role="h1" className="text-light" href="/">
+          <h1 className="m-0">
+            <a className="text-light" href="/">
               Posta
             </a>
           </h1>

@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PostDisplay from "../components/PostDisplay";
+import PostDisplay from "../components/PostDisplay/PostDisplay";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import {
   IPostaNFT,

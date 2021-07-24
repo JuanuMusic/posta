@@ -39,32 +39,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var path_1 = __importDefault(require("path"));
-var express_1 = __importDefault(require("express"));
-var fetchURLMetadata_1 = require("./fetchURLMetadata");
-var app = express_1.default();
-var port = process.env.PORT || 3000;
-var publicPath = path_1.default.join(__dirname, '..', 'build');
-app.use(express_1.default.static(publicPath));
-app.get('/preview', function (req, res) {
+exports.fetchURL = void 0;
+var axios_1 = __importDefault(require("axios"));
+var node_html_parser_1 = require("node-html-parser");
+function getTitle(tags) {
+    for (var i = 0; i < tags.length; i++) {
+        var tag = tags[i];
+        var name_1 = tag.getAttribute("name");
+        var property = tag.getAttribute("property");
+        if (name_1 === "title" || property && ["og:title", "twitter:title"].includes(property)) {
+            return tag.getAttribute("content");
+        }
+    }
+}
+function fetchURL(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var metadata;
+        var response, root, metas, title;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!req.query || !req.query.url)
-                        return [2 /*return*/, res.status(400).send()];
-                    return [4 /*yield*/, fetchURLMetadata_1.fetchURLMetadata(req.query.url)];
+                    console.log("Fetching URL", url);
+                    return [4 /*yield*/, axios_1.default.get(url)];
                 case 1:
-                    metadata = _a.sent();
-                    return [2 /*return*/, res.status(200).send({ metadata: metadata })];
+                    response = _a.sent();
+                    root = node_html_parser_1.parse(response.data);
+                    metas = root.querySelectorAll("meta");
+                    title = getTitle(metas);
+                    return [2 /*return*/, {
+                            title: title || "", description: "", image: ""
+                        }];
             }
         });
     });
-});
-// app.get('/post/**', function (req, res) {
-//     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
-// });
-app.listen(port, function () {
-    console.log("Server is up on port " + port + ". =)");
-});
+}
+exports.fetchURL = fetchURL;

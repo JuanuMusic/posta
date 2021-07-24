@@ -58,7 +58,7 @@ export default function App(props: IAppProps) {
             </Container>
           </Col>
           <Col md={4}>
-            <RecentSupporters className="mt-5" />
+            <RecentSupporters className="mt-5 d-none d-sm-none d-md-block" />
           </Col>
         </Row>
 

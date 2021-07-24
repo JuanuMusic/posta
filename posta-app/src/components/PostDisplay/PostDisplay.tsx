@@ -9,26 +9,28 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import { FaFire, FaReply, FaUsers } from "react-icons/fa";
 import { BigNumber, ethers } from "ethers";
-import { ReactComponent as BurningHeart } from "../assets/burning_heart.svg";
+import { ReactComponent as BurningHeart } from "../../assets/burning_heart.svg";
 import {
   IPostaNFT,
   PostaService,
   PostLogs,
-} from "../posta-lib/services/PostaService";
-import { useHuman } from "../contextProviders/HumanProvider";
+} from "../../posta-lib/services/PostaService";
+import { useHuman } from "../../contextProviders/HumanProvider";
 import { useEffect, useState } from "react";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { useContractProvider } from "../../contextProviders/ContractsProvider";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
-import PostReply from "./PostReply";
-import { truncateTextMiddle } from "../utils/textHelpers";
-import SupportPostDialog from "./SupportPostDialog";
+import PostReply from "../PostReply";
+import { truncateTextMiddle } from "../../utils/textHelpers";
+import SupportPostDialog from "../SupportPostDialog";
 import Skeleton from "react-loading-skeleton";
 import { Link, useHistory } from "react-router-dom";
-import ProfilePicture, { AvatarSize } from "./ProfilePicture";
+import ProfilePicture, { AvatarSize } from "../ProfilePicture";
+import { IconButton } from "../IconButton";
+import PostaContentDisplay from "./components/PostaContentDisplay";
 
 interface IPostDisplayProps extends IBasePostaProps {
   postOrId: BigNumber | IPostaNFT;
@@ -114,6 +116,39 @@ export default function PostDisplay(props: IPostDisplayProps) {
     history.push(`/post/${postData?.replyOfTokenId}`);
   }
 
+  const showReply =
+    postData &&
+    postData.replyOfTokenId &&
+    postData.replyOfTokenId.gt(0) &&
+    !props.hideSourcePost;
+
+  function getDisplayDate(date: moment.MomentInput) {
+    const blockTime = moment(date);
+    const now = moment();
+
+    const secondsAgo = now.diff(blockTime, "seconds");
+    const minutesAgo = now.diff(blockTime, "minutes");
+    if (minutesAgo < 1) {
+      return `${secondsAgo}s ago`;
+    }
+
+    const hoursAgo = now.diff(blockTime, "hours");
+    if (hoursAgo < 1) {
+      return `${secondsAgo}min ago`;
+    }
+
+    // If it was today returns just the time
+    if (
+      blockTime.year() === now.year() &&
+      now.dayOfYear() - blockTime.dayOfYear() < 1
+    ) {
+      return blockTime.format("hh:mm a");
+    }
+
+    const input = props.condensed ? "DD/MM/YY HH:mm" : "MMM DD yy - hh:mm a";
+    return blockTime.format(input);
+  }
+
   return (
     <>
       {postData && postData.tokenId && (
@@ -160,10 +195,8 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       </Link>
                       <small className="post-date ml-1 text-muted align-middle">
                         {" - "}
-                        {postData && postData.blockTime ? (
-                          moment(postData.blockTime || new Date(0)).format(
-                            "MMMM Do YYYY, h:mm"
-                          )
+                        {postData ? (
+                          getDisplayDate(postData.blockTime || new Date(0))
                         ) : (
                           <Skeleton />
                         )}
@@ -188,34 +221,24 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       </a>
                     </h6>{" "}
                   </div>
-                  <blockquote className="blockquote my-0 ml-0">
-                    {/* Post Text */}
-                    <p className="post-text text-dark mb-1">
-                      {isLoading ? (
-                        <Skeleton />
-                      ) : (
-                        <>{(postData && postData.content) || "..."}</>
-                      )}
-                    </p>
-                  </blockquote>
-                  {postData?.replyOfTokenId &&
-                    postData.replyOfTokenId.gt(0) &&
-                    !props.hideSourcePost && (
-                      <div className="mt-2">
-                        {
-                          <div
-                            onClick={handleOnPostDisplayClick}
-                            className="cursor-pointer"
-                          >
-                            <PostDisplay
-                              hideSourcePost={true}
-                              condensed
-                              postOrId={postData?.replyOfTokenId}
-                            />
-                          </div>
-                        }
-                      </div>
-                    )}
+                  <PostaContentDisplay
+                    isLoading={isLoading}
+                    content={(postData && postData.content) || ""}
+                    condensed={props.condensed}
+                    className={props.condensed ? "pr-0" : "pr-2"}
+                  />
+                  {showReply && (
+                    <div
+                      onClick={handleOnPostDisplayClick}
+                      className="cursor-pointer mt-n2"
+                    >
+                      <PostDisplay
+                        hideSourcePost={true}
+                        condensed
+                        postOrId={postData?.replyOfTokenId!}
+                      />
+                    </div>
+                  )}
                 </div>
               </Col>
             </Row>
@@ -263,17 +286,14 @@ export default function PostDisplay(props: IPostDisplayProps) {
                       </small>
                     </Link>
                   )}
-                  <Button
+                  <IconButton
                     variant="outline-primary"
                     size="sm"
                     onClick={handleReplyClicked}
                     disabled={!human.profile.registered}
-                  >
-                    <div className="d-flex justify-content-around align-items-center">
-                      <FaReply className="mr-1" />
-                      Reply
-                    </div>
-                  </Button>
+                    icon={<FaReply className="mr-1" />}
+                    text="Reply"
+                  />
                 </div>
               </Col>
             </Row>
@@ -320,19 +340,14 @@ function GiveSupportButton(props: IGiveSupportButtonProps) {
         </Tooltip>
       }
     >
-      <div className={props.className}>
-        <Button
-          variant="outline-danger"
-          onClick={props.onClick}
-          disabled={props.disabled}
-          size="sm"
-        >
-          <div className="d-flex justify-content-center align-items-center ml-1">
-            <BurningHeart className={`btn-icon bg-transparent mr-1`} />
-            <span className={"mr-1"}>{props.supportGiven}</span>
-          </div>
-        </Button>
-      </div>
+      <IconButton
+        variant="outline-danger"
+        onClick={props.onClick}
+        disabled={props.disabled}
+        size="sm"
+        icon={<BurningHeart className="mr-1" />}
+        text={props.supportGiven}
+      />
     </OverlayTrigger>
   );
 }

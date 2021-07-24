@@ -1,4 +1,4 @@
-import PostDisplay from "./PostDisplay";
+import PostDisplay from "./PostDisplay/PostDisplay";
 import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 import { BigNumber } from "ethers";

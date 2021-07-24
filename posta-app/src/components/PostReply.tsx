@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal } from "react-bootstrap";
 import { IPostaNFT } from "../posta-lib/services/PostaService";
-import PostDisplay from "./PostDisplay";
+import PostDisplay from "./PostDisplay/PostDisplay";
 import PostEditor from "./PostEditor/PostEditor";
 
 interface IPostReplyProps {

@@ -44,6 +44,11 @@ export default function RecentSupporters(props: any) {
   );
 }
 
+/**
+ * An item for the RecentSupporters list
+ * @param param0 
+ * @returns 
+ */
 function SupportItem({ support }: { support: SupportGivenLog }) {
   return (
     <ListGroup.Item

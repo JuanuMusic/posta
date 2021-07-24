@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 import HumanCard from "../components/HumanCard";
-import PostDisplay from "../components/PostDisplay";
+import PostDisplay from "../components/PostDisplay/PostDisplay";
 import { useContractProvider } from "../contextProviders/ContractsProvider";
 import { PostaService } from "../posta-lib";
 

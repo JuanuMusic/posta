@@ -20,7 +20,7 @@ export default function HumanProvider({ children }: { children: any }) {
   const contractProvider = useContractProvider();
   const web3Context = useWeb3React();
   const human = { profile, isLoading };
-
+  console.log("WEB3", web3Context);
   /**
    * Executes when the web3 context changes
    */
@@ -31,10 +31,9 @@ export default function HumanProvider({ children }: { children: any }) {
 
     if (!web3Context.account) {
       if(window.ethereum) web3Context.activate(injected);
-      return;
     };
 
-    loadHumanAccount(web3Context.account);
+    if(web3Context.account) loadHumanAccount(web3Context.account);
   }, [web3Context, contractProvider]);
 
   /**
@@ -70,6 +69,8 @@ export default function HumanProvider({ children }: { children: any }) {
       } else {
         setProfile(registeredProfile);
       }
+
+      console.log("PROFILE", registeredProfile)
     } catch (err) {
       console.error("Error loading human account", err);
     }

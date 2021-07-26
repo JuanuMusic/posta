@@ -15,7 +15,7 @@ export default function AppHeader(props: any) {
       </div>
       <span>Microblogging for human beings<br />
       <hr className="bg-secondary m-0 mb-2" />
-      <small>Powered by <strong><a href="https://www.proofofhumanity.id/" target="_blank">Proof of Humanity</a></strong></small></span>
+      <small>Powered by <strong><a href="https://www.proofofhumanity.id/" target="_blank" rel="noreferrer">Proof of Humanity</a></strong></small></span>
     </div>
   );
 }

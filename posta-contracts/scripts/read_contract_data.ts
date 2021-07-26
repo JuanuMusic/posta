@@ -10,9 +10,11 @@ async function main() {
   const deployed = postaContract.attach(KOVAN_PROXY_ADDRESS);
   const treasuryPct = await deployed.getTreasuryPct();
   const burnPct = await deployed.getBurnPct();
+  const tokenCount = await deployed.getTokenCounter();  
   //await upgrades.upgradeProxy(KOVAN_PROXY_ADDRESS, PostaV3);
   console.log("Burn %", burnPct .toString());
   console.log("Treasury %", treasuryPct.toString());
+  console.log("Tokens", tokenCount.toString());
 }
 
 // We recommend this pattern to be able to use async/await everywhere

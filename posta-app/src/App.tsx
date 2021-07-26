@@ -1,14 +1,14 @@
 import Container from "react-bootstrap/Container";
 
-import { Card, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { Switch, Route } from "react-router-dom";
 import PostPage from "./pages/PostPage";
 
 import AppHeader from "./components/AppHeader";
 import MainPage from "./pages/MainPage/MainPage";
 import SuperHeader from "./components/SuperHeader";
-import DummyPOHController from "./dev-tools/DummyPOHController";
-import PostaController from "./dev-tools/PostaController";
+// import DummyPOHController from "./dev-tools/DummyPOHController";
+// import PostaController from "./dev-tools/PostaController";
 import { useWeb3React } from "@web3-react/core";
 import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
 import HumanPage from "./pages/HumanPage";

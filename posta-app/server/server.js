@@ -42,29 +42,120 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
 var fetchURLMetadata_1 = require("./fetchURLMetadata");
+var ethers_1 = require("ethers");
+var posta_lib_1 = require("./posta-lib");
+var kovanConfig = require("./config/kovan.json");
+var developConfig = require("./config/develop.json");
+var config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig);
 var app = express_1.default();
 var port = process.env.PORT || 3000;
 var publicPath = path_1.default.join(__dirname, '..', 'build');
 app.use(express_1.default.static(publicPath));
-app.get('/preview', function (req, res) {
+/**
+ * Returns the ethers provider based on the .env and config.json
+ * @param webProvider
+ * @returns
+ */
+function getEthersProvider(webProvider) {
+    if (webProvider === void 0) { webProvider = undefined; }
     return __awaiter(this, void 0, void 0, function () {
-        var metadata;
+        var provider;
+        return __generator(this, function (_a) {
+            // If a web provider is passed, connect to it
+            if (webProvider) {
+                provider = new ethers_1.ethers.providers.Web3Provider(webProvider);
+            }
+            if (!provider) {
+                if (process.env.CONFIG === "kovan") {
+                    provider = ethers_1.ethers.getDefaultProvider("kovan", {
+                        infura: process.env.INFURA_PROJECT_ID,
+                        etherscan: process.env.ETHERSCAN_API_KEY,
+                    });
+                }
+                else if (process.env.CONFIG === "develop") {
+                    provider = new ethers_1.ethers.providers.JsonRpcProvider(config.network.URL, {
+                        chainId: config.network.chainID,
+                        name: config.network.name,
+                    });
+                }
+                else {
+                    provider = ethers_1.ethers.getDefaultProvider();
+                }
+            }
+            return [2 /*return*/, provider];
+        });
+    });
+}
+var contractsDefinitions = {
+    UBIContract: require("./contracts/DummyUBI.sol/DummyUBI.json"),
+    POHContract: require("./contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
+    //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
+    PostaContract: require("./contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
+};
+function initialize() {
+    return __awaiter(this, void 0, void 0, function () {
+        var provider, contractprovider;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    if (!req.query || !req.query.url)
-                        return [2 /*return*/, res.status(400).send()];
-                    return [4 /*yield*/, fetchURLMetadata_1.fetchURLMetadata(req.query.url)];
+                case 0: return [4 /*yield*/, getEthersProvider()];
                 case 1:
-                    metadata = _a.sent();
-                    return [2 /*return*/, res.status(200).send({ metadata: metadata })];
+                    provider = _a.sent();
+                    contractprovider = new posta_lib_1.ContractProvider(config, provider, contractsDefinitions);
+                    app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+                        var tokenId, logs, log, human, retVal;
+                        var _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    tokenId = ethers_1.BigNumber.from(req.params.tokenId);
+                                    return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractprovider)];
+                                case 1:
+                                    logs = _b.sent();
+                                    if (!logs || logs.length === 0)
+                                        return [2 /*return*/, res.status(404).send("Log not found")];
+                                    log = logs[0];
+                                    return [4 /*yield*/, posta_lib_1.PohService.getHuman(log.author, contractprovider)];
+                                case 2:
+                                    human = _b.sent();
+                                    retVal = {
+                                        author: log.author,
+                                        blockTime: log.blockTime,
+                                        content: log.content,
+                                        name: "$POSTA:" + tokenId + " by " + (human && (human.display_name || human.eth_address)),
+                                        external_url: process.env.POSTA_WEB_URL + "/post/" + tokenId,
+                                        replyOfTokenId: (_a = log.replyOfTokenId) === null || _a === void 0 ? void 0 : _a.toNumber()
+                                    };
+                                    res.status(200).send(JSON.stringify(retVal));
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    app.get('/preview', function (req, res) {
+                        return __awaiter(this, void 0, void 0, function () {
+                            var metadata;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (!req.query || !req.query.url)
+                                            return [2 /*return*/, res.status(400).send()];
+                                        return [4 /*yield*/, fetchURLMetadata_1.fetchURLMetadata(req.query.url)];
+                                    case 1:
+                                        metadata = _a.sent();
+                                        return [2 /*return*/, res.status(200).send({ metadata: metadata })];
+                                }
+                            });
+                        });
+                    });
+                    // app.get('/post/**', function (req, res) {
+                    //     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+                    // });
+                    app.listen(port, function () {
+                        console.log("Server is up on port " + port + ". =)");
+                    });
+                    return [2 /*return*/];
             }
         });
     });
-});
-// app.get('/post/**', function (req, res) {
-//     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
-// });
-app.listen(port, function () {
-    console.log("Server is up on port " + port + ". =)");
-});
+}
+initialize();

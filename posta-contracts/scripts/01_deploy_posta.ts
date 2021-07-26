@@ -1,5 +1,8 @@
 import { ethers, upgrades } from "hardhat";
 
+const MAINNET_UBI_ADDRESS = "0xDd1Ad9A21Ce722C151A836373baBe42c868cE9a4";
+const MAINNET_POH_ADDRESS = "0xC5E9dDebb09Cd64DfaCab4011A0D5cEDaf7c9BDb";
+
 
 const KOVAN_UBI_ADDRESS = "0xDdAdE19B13833d1bF52c1fe1352d41A8DD9fE8C9";
 const KOVAN_POH_ADDRESS = "0x73BCCE92806BCe146102C44c4D9c3b9b9D745794";
@@ -18,8 +21,8 @@ async function main() {
   console.log("Deploying POSTA with account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Posta = await ethers.getContractFactory("Posta");
-  const postaContract = await upgrades.deployProxy(Posta, [KOVAN_POH_ADDRESS, KOVAN_UBI_ADDRESS, MAX_CHARS, ethers.utils.parseEther(BURN_PCT).toString(), ethers.utils.parseEther(TREASURY_PCT).toString()])
+  const Posta = await ethers.getContractFactory("PostaV0_7");
+  const postaContract = await upgrades.deployProxy(Posta, [MAINNET_POH_ADDRESS, MAINNET_UBI_ADDRESS, MAX_CHARS, ethers.utils.parseEther(BURN_PCT).toString(), ethers.utils.parseEther(TREASURY_PCT).toString()])
   const owner = await postaContract.owner();
   console.log("OWNER", owner);
 

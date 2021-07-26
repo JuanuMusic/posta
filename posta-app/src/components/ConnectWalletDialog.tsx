@@ -27,9 +27,9 @@ enum ConnectorNames {
   //   Torus = "Torus",
 }
 
-const connectorImages: { [connectorName in ConnectorNames]: any } = {
-  [ConnectorNames.Injected]: MetamaskLogo,
-};
+// const connectorImages: { [connectorName in ConnectorNames]: any } = {
+//   [ConnectorNames.Injected]: MetamaskLogo,
+// };
 
 const connectorsByName: { [connectorName in ConnectorNames]: any } = {
   [ConnectorNames.Injected]: injected,
@@ -47,43 +47,40 @@ const connectorsByName: { [connectorName in ConnectorNames]: any } = {
   //   [ConnectorNames.Torus]: torus,
 };
 
-function getErrorMessage(error: Error) {
-  if (error instanceof NoEthereumProviderError) {
-    return "No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.";
-  } else if (error instanceof UnsupportedChainIdError) {
-    return "You're connected to an unsupported network.";
-    //   } else if (
-    //     error instanceof UserRejectedRequestErrorInjected ||
-    //     error instanceof UserRejectedRequestErrorWalletConnect ||
-    //     error instanceof UserRejectedRequestErrorFrame
-    //   ) {
-    //     return "Please authorize this website to access your Ethereum account.";
-  } else {
-    console.error(error);
-    return "An unknown error occurred. Check the console for more details.";
-  }
-}
+// function getErrorMessage(error: Error) {
+//   if (error instanceof NoEthereumProviderError) {
+//     return "No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.";
+//   } else if (error instanceof UnsupportedChainIdError) {
+//     return "You're connected to an unsupported network.";
+//     //   } else if (
+//     //     error instanceof UserRejectedRequestErrorInjected ||
+//     //     error instanceof UserRejectedRequestErrorWalletConnect ||
+//     //     error instanceof UserRejectedRequestErrorFrame
+//     //   ) {
+//     //     return "Please authorize this website to access your Ethereum account.";
+//   } else {
+//     console.error(error);
+//     return "An unknown error occurred. Check the console for more details.";
+//   }
+// }
 
 export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
   const context = useWeb3React<Web3Provider>();
   const {
     connector,
-    library,
-    chainId,
     account,
     activate,
     deactivate,
-    active,
     error,
   } = context;
   const [activatingConnector, setActivatingConnector] = useState();
 
-  const handleHide = () => {
+  function handleHide() {
     props.onHide && props.onHide();
   };
 
   useEffect(() => {
-    handleHide && handleHide();
+    handleHide();
   }, [account]);
 
   return (
@@ -101,8 +98,11 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
             const currentConnector = connectorsByName[name as ConnectorNames];
             const activating = currentConnector === activatingConnector;
             const connected = currentConnector === connector;
-            const disabled = !!activatingConnector || connected || !!error;
-
+            const disabled = !!activating || connected || !!error;
+            console.log("Current Connector", currentConnector);
+            console.log("Activating", activating);
+            console.log("Connected", connected);
+            console.log("Account", account);
             return (
               <Button
                 style={{

@@ -33,16 +33,16 @@ contract PostaV0_7 is Initializable, OwnableUpgradeable, ERC721Upgradeable, Post
     string constant CANT_SUPPORT_SELF_CONTENT = "CANT_SUPPORT_SELF_CONTENT";
     string constant BURN_TREASURY_MUST_TOTAL_ONE = "BURN_TREASURY_MUST_TOTAL_ONE";
 
-    // function initialize(address poh, address ubi, uint256 maxChars, uint256 burnPct, uint256 treasuryPct) public virtual initializer {
-    //     __ERC721_init("Posta","POSTA");
-    //     OwnableUpgradeable.__Ownable_init();
-    //     _tokenCounter = 0;
-    //     _poh = poh;
-    //     _ubi = ubi;
-    //     _maxChars = maxChars;
-    //     _burnPct = burnPct;
-    //     _treasuryPct = treasuryPct;
-    // }
+    function initialize(address poh, address ubi, uint256 maxChars, uint256 burnPct, uint256 treasuryPct) public virtual initializer {
+        __ERC721_init("Posta","POSTA");
+        OwnableUpgradeable.__Ownable_init();
+        _tokenCounter = 0;
+        _poh = poh;
+        _ubi = ubi;
+        _maxChars = maxChars;
+        _burnPct = burnPct;
+        _treasuryPct = treasuryPct;
+    }
 
     /// Require that an address is a valid registered human.
     modifier isHuman(address _submission) {

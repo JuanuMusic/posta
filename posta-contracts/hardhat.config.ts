@@ -45,6 +45,11 @@ module.exports = {
       url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [process.env.POSTA_DEPLOYER_PK],
       loggingEnabled: true
+    },
+    mainnet: {
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: [process.env.POSTA_DEPLOYER_PK],
+      loggingEnabled: true
     }
   },
   etherscan: {

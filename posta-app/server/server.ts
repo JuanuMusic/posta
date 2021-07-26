@@ -3,8 +3,8 @@ import express from 'express';
 import { fetchURLMetadata } from './fetchURLMetadata';
 import { BigNumber, ethers } from "ethers";
 import { PostaService, PohService, ContractProvider } from "./posta-lib";
-import kovanConfig from "./config/kovan.json";
-import developConfig from "./config/develop.json";
+const kovanConfig = require("./config/kovan.json");
+const developConfig = require("./config/develop.json");
 import { IConfiguration, IContractsDefinitions } from './posta-lib/services/ContractProvider';
 const config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig) as IConfiguration;
 
@@ -48,10 +48,10 @@ async function getEthersProvider(
 }
 
 const contractsDefinitions: IContractsDefinitions = {
-    UBIContract: require("../contracts/DummyUBI.sol/DummyUBI.json"),
-    POHContract: require("../contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
+    UBIContract: require("./contracts/DummyUBI.sol/DummyUBI.json"),
+    POHContract: require("./contracts/DummyProofOfHumanity.sol/DummyProofOfHumanity.json"),
     //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
-    PostaContract: require("../contracts/v0.6/PostaV0_6.sol/PostaV0_6.json"),
+    PostaContract: require("./contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
 };
 async function initialize() {
     const provider = await getEthersProvider();
@@ -63,7 +63,7 @@ async function initialize() {
         const logs = await PostaService.getPostLogs(null, [tokenId], contractprovider);
         if (!logs || logs.length === 0) return res.status(404).send("Log not found");
         const log = logs[0];
-        const human = await PohService.getHuman(log.author, cm);
+        const human = await PohService.getHuman(log.author, contractprovider);
         const retVal = {
             author: log.author,
             blockTime: log.blockTime,

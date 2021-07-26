@@ -35,7 +35,7 @@ async function getEthersProvider(
       provider = ethers.getDefaultProvider("kovan", {
         infura: process.env.REACT_APP_INFURA_PROJECT_ID,
         etherscan: process.env.REACT_APP_ETHERSCAN_API_KEY,
-        alchemy: process.env.REACT_APP_ALCHEMY_API_KEY
+        alchemy: undefined
       });
     } else if (process.env.REACT_APP_CONFIG === "develop") {
       const config = configProvider.getConfig();

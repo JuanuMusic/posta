@@ -1,18 +1,19 @@
 import path from 'path';
 import express from 'express';
+import dotenv from "dotenv";
 import { fetchURLMetadata } from './fetchURLMetadata';
 import { BigNumber, ethers } from "ethers";
 import { PostaService, PohService, ContractProvider } from "./posta-lib";
 const kovanConfig = require("./config/kovan.json");
-const developConfig = require("./config/develop.json");
+// const developConfig = require("./config/develop.json");
+const mainnetConfig = require("./config/mainnet.json");
 import { IConfiguration, IContractsDefinitions } from './posta-lib/services/ContractProvider';
-const config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig) as IConfiguration;
 
+dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
-const publicPath = path.join(__dirname, '..', 'build');
-app.use(express.static(publicPath));
 
+
+const configData = (process.env.CONFIG === "kovan" ? kovanConfig : mainnetConfig) as IConfiguration;
 
 /**
  * Returns the ethers provider based on the .env and config.json
@@ -35,9 +36,9 @@ async function getEthersProvider(
                 etherscan: process.env.ETHERSCAN_API_KEY,
             });
         } else if (process.env.CONFIG === "develop") {
-            provider = new ethers.providers.JsonRpcProvider(config.network.URL, {
-                chainId: config.network.chainID,
-                name: config.network.name,
+            provider = new ethers.providers.JsonRpcProvider(configData.network.URL, {
+                chainId: configData.network.chainID,
+                name: configData.network.name,
             });
         } else {
             provider = ethers.getDefaultProvider();
@@ -54,10 +55,16 @@ const contractsDefinitions: IContractsDefinitions = {
     PostaContract: require("./contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
 };
 async function initialize() {
+
+    const port = process.env.PORT || 3000;
+    const publicPath = path.join(__dirname, '..', 'build');
+    app.use(express.static(publicPath));
+
     const provider = await getEthersProvider();
-    const contractprovider = new ContractProvider(config, provider, contractsDefinitions);
+    const contractprovider = new ContractProvider(configData, provider, contractsDefinitions);
 
     app.get('/post/:tokenId', async (req, res) => {
+        
         const tokenId = BigNumber.from(req.params.tokenId); // tokenId from url param
         // Get the logs for the token
         const logs = await PostaService.getPostLogs(null, [tokenId], contractprovider);
@@ -69,13 +76,17 @@ async function initialize() {
             blockTime: log.blockTime,
             content: log.content,
             name: `$POSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
-            external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`,
+            external_url: `${process.env.POSTA_WEB_URL}/posta/${tokenId}`,
             replyOfTokenId: log.replyOfTokenId?.toNumber()
         }
 
         res.status(200).send(JSON.stringify(retVal));
 
     })
+
+    app.get("/posta/:tokenId", (req, res) => {
+        res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
 
     app.get('/preview', async function (req, res) {
         if (!req.query || !req.query.url) return res.status(400).send();

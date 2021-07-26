@@ -73,7 +73,7 @@ function SupportItem({ support }: { support: SupportGivenLog }) {
             {ethers.utils.formatEther(support.burnt.toString())}
           </span>{" "}
           $UBI on{" "}
-          <Link to={`/post/${support.tokenId.toString()}`}>
+          <Link to={`/posta/${support.tokenId.toString()}`}>
             $POSTA:{support.tokenId.toString()}
           </Link>
         </small>

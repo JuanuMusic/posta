@@ -13,7 +13,7 @@ export default function ProfilePicture(props: {
   const avatarClass = props.size || "avatar";
   return (
     (props.imageUrl && (
-      <img className={`${avatarClass} mr-2`} src={props.imageUrl} />
+      <img className={`avatar ${avatarClass} mr-2`} src={props.imageUrl} />
     )) || (
       <POHLogo
         className={`flex-shrink-0 ${avatarClass} mr-2 text-secondary p-1 bg-secondary`}

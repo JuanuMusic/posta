@@ -67,24 +67,25 @@ h1 {
   font-size: 0.75rem;
 }
 
+
 .avatar {
   vertical-align: middle;
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  object-fit: cover;
+  min-width: 40px;
 }
 .avatar-sm {
-  vertical-align: middle;
   width: 30px;
   height: 30px;
-  border-radius: 50%;
+  min-width: 30px;
 }
 
 .avatar-lg {
-  vertical-align: middle;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
+  min-width: 60px;
 }
 
 .wallet-logo {

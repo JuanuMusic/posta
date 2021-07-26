@@ -75,7 +75,7 @@ async function initialize() {
       blockTime: log.blockTime,
       content: log.content,
       name: `$POSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
-      external_url: `${process.env.POSTA_WEB_URL}/post/${tokenId}`,
+      external_url: `${process.env.POSTA_WEB_URL}/posta/${tokenId}`,
       replyOfTokenId: log.replyOfTokenId?.toNumber()
     }
 

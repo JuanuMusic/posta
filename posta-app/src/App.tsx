@@ -41,10 +41,10 @@ export default function App(props: IAppProps) {
               <Row>
                 <Col>
                   <Switch>
-                    <Route path="/post/:tokenId/supporters">
+                    <Route path="/posta/:tokenId/supporters">
                       <SupportersPage />
                     </Route>
-                    <Route path="/post/:tokenId">
+                    <Route path="/posta/:tokenId">
                       <PostPage />
                     </Route>
                     <Route path="/human/:humanAddress">

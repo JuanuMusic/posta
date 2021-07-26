@@ -113,7 +113,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   }, [postData]);
 
   function handleOnPostDisplayClick() {
-    history.push(`/post/${postData?.replyOfTokenId}`);
+    history.push(`/posta/${postData?.replyOfTokenId}`);
   }
 
   const showReply =
@@ -262,7 +262,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                     }
                   />
                   <Link
-                    to={`/post/${postData?.tokenId}/supporters`}
+                    to={`/posta/${postData?.tokenId}/supporters`}
                     className="align-middle"
                   >
                     <SupportersCount
@@ -278,7 +278,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
                 <div>
                   {repliesLogs && repliesLogs.length > 0 && (
                     <Link
-                      to={`/post/${postData?.tokenId}`}
+                      to={`/posta/${postData?.tokenId}`}
                       className="mr-2 text-secondary align-middle"
                     >
                       <small>

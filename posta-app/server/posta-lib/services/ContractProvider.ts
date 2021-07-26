@@ -126,7 +126,6 @@ export class ContractProvider implements IContractProvider {
      * @returns 
      */
     async getPostaContractForRead(): Promise<Contract> {
-        console.log("POSTA ADDRESS", this._config.PostaAddress,this._contracts.PostaContract.abi );
         return await this.getContractForRead(this._config.PostaAddress, this._contracts.PostaContract.abi);
     }
 

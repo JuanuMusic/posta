@@ -41,16 +41,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
+var dotenv_1 = __importDefault(require("dotenv"));
 var fetchURLMetadata_1 = require("./fetchURLMetadata");
 var ethers_1 = require("ethers");
 var posta_lib_1 = require("./posta-lib");
 var kovanConfig = require("./config/kovan.json");
-var developConfig = require("./config/develop.json");
-var config = (process.env.CONFIG === "kovan" ? kovanConfig : developConfig);
+// const developConfig = require("./config/develop.json");
+var mainnetConfig = require("./config/mainnet.json");
+dotenv_1.default.config();
 var app = express_1.default();
-var port = process.env.PORT || 3000;
-var publicPath = path_1.default.join(__dirname, '..', 'build');
-app.use(express_1.default.static(publicPath));
+var configData = (process.env.CONFIG === "kovan" ? kovanConfig : mainnetConfig);
 /**
  * Returns the ethers provider based on the .env and config.json
  * @param webProvider
@@ -73,9 +73,9 @@ function getEthersProvider(webProvider) {
                     });
                 }
                 else if (process.env.CONFIG === "develop") {
-                    provider = new ethers_1.ethers.providers.JsonRpcProvider(config.network.URL, {
-                        chainId: config.network.chainID,
-                        name: config.network.name,
+                    provider = new ethers_1.ethers.providers.JsonRpcProvider(configData.network.URL, {
+                        chainId: configData.network.chainID,
+                        name: configData.network.name,
                     });
                 }
                 else {
@@ -94,20 +94,28 @@ var contractsDefinitions = {
 };
 function initialize() {
     return __awaiter(this, void 0, void 0, function () {
-        var provider, contractprovider;
+        var port, publicPath, provider, contractprovider;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, getEthersProvider()];
+                case 0:
+                    port = process.env.PORT || 3000;
+                    publicPath = path_1.default.join(__dirname, '..', 'build');
+                    app.use(express_1.default.static(publicPath));
+                    return [4 /*yield*/, getEthersProvider()];
                 case 1:
                     provider = _a.sent();
-                    contractprovider = new posta_lib_1.ContractProvider(config, provider, contractsDefinitions);
+                    contractprovider = new posta_lib_1.ContractProvider(configData, provider, contractsDefinitions);
+                    app.get("/posta/:tokenId", function (req, res) {
+                        res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
+                    });
                     app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
                         var tokenId, logs, log, human, retVal;
                         var _a;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
+                                    console.log("GETTING TOKEN", req.params.tokenId);
                                     tokenId = ethers_1.BigNumber.from(req.params.tokenId);
                                     return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractprovider)];
                                 case 1:
@@ -123,7 +131,7 @@ function initialize() {
                                         blockTime: log.blockTime,
                                         content: log.content,
                                         name: "$POSTA:" + tokenId + " by " + (human && (human.display_name || human.eth_address)),
-                                        external_url: process.env.POSTA_WEB_URL + "/post/" + tokenId,
+                                        external_url: process.env.POSTA_WEB_URL + "/posta/" + tokenId,
                                         replyOfTokenId: (_a = log.replyOfTokenId) === null || _a === void 0 ? void 0 : _a.toNumber()
                                     };
                                     res.status(200).send(JSON.stringify(retVal));

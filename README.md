@@ -23,6 +23,8 @@ Posta is an ERC721 NFT (PSTA). Everytime an address tries to create a new Post, 
 
 If the address is an actual Human, a new NFT with symbol "PSTA" is minted and sent to the Human that created it, and a JSON file is generated with the post and the author, and uploaded to a decentralized storage system.
 
+The data is stored on-chain using the logs. This strategy was taken from [Auryn MacMillan's poster](https://github.com/auryn-macmillan/poster). All credits for using this technique goes to him.
+
 ### 👍 Likes / Support (Or how to come up with excuses to burn UBI)🔥🔥🔥
 ---
 Just as on any social network there is the concept of like, Posta has a "**support**" feature, which is paid in **UBIs**.

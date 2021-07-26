@@ -1,7 +1,15 @@
 # POSTA 📢
 A twitter-like social network for Human Beings only!
 
-## Preface  (Why Posta)?
+## Key Features
+- Decentralized
+- Censorship resistant
+- Each posta is minted as an NFTs owned by the creator
+- NFTs are compatible with NFT markets such as OpenSea
+- Content ownership by default (owners can be held accountable for their content)
+
+
+## Why Posta?
 **Social Networks**🌎 are a great evolution of Human Society to socialize through the internet. One of the fundamental problems of the current state, is that they are fully centralized. All the data and content generated through them, is collected and managed by the owners of the service.
 
 Another problem is the amount of fake profiles that can be generated 🦹‍♂️, making social networks untrustworthy about the authors of the content.
@@ -14,6 +22,8 @@ To achieve this, a user must be a registered and approved Human under the [Proof
 Posta is an ERC721 NFT (PSTA). Everytime an address tries to create a new Post, the contract validates that the creator address is registered on the [Proof of Humanity registry](https://www.proofofhumanity.id/).
 
 If the address is an actual Human, a new NFT with symbol "PSTA" is minted and sent to the Human that created it, and a JSON file is generated with the post and the author, and uploaded to a decentralized storage system.
+
+The data is stored on-chain using the logs. This strategy was taken from [Auryn MacMillan's poster](https://github.com/auryn-macmillan/poster). All credits for using this technique goes to him.
 
 ### 👍 Likes / Support (Or how to come up with excuses to burn UBI)🔥🔥🔥
 ---

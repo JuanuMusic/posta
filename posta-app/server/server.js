@@ -50,6 +50,9 @@ var kovanConfig = require("./config/kovan.json");
 var mainnetConfig = require("./config/mainnet.json");
 dotenv_1.default.config();
 var app = express_1.default();
+// Server React
+var publicPath = path_1.default.join(__dirname, '..', 'build');
+app.use(express_1.default.static(publicPath));
 var configData = (process.env.CONFIG === "kovan" ? kovanConfig : mainnetConfig);
 /**
  * Returns the ethers provider based on the .env and config.json
@@ -79,7 +82,7 @@ function getEthersProvider(webProvider) {
                     });
                 }
                 else {
-                    provider = ethers_1.ethers.getDefaultProvider();
+                    provider = ethers_1.ethers.getDefaultProvider("mainnet");
                 }
             }
             return [2 /*return*/, provider];
@@ -94,28 +97,20 @@ var contractsDefinitions = {
 };
 function initialize() {
     return __awaiter(this, void 0, void 0, function () {
-        var port, publicPath, provider, contractprovider;
+        var provider, contractprovider, port;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    port = process.env.PORT || 3000;
-                    publicPath = path_1.default.join(__dirname, '..', 'build');
-                    app.use(express_1.default.static(publicPath));
-                    return [4 /*yield*/, getEthersProvider()];
+                case 0: return [4 /*yield*/, getEthersProvider()];
                 case 1:
                     provider = _a.sent();
                     contractprovider = new posta_lib_1.ContractProvider(configData, provider, contractsDefinitions);
-                    app.get("/posta/:tokenId", function (req, res) {
-                        res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
-                    });
                     app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
                         var tokenId, logs, log, human, retVal;
                         var _a;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
-                                    console.log("GETTING TOKEN", req.params.tokenId);
                                     tokenId = ethers_1.BigNumber.from(req.params.tokenId);
                                     return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractprovider)];
                                 case 1:
@@ -139,6 +134,9 @@ function initialize() {
                             }
                         });
                     }); });
+                    app.get("/posta/:tokenId", function (req, res) {
+                        res.sendFile(path_1.default.join(__dirname, '..', 'build', 'index.html'));
+                    });
                     app.get('/preview', function (req, res) {
                         return __awaiter(this, void 0, void 0, function () {
                             var metadata;
@@ -155,9 +153,7 @@ function initialize() {
                             });
                         });
                     });
-                    // app.get('/post/**', function (req, res) {
-                    //     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
-                    // });
+                    port = process.env.PORT || 3000;
                     app.listen(port, function () {
                         console.log("Server is up on port " + port + ". =)");
                     });

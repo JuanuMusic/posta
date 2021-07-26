@@ -12,6 +12,10 @@ import { IConfiguration, IContractsDefinitions } from './posta-lib/services/Cont
 dotenv.config();
 const app = express();
 
+// Server React
+const publicPath = path.join(__dirname, '..', 'build');
+app.use(express.static(publicPath));
+
 
 const configData = (process.env.CONFIG === "kovan" ? kovanConfig : mainnetConfig) as IConfiguration;
 
@@ -41,7 +45,7 @@ async function getEthersProvider(
                 name: configData.network.name,
             });
         } else {
-            provider = ethers.getDefaultProvider();
+            provider = ethers.getDefaultProvider("mainnet");
         }
     }
 
@@ -54,11 +58,8 @@ const contractsDefinitions: IContractsDefinitions = {
     //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
     PostaContract: require("./contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
 };
-async function initialize() {
 
-    const port = process.env.PORT || 3000;
-    const publicPath = path.join(__dirname, '..', 'build');
-    app.use(express.static(publicPath));
+async function initialize() {
 
     const provider = await getEthersProvider();
     const contractprovider = new ContractProvider(configData, provider, contractsDefinitions);
@@ -85,7 +86,7 @@ async function initialize() {
     })
 
     app.get("/posta/:tokenId", (req, res) => {
-        res.sendFile(path.join(__dirname, "public", "index.html"));
+        res.sendFile(path.join(__dirname,'..','build', 'index.html'));
     });
 
     app.get('/preview', async function (req, res) {
@@ -97,7 +98,7 @@ async function initialize() {
     // app.get('/post/**', function (req, res) {
     //     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     // });
-
+    const port = process.env.PORT || 3000;
     app.listen(port, () => {
         console.log(`Server is up on port ${port}. =)`);
     });

@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PohAPI = void 0;
 var axios_1 = __importDefault(require("axios"));
 var pohApiInstance = axios_1.default.create({
-    baseURL: 'https://api-kovan.poh.dev/',
+    baseURL: 'https://api.poh.dev/',
     timeout: 1000,
     //headers: {'X-Custom-Header': 'foobar'}
 });

@@ -36,7 +36,7 @@ export async function getMetadata(tokenId: BigNumber, contractProvider: IContrac
 
     const retVal = {
         blockTime: log.blockTime,
-        description: "A unique Posta by a real human",
+        description: "A unique Posta by a real human being ",
         name: `$POSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
         external_url: `${process.env.POSTA_WEB_URL}/posta/${tokenId}`,
         attributes: attributes

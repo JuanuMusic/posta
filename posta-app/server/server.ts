@@ -8,6 +8,7 @@ const kovanConfig = require("./config/kovan.json");
 // const developConfig = require("./config/develop.json");
 const mainnetConfig = require("./config/mainnet.json");
 import { IConfiguration, IContractsDefinitions } from './posta-lib/services/ContractProvider';
+import { getMetadata } from './nftMetadataBuilder';
 
 dotenv.config();
 const app = express();
@@ -65,28 +66,19 @@ async function initialize() {
     const contractprovider = new ContractProvider(configData, provider, contractsDefinitions);
 
     app.get('/post/:tokenId', async (req, res) => {
-        
-        const tokenId = BigNumber.from(req.params.tokenId); // tokenId from url param
-        // Get the logs for the token
-        const logs = await PostaService.getPostLogs(null, [tokenId], contractprovider);
-        if (!logs || logs.length === 0) return res.status(404).send("Log not found");
-        const log = logs[0];
-        const human = await PohService.getHuman(log.author, contractprovider);
-        const retVal = {
-            author: log.author,
-            blockTime: log.blockTime,
-            content: log.content,
-            name: `$POSTA:${tokenId} by ${human && (human.display_name || human.eth_address)}`,
-            external_url: `${process.env.POSTA_WEB_URL}/posta/${tokenId}`,
-            replyOfTokenId: log.replyOfTokenId?.toNumber()
-        }
 
-        res.status(200).send(JSON.stringify(retVal));
+        const tokenId = BigNumber.from(req.params.tokenId); // tokenId from url param
+        const metadata = await getMetadata(tokenId, contractprovider);
+        res.status(200).send(JSON.stringify(metadata));
 
     })
 
     app.get("/posta/:tokenId", (req, res) => {
-        res.sendFile(path.join(__dirname,'..','build', 'index.html'));
+        res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    });
+
+    app.get("/human/:humanAddress", (req, res) => {
+        res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     });
 
     app.get('/preview', async function (req, res) {

@@ -48,6 +48,7 @@ var posta_lib_1 = require("./posta-lib");
 var kovanConfig = require("./config/kovan.json");
 // const developConfig = require("./config/develop.json");
 var mainnetConfig = require("./config/mainnet.json");
+var nftMetadataBuilder_1 = require("./nftMetadataBuilder");
 dotenv_1.default.config();
 var app = express_1.default();
 // Server React
@@ -106,35 +107,23 @@ function initialize() {
                     provider = _a.sent();
                     contractprovider = new posta_lib_1.ContractProvider(configData, provider, contractsDefinitions);
                     app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                        var tokenId, logs, log, human, retVal;
-                        var _a;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
+                        var tokenId, metadata;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
                                 case 0:
                                     tokenId = ethers_1.BigNumber.from(req.params.tokenId);
-                                    return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractprovider)];
+                                    return [4 /*yield*/, nftMetadataBuilder_1.getMetadata(tokenId, contractprovider)];
                                 case 1:
-                                    logs = _b.sent();
-                                    if (!logs || logs.length === 0)
-                                        return [2 /*return*/, res.status(404).send("Log not found")];
-                                    log = logs[0];
-                                    return [4 /*yield*/, posta_lib_1.PohService.getHuman(log.author, contractprovider)];
-                                case 2:
-                                    human = _b.sent();
-                                    retVal = {
-                                        author: log.author,
-                                        blockTime: log.blockTime,
-                                        content: log.content,
-                                        name: "$POSTA:" + tokenId + " by " + (human && (human.display_name || human.eth_address)),
-                                        external_url: process.env.POSTA_WEB_URL + "/posta/" + tokenId,
-                                        replyOfTokenId: (_a = log.replyOfTokenId) === null || _a === void 0 ? void 0 : _a.toNumber()
-                                    };
-                                    res.status(200).send(JSON.stringify(retVal));
+                                    metadata = _a.sent();
+                                    res.status(200).send(JSON.stringify(metadata));
                                     return [2 /*return*/];
                             }
                         });
                     }); });
                     app.get("/posta/:tokenId", function (req, res) {
+                        res.sendFile(path_1.default.join(__dirname, '..', 'build', 'index.html'));
+                    });
+                    app.get("/human/:humanAddress", function (req, res) {
                         res.sendFile(path_1.default.join(__dirname, '..', 'build', 'index.html'));
                     });
                     app.get('/preview', function (req, res) {

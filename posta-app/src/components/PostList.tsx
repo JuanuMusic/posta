@@ -24,6 +24,7 @@ export default function PostList(props: IPostListProps) {
             next={props.onNextPage}
             hasMore={props.hasMore}
             loader={<LoadingList />}
+            className={"overflow-hidden"}
           >
             {props.posts &&
               props.posts.map((postOrId, index) => (

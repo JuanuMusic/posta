@@ -25,7 +25,7 @@ ReactDOM.render(
       <ContractsProvider>
         <HumanProvider>
           <Router>
-            <div className="text-light">
+            <div className="text-light mb-5">
               <App />
             </div>
             {/* <div className="p-5 d-flex justify-content-end" style={{ position: "fixed", width: "100%", bottom: 0 }}>

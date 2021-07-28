@@ -16,6 +16,7 @@ export default function MainPage() {
   const recordsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(0);
   const [totalTokenCount, setTotalTokenCount] = useState(0);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
 
   const refreshPosts = async () => {
     setIsLoadingPosts(true);
@@ -24,11 +25,20 @@ export default function MainPage() {
       return;
     }
     try {
-      const postList = await PostaService.getConsecutivePosts(totalTokenCount - (currentPage * recordsPerPage), recordsPerPage, contractProvider);
-      console.log("postList", postList)
+      const postList = await PostaService.getConsecutivePosts(
+        totalTokenCount - currentPage * recordsPerPage,
+        recordsPerPage,
+        contractProvider
+      );
+      console.log("postList", postList);
       // If list is not null, set to the state
-      if (postList) { setPosts(postList);
-        setCurrentPage(currentPage+1);
+      if (postList) {
+        setCurrentPage(currentPage + 1);
+        const newList = posts.concat(postList);
+        setPosts(newList);
+
+        // Has more posts if last item is greater than 1
+        setHasMorePosts(postList[postList.length -1].tokenId.toNumber() > 1);
       }
     } catch (error) {
       console.error(error.message);
@@ -97,7 +107,12 @@ export default function MainPage() {
       </Row>
       <Row>
         <Col>
-          <PostList posts={posts} isLoading={isLoadingPosts} onNextPage={refreshPosts} hasMore={(currentPage * recordsPerPage) <= totalTokenCount} />
+          <PostList
+            posts={posts}
+            isLoading={isLoadingPosts}
+            onNextPage={refreshPosts}
+            hasMore={hasMorePosts}
+          />
         </Col>
       </Row>
     </Container>

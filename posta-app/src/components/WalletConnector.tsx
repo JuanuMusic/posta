@@ -1,5 +1,4 @@
 import React from "react";
-import { newContextComponents } from "@drizzle/react-components";
 
 interface IWalletConnectorProps {
   walletInstance: any;

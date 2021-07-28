@@ -288,12 +288,13 @@ var PostaService = {
         });
     },
     /**
-    * Get the latest posts
-    * @param provider
+    * Get a list of consecutive posts
+    * @param fromTokenId Token id to start fetching results.
     * @param maxRecords Max number of records to fetch.
+    * @param provider
     * @returns
     */
-    getLatestPosts: function (maxRecords, contractProvider) {
+    getConsecutivePosts: function (fromTokenId, maxRecords, contractProvider) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, bnCounter, counter, tokenIds, i, postsNFTs;
             return __generator(this, function (_a) {
@@ -304,7 +305,7 @@ var PostaService = {
                         return [4 /*yield*/, postaContract.getTokenCounter()];
                     case 2:
                         bnCounter = _a.sent();
-                        counter = bnCounter.toNumber();
+                        counter = Math.min(bnCounter.toNumber(), fromTokenId);
                         tokenIds = [];
                         for (i = counter; i > Math.max(counter - maxRecords, 0); i--) {
                             tokenIds.unshift(ethers_1.BigNumber.from(i));
@@ -314,6 +315,30 @@ var PostaService = {
                         postsNFTs = _a.sent();
                         // Return the list of nfts posts
                         return [2 /*return*/, (postsNFTs && postsNFTs.sort(function (a, b) { return a.tokenId.gt(b.tokenId) ? -1 : 1; })) || null];
+                }
+            });
+        });
+    },
+    /**
+    * Get the latest posts
+    * @param provider
+    * @param maxRecords Max number of records to fetch.
+    * @returns
+    */
+    getLatestPosts: function (maxRecords, contractProvider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postaContract, bnCounter, counter;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 1:
+                        postaContract = _a.sent();
+                        return [4 /*yield*/, postaContract.getTokenCounter()];
+                    case 2:
+                        bnCounter = _a.sent();
+                        counter = bnCounter.toNumber();
+                        return [4 /*yield*/, PostaService.getConsecutivePosts(counter, maxRecords, contractProvider)];
+                    case 3: return [2 /*return*/, _a.sent()];
                 }
             });
         });
@@ -364,7 +389,7 @@ var PostaService = {
                         return [4 /*yield*/, postaContract.getTokenCounter()];
                     case 2:
                         bnCounter = _a.sent();
-                        return [2 /*return*/, bnCounter.toString()];
+                        return [2 /*return*/, bnCounter];
                 }
             });
         });

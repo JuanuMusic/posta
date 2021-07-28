@@ -67,7 +67,7 @@ function getMetadata(tokenId, contractProvider) {
                             value: log.author,
                         }, {
                             display_type: "date",
-                            blockTime: "Post date",
+                            trait_type: "Post date",
                             value: log.blockTime.getTime() / 1000,
                         }];
                     if (log.replyOfTokenId && log.replyOfTokenId.gt(0)) {

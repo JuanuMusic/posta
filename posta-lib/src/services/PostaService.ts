@@ -19,6 +19,16 @@ interface IPostaService {
   giveSupport(tokenID: BigNumber, amount: BigNumber, from: string, contractProvider: IContractProvider, confirmations: number | undefined): Promise<void>;
   publishPost(postData: IPostData, contractProvider: IContractProvider): Promise<TransactionResponse>;
   getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
+
+  /**
+  * Get a list of consecutive posts
+  * @param fromTokenId Token id to start fetching results.
+  * @param maxRecords Max number of records to fetch.
+  * @param provider 
+  * @returns 
+  */
+   getConsecutivePosts(fromTokenId: number, maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null>;
+
   requestBurnApproval(from: string, amount: BigNumber, contractProvider: IContractProvider): Promise<void>;
   buildPost(log: PostLogs, contractProvider: IContractProvider): Promise<IPostaNFT>;
   buildSupportLog(log: Event): Promise<SupportGivenLog>;
@@ -273,15 +283,16 @@ const PostaService: IPostaService = {
   },
 
   /**
-  * Get the latest posts
-  * @param provider 
+  * Get a list of consecutive posts
+  * @param fromTokenId Token id to start fetching results.
   * @param maxRecords Max number of records to fetch.
+  * @param provider 
   * @returns 
   */
-  async getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
+   async getConsecutivePosts(fromTokenId: number, maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const bnCounter = await postaContract.getTokenCounter();
-    const counter = bnCounter.toNumber()
+    const counter = Math.min(bnCounter.toNumber(), fromTokenId);
 
     // Build the token id array to fetch from logs
     const tokenIds: BigNumber[] = []
@@ -294,6 +305,19 @@ const PostaService: IPostaService = {
 
     // Return the list of nfts posts
     return (postsNFTs && postsNFTs.sort((a, b) => a.tokenId.gt(b.tokenId) ? - 1 : 1)) || null;
+  },
+
+  /**
+  * Get the latest posts
+  * @param provider 
+  * @param maxRecords Max number of records to fetch.
+  * @returns 
+  */
+  async getLatestPosts(maxRecords: number, contractProvider: IContractProvider): Promise<IPostaNFT[] | null> {
+    const postaContract = await contractProvider.getPostaContractForRead();
+    const bnCounter = await postaContract.getTokenCounter();
+    const counter = bnCounter.toNumber()
+    return await PostaService.getConsecutivePosts(counter, maxRecords, contractProvider);
   },
 
   /**

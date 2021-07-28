@@ -38,7 +38,7 @@ interface IPostaService {
    * @param contractProvider 
    * @returns 
    */
-  getTokenCounter(contractProvider: IContractProvider): Promise<string>;
+  getTokenCounter(contractProvider: IContractProvider): Promise<BigNumber>;
 
   /**
     * Returns a list of already built posts from a list of token ids
@@ -342,10 +342,10 @@ const PostaService: IPostaService = {
    * @param contractProvider 
    * @returns 
    */
-  async getTokenCounter(contractProvider: IContractProvider): Promise<string> {
+  async getTokenCounter(contractProvider: IContractProvider): Promise<BigNumber> {
     const postaContract = await contractProvider.getPostaContractForRead();
     const bnCounter = await postaContract.getTokenCounter();
-    return bnCounter.toString();
+    return bnCounter;
   },
 
   /**

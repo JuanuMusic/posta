@@ -22,7 +22,7 @@ export async function getMetadata(tokenId: BigNumber, contractProvider: IContrac
         value: log.author,
     },{
         display_type: "date",
-        blockTime: "Post date",
+        trait_type: "Post date",
         value: log.blockTime.getTime()/1000,
     }];
 

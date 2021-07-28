@@ -3,30 +3,37 @@ import { Container, Row, Col, Spinner, Card } from "react-bootstrap";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
 import { BigNumber } from "ethers";
 import { useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface IPostListProps extends IBasePostaProps {
   posts?: Array<BigNumber | IPostaNFT>;
   isLoading: boolean;
+  onNextPage(): void;
+  hasMore: boolean;
 }
 
 export default function PostList(props: IPostListProps) {
-
   return (
     <>
       <Container>
         {props.isLoading ? (
           <LoadingList />
         ) : (
-          props.posts && props.posts.map((postOrId, index) => (
-            <Row key={index} className="justify-content-center my-3">
-              <Col>
-                <PostDisplay
-                  postOrId={postOrId}
-                  {...props}
-                />
-              </Col>
-            </Row>
-          ))
+          <InfiniteScroll
+            dataLength={(props.posts && props.posts.length) || 0}
+            next={props.onNextPage}
+            hasMore={props.hasMore}
+            loader={<LoadingList />}
+          >
+            {props.posts &&
+              props.posts.map((postOrId, index) => (
+                <Row key={index} className="justify-content-center my-3">
+                  <Col>
+                    <PostDisplay postOrId={postOrId} {...props} />
+                  </Col>
+                </Row>
+              ))}
+          </InfiniteScroll>
         )}
       </Container>
     </>

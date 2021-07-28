@@ -40,12 +40,14 @@ function HumanPage(props: any) {
     <Container>
       <Row>
         <Col>
-        <HumanCard humanAddress={humanAddress} />
+          <HumanCard humanAddress={humanAddress} />
         </Col>
       </Row>
       <Row>
         <Col>
           <PostList
+            onNextPage={loadHumanPosts}
+            hasMore={false}
             isLoading={isLoadingPosts || !humanPosts}
             posts={humanPosts || []}
           />

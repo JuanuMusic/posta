@@ -13,19 +13,23 @@ export default function MainPage() {
   const [posts, setPosts] = useState<IPostaNFT[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const contractProvider = useContractProvider();
+  const recordsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalTokenCount, setTotalTokenCount] = useState(0);
 
-  const refreshLatestPosts = async () => {
+  const refreshPosts = async () => {
     setIsLoadingPosts(true);
     if (!contractProvider) {
       console.warn("Contract provider not set");
       return;
     }
     try {
-      // Get the last 10 posts
-      const postList = await PostaService.getLatestPosts(10, contractProvider);
+      const postList = await PostaService.getConsecutivePosts(totalTokenCount - (currentPage * recordsPerPage), recordsPerPage, contractProvider);
       console.log("postList", postList)
       // If list is not null, set to the state
-      if (postList) setPosts(postList);
+      if (postList) { setPosts(postList);
+        setCurrentPage(currentPage+1);
+      }
     } catch (error) {
       console.error(error.message);
       console.error(error.stack);
@@ -47,8 +51,12 @@ export default function MainPage() {
     async function onContractProviderChanged() {
       if (!contractProvider) return;
 
+      // Update posts count
+      const tokenCount = await PostaService.getTokenCounter(contractProvider);
+      setTotalTokenCount(tokenCount.toNumber());
+
       // Refresh the latest posts
-      await refreshLatestPosts();
+      await refreshPosts();
 
       const contract = await contractProvider.getPostaContractForRead();
       // Subscribe to NewPost evemt
@@ -67,7 +75,7 @@ export default function MainPage() {
   };
 
   const onNewPostSent = (stackId: number) => {
-    refreshLatestPosts();
+    refreshPosts();
   };
 
   return (
@@ -89,7 +97,7 @@ export default function MainPage() {
       </Row>
       <Row>
         <Col>
-          <PostList posts={posts} isLoading={isLoadingPosts} />
+          <PostList posts={posts} isLoading={isLoadingPosts} onNextPage={refreshPosts} hasMore={(currentPage * recordsPerPage) <= totalTokenCount} />
         </Col>
       </Row>
     </Container>

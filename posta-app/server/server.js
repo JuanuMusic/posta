@@ -49,6 +49,7 @@ var kovanConfig = require("./config/kovan.json");
 // const developConfig = require("./config/develop.json");
 var mainnetConfig = require("./config/mainnet.json");
 var nftMetadataBuilder_1 = require("./nftMetadataBuilder");
+var ultimate_text_to_image_1 = require("ultimate-text-to-image");
 dotenv_1.default.config();
 var app = express_1.default();
 // Server React
@@ -96,6 +97,25 @@ var contractsDefinitions = {
     //PostaContract: require("../contracts/v0.2/Posta.sol/Posta.json"),
     PostaContract: require("./contracts/v0.7/PostaV0_7.sol/PostaV0_7.json"),
 };
+function getPost(tokenId, contractProvider) {
+    return __awaiter(this, void 0, void 0, function () {
+        var logs, log, post;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractProvider)];
+                case 1:
+                    logs = _a.sent();
+                    if (!logs || logs.length === 0)
+                        return [2 /*return*/, null];
+                    log = logs[0];
+                    return [4 /*yield*/, posta_lib_1.PostaService.buildPost(log, contractProvider)];
+                case 2:
+                    post = _a.sent();
+                    return [2 /*return*/, post];
+            }
+        });
+    });
+}
 function initialize() {
     return __awaiter(this, void 0, void 0, function () {
         var provider, contractprovider, port;
@@ -106,15 +126,62 @@ function initialize() {
                 case 1:
                     provider = _a.sent();
                     contractprovider = new posta_lib_1.ContractProvider(configData, provider, contractsDefinitions);
-                    app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                        var tokenId, metadata;
+                    app.get('/post/:tokenId/image', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+                        var tokenId, post, author, authorImage, postaTicker, authorCanvas, tickerCanvas, image;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     tokenId = ethers_1.BigNumber.from(req.params.tokenId);
-                                    return [4 /*yield*/, nftMetadataBuilder_1.getMetadata(tokenId, contractprovider)];
+                                    return [4 /*yield*/, getPost(tokenId, contractprovider)];
                                 case 1:
+                                    post = _a.sent();
+                                    if (!post)
+                                        return [2 /*return*/, res.status(404)];
+                                    return [4 /*yield*/, posta_lib_1.PohService.getHuman(post === null || post === void 0 ? void 0 : post.author, contractprovider)];
+                                case 2:
+                                    author = _a.sent();
+                                    authorImage = new ultimate_text_to_image_1.UltimateTextToImage((author && (author.display_name || author.eth_address)) || "unknown", { marginBottom: 10, marginRight: 10 }).render().toBuffer();
+                                    postaTicker = new ultimate_text_to_image_1.UltimateTextToImage("$POSTA:" + tokenId.toString(), { marginTop: 10, marginLeft: 10, fontSize: 30, fontWeight: "bold" }).render().toBuffer();
+                                    return [4 /*yield*/, ultimate_text_to_image_1.getCanvasImage({ buffer: authorImage })];
+                                case 3:
+                                    authorCanvas = _a.sent();
+                                    return [4 /*yield*/, ultimate_text_to_image_1.getCanvasImage({ buffer: postaTicker })];
+                                case 4:
+                                    tickerCanvas = _a.sent();
+                                    image = new ultimate_text_to_image_1.UltimateTextToImage(post.content, {
+                                        margin: 20,
+                                        width: 512,
+                                        height: 512,
+                                        borderColor: "#00000000",
+                                        borderSize: 2,
+                                        valign: "middle",
+                                        fontSize: 35,
+                                        lineHeight: 50,
+                                        images: [
+                                            { canvasImage: authorCanvas, layer: -1, repeat: "bottomRight" },
+                                            { canvasImage: tickerCanvas, layer: -1, repeat: "topLeft" },
+                                        ]
+                                    }).render().toBuffer();
+                                    res.setHeader('content-type', 'image/png');
+                                    return [2 /*return*/, res.status(200).send(image)];
+                            }
+                        });
+                    }); });
+                    app.get('/post/:tokenId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+                        var tokenId, post, metadata;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    tokenId = ethers_1.BigNumber.from(req.params.tokenId);
+                                    return [4 /*yield*/, getPost(tokenId, contractprovider)];
+                                case 1:
+                                    post = _a.sent();
+                                    if (!post)
+                                        return [2 /*return*/, res.status(404)];
+                                    return [4 /*yield*/, nftMetadataBuilder_1.buildMetadata(post, contractprovider)];
+                                case 2:
                                     metadata = _a.sent();
+                                    res.setHeader('content-type', 'application/json');
                                     res.status(200).send(JSON.stringify(metadata));
                                     return [2 /*return*/];
                             }

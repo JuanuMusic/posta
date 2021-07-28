@@ -36,24 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMetadata = void 0;
+exports.buildMetadata = void 0;
 var posta_lib_1 = require("./posta-lib");
-function getMetadata(tokenId, contractProvider) {
+function buildMetadata(post, contractProvider) {
     return __awaiter(this, void 0, void 0, function () {
-        var logs, log, post, human, attributes, retVal;
+        var human, attributes, retVal;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, posta_lib_1.PostaService.getPostLogs(null, [tokenId], contractProvider)];
+                case 0: return [4 /*yield*/, posta_lib_1.PohService.getHuman(post.author, contractProvider)];
                 case 1:
-                    logs = _a.sent();
-                    if (!logs || logs.length === 0)
-                        return [2 /*return*/, null];
-                    log = logs[0];
-                    return [4 /*yield*/, posta_lib_1.PostaService.buildPost(log, contractProvider)];
-                case 2:
-                    post = _a.sent();
-                    return [4 /*yield*/, posta_lib_1.PohService.getHuman(log.author, contractProvider)];
-                case 3:
                     human = _a.sent();
                     attributes = [{
                             trait_type: "Supporters",
@@ -64,23 +55,23 @@ function getMetadata(tokenId, contractProvider) {
                             value: post.content
                         }, {
                             trait_type: "Author",
-                            value: log.author,
+                            value: post.author,
                         }, {
                             display_type: "date",
                             trait_type: "Post date",
-                            value: log.blockTime.getTime() / 1000,
+                            value: post.blockTime.getTime() / 1000,
                         }];
-                    if (log.replyOfTokenId && log.replyOfTokenId.gt(0)) {
+                    if (post.replyOfTokenId && post.replyOfTokenId.gt(0)) {
                         attributes.push({
                             trait_type: "In reply of",
                             value: "$POSTA:" + post.replyOfTokenId
                         });
                     }
                     retVal = {
-                        blockTime: log.blockTime,
+                        blockTime: post.blockTime,
                         description: "A unique Posta by a real human being ",
-                        name: "$POSTA:" + tokenId + " by " + (human && (human.display_name || human.eth_address)),
-                        external_url: process.env.POSTA_WEB_URL + "/posta/" + tokenId,
+                        name: "$POSTA:" + post.tokenId + " by " + (human && (human.display_name || human.eth_address)),
+                        external_url: process.env.POSTA_WEB_URL + "/posta/" + post.tokenId,
                         attributes: attributes
                     };
                     return [2 /*return*/, retVal];
@@ -88,4 +79,4 @@ function getMetadata(tokenId, contractProvider) {
         });
     });
 }
-exports.getMetadata = getMetadata;
+exports.buildMetadata = buildMetadata;

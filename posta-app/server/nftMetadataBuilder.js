@@ -72,6 +72,7 @@ function buildMetadata(post, contractProvider) {
                         description: "A unique Posta by a real human being ",
                         name: "$POSTA:" + post.tokenId + " by " + (human && (human.display_name || human.eth_address)),
                         external_url: process.env.POSTA_WEB_URL + "/posta/" + post.tokenId,
+                        image: process.env.POSTA_WEB_URL + "/post/" + post.tokenId + "/image",
                         attributes: attributes
                     };
                     return [2 /*return*/, retVal];

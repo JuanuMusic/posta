@@ -86,8 +86,8 @@ async function initialize() {
         const author = await PohService.getHuman(post?.author, contractprovider);
         // Build metadata pbject
 
-        const authorImage = new UltimateTextToImage((author && (author.display_name || author.eth_address)) || "unknown", { marginBottom: 10, marginRight: 10 }).render().toBuffer();
-        const postaTicker = new UltimateTextToImage(`$POSTA:${tokenId.toString()}`, { marginTop: 10, marginLeft: 10, fontSize: 30, fontWeight: "bold" }).render().toBuffer();
+        const authorImage = new UltimateTextToImage((author && (author.display_name || author.eth_address)) || "unknown", { marginBottom: 15, marginRight: 15 }).render().toBuffer();
+        const postaTicker = new UltimateTextToImage(`$POSTA:${tokenId.toString()}`, { marginTop: 15, marginLeft: 15, fontSize: 30, fontWeight: "bold" }).render().toBuffer();
         const authorCanvas = await getCanvasImage({ buffer: authorImage });
         const tickerCanvas = await getCanvasImage({ buffer: postaTicker });
         const image = new UltimateTextToImage(post.content,
@@ -95,10 +95,11 @@ async function initialize() {
                 margin: 20,
                 width: 512,
                 height: 512,
-                borderColor: "#00000000",
-                borderSize: 2,
+                borderColor: "#000000",
+                borderSize: 10,
                 valign: "middle",
                 fontSize: 35,
+                minFontSize: 12,
                 lineHeight: 50,
                 images: [
                     { canvasImage: authorCanvas, layer: -1, repeat: "bottomRight" },

@@ -96,7 +96,7 @@ export default function PostEditor(props: IPostEditorProps) {
         {/* Loading Indicator */}
         {isLoading && <PublishingIndicator />}
         {/* Publish error */}
-        {publishError && <PostError error={publishError} />}
+        {/* {publishError && <PostError error={publishError} />} */}
         <Card.Body className="p-0">
           <FormControl
             style={{ borderRadius: 0 }}

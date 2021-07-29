@@ -14,6 +14,6 @@ export default class WalletConnector extends React.Component<
 
 
   render() {
-      return(<></>);
+      return(<> </>);
   }
 }

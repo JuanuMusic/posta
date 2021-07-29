@@ -140,8 +140,8 @@ function initialize() {
                                     return [4 /*yield*/, posta_lib_1.PohService.getHuman(post === null || post === void 0 ? void 0 : post.author, contractprovider)];
                                 case 2:
                                     author = _a.sent();
-                                    authorImage = new ultimate_text_to_image_1.UltimateTextToImage((author && (author.display_name || author.eth_address)) || "unknown", { marginBottom: 10, marginRight: 10 }).render().toBuffer();
-                                    postaTicker = new ultimate_text_to_image_1.UltimateTextToImage("$POSTA:" + tokenId.toString(), { marginTop: 10, marginLeft: 10, fontSize: 30, fontWeight: "bold" }).render().toBuffer();
+                                    authorImage = new ultimate_text_to_image_1.UltimateTextToImage((author && (author.display_name || author.eth_address)) || "unknown", { marginBottom: 15, marginRight: 15 }).render().toBuffer();
+                                    postaTicker = new ultimate_text_to_image_1.UltimateTextToImage("$POSTA:" + tokenId.toString(), { marginTop: 15, marginLeft: 15, fontSize: 30, fontWeight: "bold" }).render().toBuffer();
                                     return [4 /*yield*/, ultimate_text_to_image_1.getCanvasImage({ buffer: authorImage })];
                                 case 3:
                                     authorCanvas = _a.sent();
@@ -152,10 +152,11 @@ function initialize() {
                                         margin: 20,
                                         width: 512,
                                         height: 512,
-                                        borderColor: "#00000000",
-                                        borderSize: 2,
+                                        borderColor: "#000000",
+                                        borderSize: 10,
                                         valign: "middle",
                                         fontSize: 35,
+                                        minFontSize: 12,
                                         lineHeight: 50,
                                         images: [
                                             { canvasImage: authorCanvas, layer: -1, repeat: "bottomRight" },

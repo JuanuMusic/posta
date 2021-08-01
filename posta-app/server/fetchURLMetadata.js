@@ -55,19 +55,23 @@ function getValueFromTags(tags, type) {
 }
 function fetchURLMetadata(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var response, root, metas, title, description, image;
+        var response, isImage, root, metas, title, description, image;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, axios_1.default.get(url)];
                 case 1:
                     response = _a.sent();
+                    isImage = response.headers['content-type'].indexOf("image") != -1;
                     root = node_html_parser_1.parse(response.data);
                     metas = root.querySelectorAll("meta");
                     title = getValueFromTags(metas, "title");
                     description = getValueFromTags(metas, "description");
                     image = getValueFromTags(metas, "image");
                     return [2 /*return*/, {
-                            title: title || "", description: description || "", image: image || ""
+                            title: title || "",
+                            description: description || "",
+                            image: isImage ? url : image || "",
+                            isImage: isImage
                         }];
             }
         });

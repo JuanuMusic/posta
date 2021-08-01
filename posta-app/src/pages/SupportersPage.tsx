@@ -14,6 +14,7 @@ function SupportersPage(props: any) {
 
   async function loadSupporters() {
       if(!tokenId || !contractProvider) return;
+      if(tokenId === "test") return;
       const supportLogs = await PostaService.getSupportersOf(BigNumber.from(tokenId), 50, contractProvider);
       supportLogs && setHumanAddresses(supportLogs.map((supportLog: SupportGivenLog) => supportLog.supporter));
   }
@@ -26,7 +27,7 @@ function SupportersPage(props: any) {
     <Container>
       <Row>
         <Col>
-          <PostDisplay postOrId={BigNumber.from(tokenId)} />
+          <PostDisplay postOrId={tokenId === "test" ? BigNumber.from(1) : BigNumber.from(tokenId)} />
         </Col>
       </Row>
       <Row className="mt-3 mb-0"><Col><h4>Supporters</h4></Col></Row>

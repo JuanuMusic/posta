@@ -2,16 +2,15 @@
 import Container from "react-bootstrap/Container";
 
 import {
-  Button,
   Card,
   Col,
   Row,
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
-import { FaFire, FaReply, FaUsers } from "react-icons/fa";
+import { FaReply, FaUsers } from "react-icons/fa";
 import { BigNumber, ethers } from "ethers";
 import { ReactComponent as BurningHeart } from "../../assets/burning_heart.svg";
 import {
@@ -22,7 +21,6 @@ import {
 import { useHuman } from "../../contextProviders/HumanProvider";
 import { useEffect, useState } from "react";
 import { useContractProvider } from "../../contextProviders/ContractsProvider";
-import { POINT_CONVERSION_COMPRESSED } from "constants";
 import PostReply from "../PostReply";
 import { truncateTextMiddle } from "../../utils/textHelpers";
 import SupportPostDialog from "../SupportPostDialog";

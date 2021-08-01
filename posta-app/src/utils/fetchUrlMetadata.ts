@@ -26,7 +26,8 @@ export async function fetchUrlMetadata(url: string): Promise<URLMetadata | null>
 }
 
 export interface URLMetadata {
-    title: string,
-    description: string,
-    image: string
+    title: string;
+    description: string;
+    image: string;
+    isImage: boolean;
 }

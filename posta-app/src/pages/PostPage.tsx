@@ -20,10 +20,31 @@ export default function PostPage(props: any) {
     if (!contractProvider) return;
     setIsLoading(true);
 
-    // Get the post with the specific token id
-    const post = await PostaService.getPosts(null, [BigNumber.from(tokenId)], contractProvider);
-    if (post && post.length > 0) {
-      setPost(post[0]);
+    if (tokenId === "test") {
+      setPost({
+        author: "test human",
+        content:
+          "A test post with an image https://ipfs.kleros.io/ipfs/QmY9L11JwZoHazuvBJU9z6YnaNSfXNtNZVJp4gwhfYEQPd/20210506-180407.jpg",
+        authorImage:
+          "https://ipfs.kleros.io/ipfs/QmY9L11JwZoHazuvBJU9z6YnaNSfXNtNZVJp4gwhfYEQPd/20210506-180407.jpg",
+        authorDisplayName: "Juanu",
+        authorFullName: "",
+        blockTime: new Date(),
+        supportCount: BigNumber.from(1),
+        supportGiven: BigNumber.from(10),
+        tokenId: BigNumber.from(1),
+        tokenURI: "test",
+      });
+    } else {
+      // Get the post with the specific token id
+      const post = await PostaService.getPosts(
+        null,
+        [BigNumber.from(tokenId)],
+        contractProvider
+      );
+      if (post && post.length > 0) {
+        setPost(post[0]);
+      }
     }
 
     setIsLoading(false);
@@ -45,6 +66,8 @@ export default function PostPage(props: any) {
 
   const loadPostReplies = async () => {
     if (!contractProvider) return;
+    if(tokenId === "test") return;
+
     //  Get replies logs
     const postRepliesLogs = await PostaService.getPostRepliesLogs(
       BigNumber.from(tokenId),
@@ -63,15 +86,16 @@ export default function PostPage(props: any) {
         : (post && (
             <>
               <div className="mb-4">
-                <PostDisplay
-                  postOrId={post}
-                />
+                <PostDisplay postOrId={post} />
               </div>
               {postReplies &&
                 postReplies.map((replyLog) => {
                   return (
                     <div className="px-5 py-1">
-                      <PostDisplay postOrId={replyLog.tokenId} hideSourcePost={true} />
+                      <PostDisplay
+                        postOrId={replyLog.tokenId}
+                        hideSourcePost={true}
+                      />
                     </div>
                   );
                 })}

@@ -55,6 +55,7 @@ export default function PostaContentDisplay(props: IPostaContentDisplayProps) {
 
   useEffect(() => {
     const urls = extractLinks(props.content);
+    console.log(urls);
     if (urls && urls.length > 0) setPreviewUrl(urls[0]);
   });
   const content = props.content ? processString(config)(props.content) : "...";

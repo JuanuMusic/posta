@@ -3,9 +3,10 @@ import { parse, HTMLElement } from "node-html-parser"
 
 
 export interface URLMetadata {
-    title: string,
-    description: string,
+    title?: string,
+    description?: string,
     image: string
+    isImage: boolean
 }
 
 function getValueFromTags(tags: HTMLElement[], type: "title" | "description" | "image") {
@@ -24,19 +25,18 @@ function getValueFromTags(tags: HTMLElement[], type: "title" | "description" | "
 
 export async function fetchURLMetadata(url: string): Promise<URLMetadata> {
     const response = await axios.get(url);
+    const isImage = response.headers['content-type'].indexOf("image") != -1;
+    
     const root = parse(response.data);
     const metas = root.querySelectorAll("meta");
 
     const title = getValueFromTags(metas, "title");
     const description = getValueFromTags(metas, "description");
-    const image =getValueFromTags(metas, "image");
+    const image = getValueFromTags(metas, "image");
     return {
-        title: title || "", description: description || "", image: image || ""
-    }
-}
-
-export interface URLMetadata {
-    title: string,
-    description: string,
-    image: string
+        title: title || "", 
+        description: description || "", 
+        image: isImage ? url : image || "",
+        isImage: isImage
+    };
 }

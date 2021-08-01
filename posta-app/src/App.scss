@@ -60,11 +60,15 @@ h1 {
 .post-text {
   font-weight: 100;
   font-size: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .post-text-sm {
   font-weight: 100;
   font-size: 0.75rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 
@@ -136,8 +140,22 @@ h6 {
 .url-preview-image {
   height: 50px;
   width: 50px;
+  vertical-align: middle;
+  object-fit: cover;
+  min-width: 50px;
+}
+.url-preview-image-only {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+  min-width: 50px;
 }
 
 .url-preview-description {
   font-size: 0.7rem;
+}
+
+.modal-image-preview .modal-content {
+  background-color: transparent;
+  border: 0px;
 }

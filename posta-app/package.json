@@ -5,6 +5,7 @@
   "engines": {
     "node": "14.15.1"
   },
+  "homepage": ".",
   "private": true,
   "author": "Juan Manuel Haedo",
   "license": "MIT",

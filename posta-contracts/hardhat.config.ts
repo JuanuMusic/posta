@@ -20,6 +20,8 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
+const accounts  = process.env.POSTA_DEPLOYER_PK && [process.env.POSTA_DEPLOYER_PK];
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -43,12 +45,15 @@ module.exports = {
     },
     kovan: {
       url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [process.env.POSTA_DEPLOYER_PK],
-      loggingEnabled: true
+      accounts: accounts || undefined,
+      //loggingEnabled: true
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [process.env.POSTA_DEPLOYER_PK],
+      accounts: accounts || undefined,
+      //loggingEnabled: true
+    }, 
+    localhost: {
       loggingEnabled: true
     }
   },

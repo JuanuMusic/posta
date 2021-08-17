@@ -37,14 +37,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UBIService = void 0;
-var UBIService = {
+var UBIService = /** @class */ (function () {
+    function UBIService(contractProvider) {
+        this._contractProvider = contractProvider;
+    }
     /**
      * Returns the UBI balance of an account.
      * @param address
      * @param provider
      * @returns
      */
-    balanceOf: function (address, contractProvider) {
+    UBIService.prototype.balanceOf = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             var contract, error_1;
             return __generator(this, function (_a) {
@@ -53,7 +56,7 @@ var UBIService = {
                         _a.trys.push([0, 3, , 4]);
                         if (!address)
                             throw new Error("Invalid address " + address);
-                        return [4 /*yield*/, contractProvider.getUBIContractForRead()];
+                        return [4 /*yield*/, this._contractProvider.getUBIContractForRead()];
                     case 1:
                         contract = _a.sent();
                         return [4 /*yield*/, contract.balanceOf(address)];
@@ -67,14 +70,14 @@ var UBIService = {
                 }
             });
         });
-    },
+    };
     /** Call to Start accruing UBI  */
-    startAccruing: function (address, contractProvider) {
+    UBIService.prototype.startAccruing = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             var contract, tx;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getUBIContractForWrite(address)];
+                    case 0: return [4 /*yield*/, this._contractProvider.getUBIContractForWrite(address)];
                     case 1:
                         contract = _a.sent();
                         return [4 /*yield*/, contract.startAccruing(address)];
@@ -84,6 +87,7 @@ var UBIService = {
                 }
             });
         });
-    }
-};
+    };
+    return UBIService;
+}());
 exports.UBIService = UBIService;

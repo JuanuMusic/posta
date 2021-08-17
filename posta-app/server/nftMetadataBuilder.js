@@ -37,46 +37,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildMetadata = void 0;
-var posta_lib_1 = require("./posta-lib");
-function buildMetadata(post, contractProvider) {
+function buildMetadata(post, human) {
     return __awaiter(this, void 0, void 0, function () {
-        var human, attributes, retVal;
+        var attributes, retVal;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, posta_lib_1.PohService.getHuman(post.author, contractProvider)];
-                case 1:
-                    human = _a.sent();
-                    attributes = [{
-                            trait_type: "Supporters",
-                            value: post.supportCount.toNumber()
-                        },
-                        {
-                            trait_type: "Content",
-                            value: post.content
-                        }, {
-                            trait_type: "Author",
-                            value: post.author,
-                        }, {
-                            display_type: "date",
-                            trait_type: "Post date",
-                            value: post.blockTime.getTime() / 1000,
-                        }];
-                    if (post.replyOfTokenId && post.replyOfTokenId.gt(0)) {
-                        attributes.push({
-                            trait_type: "In reply of",
-                            value: "$POSTA:" + post.replyOfTokenId
-                        });
-                    }
-                    retVal = {
-                        blockTime: post.blockTime,
-                        description: "A unique Posta by a real human being ",
-                        name: "$POSTA:" + post.tokenId + " by " + (human && (human.display_name || human.eth_address)),
-                        external_url: process.env.POSTA_WEB_URL + "/posta/" + post.tokenId,
-                        image: process.env.POSTA_WEB_URL + "/post/" + post.tokenId + "/image",
-                        attributes: attributes
-                    };
-                    return [2 /*return*/, retVal];
+            attributes = [{
+                    trait_type: "Supporters",
+                    value: post.supportCount.toNumber()
+                },
+                {
+                    trait_type: "Content",
+                    value: post.content
+                }, {
+                    trait_type: "Author",
+                    value: post.author,
+                }, {
+                    display_type: "date",
+                    trait_type: "Post date",
+                    value: post.blockTime.getTime() / 1000,
+                }];
+            if (post.replyOfTokenId && post.replyOfTokenId.gt(0)) {
+                attributes.push({
+                    trait_type: "In reply of",
+                    value: "$POSTA:" + post.replyOfTokenId
+                });
             }
+            retVal = {
+                blockTime: post.blockTime,
+                description: "A unique Posta by a real human being ",
+                name: "$POSTA:" + post.tokenId + " by " + ((human && (human.display_name || human.eth_address)) || "[Human not found on PoH]"),
+                external_url: process.env.POSTA_WEB_URL + "/posta/" + post.tokenId,
+                image: process.env.POSTA_WEB_URL + "/post/" + post.tokenId + "/image",
+                attributes: attributes
+            };
+            return [2 /*return*/, retVal];
         });
     });
 }

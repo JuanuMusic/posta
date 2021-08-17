@@ -6,9 +6,8 @@
   "types": "./src/@types/**/*.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-win": "tsc && npm run copy-to-app && npm run copy-to-server",
-    "copy-to-app":"Xcopy /E /I \"./src\" \"../posta-app/src/posta-lib/\"",
-    "copy-to-server":"Xcopy /E /I \"./src\" \"../posta-app/server/posta-lib/\""
+    "build-win": "tsc && npm run copy-to-app",
+    "copy-to-app":"Xcopy /E /I \"./src\" \"../posta-app/src/posta-lib/\""
   },
   "author": "",
   "license": "ISC",

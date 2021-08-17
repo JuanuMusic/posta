@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { BigNumber, Contract, Signer } from "ethers";
+import { ParamType } from "ethers/lib/utils";
 
 interface IContracts {
     ubi: Contract, poh: Contract, posta: Contract;
@@ -21,9 +22,9 @@ export async function getContracts(pohGovernor: string, maxCharsPosta: number, b
     // Deploy Posta
     const postaV1Contract = await upgrades.deployProxy(Posta, [pohContract.address, ubiContract.address, maxCharsPosta, burnPct, treasuryPct])
     // Upgrade Posta
-    const PostaV0_3 = await ethers.getContractFactory("PostaV0_3");
-    const postaV0_3Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV0_3)
-    return { ubi: ubiContract, poh: pohContract, posta: postaV0_3Contract };
+    const PostaV0_8 = await ethers.getContractFactory("PostaV0_8");
+    const postaV0_8Contract = await upgrades.upgradeProxy(postaV1Contract.address, PostaV0_8)
+    return { ubi: ubiContract, poh: pohContract, posta: postaV0_8Contract };
 
 
 }
@@ -48,22 +49,9 @@ export async function getActors() {
  * @param postaContract 
  * @returns 
  */
-export async function replyPostFrom(account: Signer, content: string, replyOftokenId: string, postaContract: Contract): Promise<void> {
+export async function createPostFrom(account: Signer, content: string, isReplyOfTokenId: number | null, postaContract: Contract): Promise<void> {
     const humanPosta = postaContract.connect(account);
-    const transaction = await humanPosta.replyPost(content, replyOftokenId);
-    return transaction;
-}
-
-/**
- * Creates a new post and returns the token ID
- * @param account 
- * @param content 
- * @param postaContract 
- * @returns 
- */
- export async function createPostFrom(account: Signer, content: string, postaContract: Contract): Promise<void> {
-    const humanPosta = postaContract.connect(account);
-    const transaction = await humanPosta.publishPost(content);
+    const transaction = await humanPosta.publishPost(content, isReplyOfTokenId || "0");
     return transaction;
 }
 
@@ -73,4 +61,26 @@ export async function supportPostFrom(account: Signer, postTokenId: string, amou
     const human2Posta = contracts.posta.connect(account);
     await human2Ubi.approve(contracts.posta.address, amount);
     await human2Posta.support(postTokenId, amount);
+}
+
+export async function publishPostOnBehalfOf(funder: Signer, signer: Signer, postText: string, isReplyOfTokenId: string, signature: any, nonce: number, postaContract: Contract) {
+    const funderPosta = postaContract.connect(funder);
+    const authorAddress = await signer.getAddress();
+    return await funderPosta.publishOnBehalfOf(postText, authorAddress, isReplyOfTokenId, nonce, signature);
+}
+
+export async function signMessage(types: readonly (string | ParamType)[], data: any[], signer: Signer): Promise<string> {
+    
+    // 66 byte string, which represents 32 bytes of data
+    //let messageHash = ethers.utils.solidityKeccak256(payL);
+    let payload = ethers.utils.defaultAbiCoder.encode(types, data);
+    let payloadHash = ethers.utils.keccak256(payload);
+
+    // See the note in the Solidity; basically this would save 6 gas and
+    // can potentially add security vulnerabilities in the future
+    // let payloadHash = ethers.utils.solidityKeccak256([ "bytes32", "string" ], [ someHash, someDescr ]);
+
+    // This adds the message prefix
+    let signature = await signer.signMessage(ethers.utils.arrayify(payloadHash));
+    return signature;
 }

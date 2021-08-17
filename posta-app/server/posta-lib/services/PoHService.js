@@ -38,40 +38,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PohService = void 0;
 var PohAPI_1 = require("./PohAPI");
-// Cache profiles
-var _profilesCache = {};
-function ensureHumanIsCached(address) {
-    return __awaiter(this, void 0, void 0, function () {
-        var human;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!!_profilesCache[address]) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PohAPI_1.PohAPI.profiles.getByAddress(address)];
-                case 1:
-                    human = _a.sent();
-                    if (human)
-                        _profilesCache[address] = human;
-                    _a.label = 2;
-                case 2: return [2 /*return*/];
-            }
-        });
-    });
-}
-var PohService = {
+var PohService = /** @class */ (function () {
+    function PohService(api, contractProvider) {
+        // Cache profiles
+        this._profilesCache = {};
+        if (typeof api === "string") {
+            this._pohApi = new PohAPI_1.PohAPI(api);
+        }
+        else {
+            this._pohApi = api;
+        }
+        this._contractProvider = contractProvider;
+    }
     /**
      * Returns a human profile from the PoH API
      * @param address
      * @returns
      */
-    getHuman: function (address, contractProvider) {
+    PohService.prototype.getHuman = function (address) {
         return __awaiter(this, void 0, void 0, function () {
-            var resolvedAddress, _a;
+            var resolvedAddress, _a, human;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         if (!address.toLowerCase().endsWith(".eth")) return [3 /*break*/, 2];
-                        return [4 /*yield*/, contractProvider.ethersProvider.resolveName(address)];
+                        return [4 /*yield*/, this._contractProvider.ethersProvider.resolveName(address)];
                     case 1:
                         _a = _b.sent();
                         return [3 /*break*/, 3];
@@ -80,22 +71,26 @@ var PohService = {
                         _b.label = 3;
                     case 3:
                         resolvedAddress = _a;
-                        // Cache human
-                        return [4 /*yield*/, ensureHumanIsCached(resolvedAddress)];
+                        if (!!this._profilesCache[address]) return [3 /*break*/, 5];
+                        return [4 /*yield*/, this._pohApi.getProfileByAddress(resolvedAddress)];
                     case 4:
-                        // Cache human
-                        _b.sent();
-                        return [2 /*return*/, _profilesCache[address]];
+                        human = _b.sent();
+                        if (human)
+                            this._profilesCache[address] = human;
+                        _b.label = 5;
+                    case 5: 
+                    // Return cached profile
+                    return [2 /*return*/, this._profilesCache[address]];
                 }
             });
         });
-    },
-    isRegistered: function (address, contractProvider) {
+    };
+    PohService.prototype.isRegistered = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             var poh;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPohContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPohContractForRead()];
                     case 1:
                         poh = _a.sent();
                         return [4 /*yield*/, poh.isRegistered(address)];
@@ -103,6 +98,7 @@ var PohService = {
                 }
             });
         });
-    }
-};
+    };
+    return PohService;
+}());
 exports.PohService = PohService;

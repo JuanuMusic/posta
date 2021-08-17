@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostDisplay from "../components/PostDisplay/PostDisplay";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import {
   IPostaNFT,
   PostaService,
@@ -13,11 +13,11 @@ export default function PostPage(props: any) {
   const [post, setPost] = useState<IPostaNFT>();
   const [postReplies, setPostReplies] = useState<PostLogs[] | null>(null);
   const { tokenId } = useParams<{ tokenId: string }>();
-  const contractProvider = useContractProvider();
+  const { postaService } = usePostaContext();
   const [isLoading, setIsLoading] = useState(false);
 
   async function init() {
-    if (!contractProvider) return;
+    if (!postaService) return;
     setIsLoading(true);
 
     if (tokenId === "test") {
@@ -37,11 +37,7 @@ export default function PostPage(props: any) {
       });
     } else {
       // Get the post with the specific token id
-      const post = await PostaService.getPosts(
-        null,
-        [BigNumber.from(tokenId)],
-        contractProvider
-      );
+      const post = await postaService.getPosts(null, [BigNumber.from(tokenId)]);
       if (post && post.length > 0) {
         setPost(post[0]);
       }
@@ -53,25 +49,24 @@ export default function PostPage(props: any) {
   // Initialize page when library is available
   useEffect(() => {
     init();
-  }, [contractProvider]);
+  }, [postaService]);
 
   // Load post replies when tokenId is set
   useEffect(() => {
     if (!tokenId) return;
 
     loadPostReplies();
-  }, [tokenId, contractProvider]);
+  }, [tokenId, postaService]);
 
   const handleBurnUBIsClicked = () => console.log("TODO");
 
   const loadPostReplies = async () => {
-    if (!contractProvider) return;
-    if(tokenId === "test") return;
+    if (!postaService) return;
+    if (tokenId === "test") return;
 
     //  Get replies logs
-    const postRepliesLogs = await PostaService.getPostRepliesLogs(
-      BigNumber.from(tokenId),
-      contractProvider
+    const postRepliesLogs = await postaService.getPostRepliesLogs(
+      BigNumber.from(tokenId)
     );
 
     if (postRepliesLogs && postRepliesLogs.length > 0)

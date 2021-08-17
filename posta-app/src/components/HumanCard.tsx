@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import Skeleton from "react-loading-skeleton";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import { PohService } from "../posta-lib";
 import { POHProfileModel } from "../posta-lib/services/PohAPI";
 import ProfilePicture, { AvatarSize } from "./ProfilePicture";
@@ -18,25 +18,22 @@ export default function HumanCard(props: HumanCardProps) {
   const [currentHuman, setCurrentHuman] = useState<POHProfileModel | null>(
     null
   );
-  const contractProvider = useContractProvider();
+  const { pohService } = usePostaContext();
   console.log("Human address", props.humanAddress);
   /**
    * Loads the human's data
    */
   async function loadHumanData() {
-    if (!contractProvider || !props.humanAddress) return;
+    if (!pohService || !props.humanAddress) return;
     setIsLoading(true);
-    const human = await PohService.getHuman(
-      props.humanAddress,
-      contractProvider
-    );
+    const human = await pohService.getHuman(props.humanAddress);
     setCurrentHuman(human);
     setIsLoading(false);
   }
 
   useEffect(() => {
     loadHumanData();
-  }, [props.humanAddress, contractProvider]);
+  }, [props.humanAddress, pohService]);
 
   useEffect(() => {
     if (props.human) setCurrentHuman(props.human);

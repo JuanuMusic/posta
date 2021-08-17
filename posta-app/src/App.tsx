@@ -14,6 +14,7 @@ import RecentSupporters from "./components/RecentSupporters/RecentSupporters";
 import HumanPage from "./pages/HumanPage";
 import SupportersPage from "./pages/SupportersPage";
 import ContractSettings from "./components/ContractSettings";
+import DummyPOHController from "./dev-tools/DummyPOHController";
 
 //const drizzle = new Drizzle(drizzleOptions as IDrizzleOptions);
 

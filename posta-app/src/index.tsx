@@ -11,7 +11,7 @@ import { Web3ReactProvider } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
 import { BrowserRouter as Router } from "react-router-dom";
 import HumanProvider from "./contextProviders/HumanProvider";
-import ContractsProvider from "./contextProviders/ContractsProvider";
+import PostaContext from "./contextProviders/PostaContext";
 
 function getLibrary(provider: any): Web3Provider {
   const library = new Web3Provider(provider);
@@ -22,7 +22,7 @@ function getLibrary(provider: any): Web3Provider {
 ReactDOM.render(
   <React.StrictMode>
     <Web3ReactProvider getLibrary={getLibrary}>
-      <ContractsProvider>
+      <PostaContext>
         <HumanProvider>
           <Router>
             <div className="text-light mb-5">
@@ -45,7 +45,7 @@ ReactDOM.render(
             </div> */}
           </Router>
         </HumanProvider>
-      </ContractsProvider>
+      </PostaContext>
     </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById("root")

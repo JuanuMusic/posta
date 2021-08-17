@@ -48,7 +48,7 @@ var ContractProvider = /** @class */ (function () {
         this._config = config;
         this._contracts = contracts;
     }
-    ContractProvider.prototype._getSigner = function (signer) {
+    ContractProvider.prototype.getSigner = function (signer) {
         if (!this._provider)
             throw new Error("JsonRpcProvider not set");
         return this._provider.getSigner(signer);
@@ -95,7 +95,7 @@ var ContractProvider = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var signer, contract;
             return __generator(this, function (_a) {
-                signer = this._getSigner(fromAddress);
+                signer = this.getSigner(fromAddress);
                 contract = new ethers_1.Contract(contractAddress, abi, signer);
                 return [2 /*return*/, contract.connect(signer)];
             });
@@ -162,6 +162,23 @@ var ContractProvider = /** @class */ (function () {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.getContractForWrite(this._config.UBIAddress, this._contracts.UBIContract.abi, address)];
                     case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ContractProvider.prototype.signMessage = function (types, data, signerAddress) {
+        return __awaiter(this, void 0, void 0, function () {
+            var payload, payloadHash, signer, signature;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        payload = ethers_1.ethers.utils.defaultAbiCoder.encode(types, data);
+                        payloadHash = ethers_1.ethers.utils.keccak256(payload);
+                        signer = this.getSigner(signerAddress);
+                        return [4 /*yield*/, signer.signMessage(ethers_1.ethers.utils.arrayify(payloadHash))];
+                    case 1:
+                        signature = _a.sent();
+                        return [2 /*return*/, signature];
                 }
             });
         });

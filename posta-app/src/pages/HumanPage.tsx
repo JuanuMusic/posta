@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 import HumanCard from "../components/HumanCard";
 import PostList from "../components/PostList";
 import ProfilePicture, { AvatarSize } from "../components/ProfilePicture";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import { ContractProvider, PohService } from "../posta-lib";
 import { POHProfileModel } from "../posta-lib/services/PohAPI";
 import { IPostaNFT, PostaService } from "../posta-lib/services/PostaService";
@@ -18,23 +18,23 @@ function HumanPage(props: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
 
-  const contractProvider = useContractProvider();
+  const { postaService } = usePostaContext();
   const humanAddress = props.match.params.humanAddress as string;
 
   /**
    * Load posts by human
    */
   async function loadHumanPosts() {
-    if (!contractProvider || !humanAddress) return;
+    if (!postaService || !humanAddress) return;
     setIsLoadingPosts(true);
-    const posts = await PostaService.getPostsBy(humanAddress, contractProvider);
+    const posts = await postaService.getPostsBy(humanAddress);
     setHumanPosts(posts);
     setIsLoadingPosts(false);
   }
 
   useEffect(() => {
     loadHumanPosts();
-  }, [humanAddress, contractProvider]);
+  }, [humanAddress, postaService]);
 
   return (
     <Container>

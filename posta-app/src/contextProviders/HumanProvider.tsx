@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 import { PohService } from "../posta-lib";
 import { PohAPI, POHProfileModel } from "../posta-lib/services/PohAPI";
-import { useContractProvider } from "./ContractsProvider";
+import { usePostaContext } from "./PostaContext";
 import { injected } from "../connectors";
 
 const EMPTY_POH_PROFILE = { display_name: "", first_name: "", last_name: "" };
@@ -17,7 +17,7 @@ const context = createContext<{ profile: POHProfileModel; isLoading: boolean }>(
 export default function HumanProvider({ children }: { children: any }) {
   const [profile, setProfile] = useState<POHProfileModel>(EMPTY_POH_PROFILE);
   const [isLoading, setIsLoading] = useState(false);
-  const contractProvider = useContractProvider();
+  const { pohService } = usePostaContext();
   const web3Context = useWeb3React();
   const human = { profile, isLoading };
   console.log("WEB3", web3Context);
@@ -30,29 +30,26 @@ export default function HumanProvider({ children }: { children: any }) {
     }
 
     if (!web3Context.account) {
-      if(window.ethereum) web3Context.activate(injected);
-    };
+      if (window.ethereum) web3Context.activate(injected);
+    }
 
-    if(web3Context.account) loadHumanAccount(web3Context.account);
-  }, [web3Context, contractProvider]);
+    if (web3Context.account) loadHumanAccount(web3Context.account);
+  }, [web3Context, pohService]);
 
   /**
    * Try to load a human account from an address.
    * @param address
    */
   const loadHumanAccount = async (address: string) => {
-    if (!contractProvider) return;
+    if (!pohService) return;
     setIsLoading(true);
     try {
       // Get if the address is human registered from the PoH contract
-      const isRegistered = await PohService.isRegistered(
-        address,
-        contractProvider
-      );
+      const isRegistered = await pohService.isRegistered(address);
 
       // Get the registered profile and log a warning in case not found
-      const registeredProfile = await PohAPI.profiles.getByAddress(address);
-      
+      const registeredProfile = await pohService.getHuman(address);
+
       // If profile is not registered, warn and set to empty POH profile.
       if (!registeredProfile) {
         console.warn(
@@ -70,7 +67,7 @@ export default function HumanProvider({ children }: { children: any }) {
         setProfile(registeredProfile);
       }
 
-      console.log("PROFILE", registeredProfile)
+      console.log("PROFILE", registeredProfile);
     } catch (err) {
       console.error("Error loading human account", err);
     }

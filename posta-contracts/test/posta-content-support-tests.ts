@@ -42,7 +42,7 @@ describe("Posta", function () {
 
         it("Should decrease UBI balance on supporter", async () => {
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
 
             // Get initial balance of supporter
@@ -63,7 +63,7 @@ describe("Posta", function () {
         it("Should give support", async () => {
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
 
             // Get post state before giving support. 
@@ -83,7 +83,7 @@ describe("Posta", function () {
         it("Should count only 1 supporter even if support is given multiple times by the same human", async () => {
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
             const ubiSupport = BigNumber.from(1).mul(TO_WEI_BN);
 
@@ -101,7 +101,7 @@ describe("Posta", function () {
         it("Should count 2 supporters when 2 humans send support", async () => {
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
             const ubiSupport = BigNumber.from(1).mul(TO_WEI_BN);
             const prevPost = await contracts.posta.getPost(tokenId);
@@ -118,7 +118,7 @@ describe("Posta", function () {
 
         it("Should fail if UBI balance is not enough", async () => {
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
             // Get current balance
             const currentUBIBalance = await contracts.ubi.balanceOf(await actors.HUMAN_1.getAddress());
@@ -142,7 +142,7 @@ describe("Posta", function () {
             await contracts.posta.setTreasuryPct(treasuryPct.toString());
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_1, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
 
             // Get creator current UBI balance
@@ -175,7 +175,7 @@ describe("Posta", function () {
             await contracts.posta.setBurnPct(burnPct.toString());
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
 
             // Get the initial total UBI supply.
@@ -197,7 +197,7 @@ describe("Posta", function () {
             await contracts.posta.setBurnPct(burnPct.toString());
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, null, contracts.posta);
             const tokenId = "1";
 
             // Get the initial total UBI supply.
@@ -222,7 +222,7 @@ describe("Posta", function () {
             await contracts.posta.setTreasuryPct(treasuryPct.toString());
 
             // Create a post
-            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, contracts.posta);
+            await utils.createPostFrom(actors.HUMAN_2, POST_TEST_TEXT, null,contracts.posta);
             const tokenId = "1";
             
             // Get the initial total UBI supply.

@@ -2,6 +2,7 @@ import { Contract, ethers } from "ethers";
 import configService from "./configService";
 
 export type EthersProviders = ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc;
+type EthersParamType = string | ethers.utils.ParamType
 
 export interface IContractProvider {
     config: IConfiguration;
@@ -36,6 +37,8 @@ export interface IContractProvider {
     getPohContractForRead(): Promise<Contract>;
     getUBIContractForRead(): Promise<Contract>;
     getUBIContractForWrite(address: string): Promise<Contract>;
+    getSigner(signer: string) : ethers.providers.JsonRpcSigner;
+    signMessage(types: EthersParamType[], data: any[], signerAddress: string) : Promise<string>;
 }
 
 export interface IConfiguration {
@@ -68,7 +71,7 @@ export class ContractProvider implements IContractProvider {
         this._contracts = contracts;
     }
 
-    _getSigner(signer: string) {
+    getSigner(signer: string) : ethers.providers.JsonRpcSigner {
         if(!this._provider) throw new Error("JsonRpcProvider not set");
         return (this._provider as ethers.providers.JsonRpcProvider).getSigner(signer);
 
@@ -103,7 +106,7 @@ export class ContractProvider implements IContractProvider {
      * @returns 
      */
     async getContractForWrite(contractAddress: string, abi: any, fromAddress: string): Promise<Contract> {
-        const signer = this._getSigner(fromAddress);
+        const signer = this.getSigner(fromAddress);
         const contract = new Contract(contractAddress, abi, signer);
         return contract.connect(signer);
     }
@@ -136,5 +139,15 @@ export class ContractProvider implements IContractProvider {
     async getUBIContractForWrite(address: string): Promise<Contract> {
         return await this.getContractForWrite(this._config.UBIAddress, this._contracts.UBIContract.abi, address);
     }
+
+    async signMessage(types: EthersParamType[], data: any[], signerAddress: string) : Promise<string> {
+        let payload = ethers.utils.defaultAbiCoder.encode(types, data);
+        let payloadHash = ethers.utils.keccak256(payload);
+    
+        // This adds the message prefix
+        const signer = this.getSigner(signerAddress);
+        let signature = await signer.signMessage(ethers.utils.arrayify(payloadHash));
+        return signature;
+      }
 
 }

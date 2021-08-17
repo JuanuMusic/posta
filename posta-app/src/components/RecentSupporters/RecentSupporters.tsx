@@ -3,29 +3,33 @@ import { ethers } from "ethers";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Card, ListGroup } from "react-bootstrap";
-import { useContractProvider } from "../../contextProviders/ContractsProvider";
+import { usePostaContext } from "../../contextProviders/PostaContext";
 import { PostaService } from "../../posta-lib";
-import {truncateTextMiddle} from "../../utils/textHelpers";
+import { truncateTextMiddle } from "../../utils/textHelpers";
 import { Link } from "react-router-dom";
 
 export default function RecentSupporters(props: any) {
   const [lastSupporters, setLastSupporters] = useState<
     SupportGivenLog[] | null
   >(null);
-  const contractProvider = useContractProvider();
+  const { postaService } = usePostaContext();
 
   useEffect(() => {
     async function refreshLastSupporters() {
-      if (!contractProvider) return;
-      const supporters = await PostaService.getLastSupporters(
-        10,
-        contractProvider
-      );
-      supporters && setLastSupporters(supporters.sort((supportA, supportB) => supportB.blockTime.getTime() - supportA.blockTime.getTime()));
+      if (!postaService) return;
+      const supporters = await postaService.getLastSupporters(10);
+      // Set the last supporters sorting by blocktime
+      supporters &&
+        setLastSupporters(
+          supporters.sort(
+            (supportA, supportB) =>
+              supportB.blockTime.getTime() - supportA.blockTime.getTime()
+          )
+        );
     }
 
     refreshLastSupporters();
-  }, [contractProvider]);
+  }, [postaService]);
 
   return (
     <Card className={props.className + " bg-dark"}>
@@ -46,8 +50,8 @@ export default function RecentSupporters(props: any) {
 
 /**
  * An item for the RecentSupporters list
- * @param param0 
- * @returns 
+ * @param param0
+ * @returns
  */
 function SupportItem({ support }: { support: SupportGivenLog }) {
   return (

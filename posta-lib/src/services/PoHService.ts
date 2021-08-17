@@ -1,37 +1,49 @@
 import { IContractProvider } from "./ContractProvider";
 import { PohAPI, POHProfileModel } from "./PohAPI"
 
-// Cache profiles
-const _profilesCache: { [key: string]: POHProfileModel } = {};
+class PohService {
+    // Cache profiles
+    private _profilesCache: { [key: string]: POHProfileModel } = {};
+    private _pohApi: PohAPI;
+    private _contractProvider: IContractProvider;
 
 
-async function ensureHumanIsCached(address: string) {
-    // Cache profile
-    if (!_profilesCache[address]) {
-        const human = await PohAPI.profiles.getByAddress(address);
-        if (human)
-            _profilesCache[address] = human;
+    constructor(api: PohAPI | string, contractProvider: IContractProvider) {
+        if(typeof api === "string") {
+            this._pohApi = new PohAPI(api);
+        } else {
+            this._pohApi = api;
+        }
+
+        this._contractProvider = contractProvider;
     }
-}
 
-const PohService = {
+
     /**
      * Returns a human profile from the PoH API
      * @param address 
      * @returns 
      */
-    async getHuman(address: string, contractProvider: IContractProvider) {
+    async getHuman(address: string) {
         // Resolve in case it's an ens name
-        const resolvedAddress = address.toLowerCase().endsWith(".eth") ? await contractProvider.ethersProvider.resolveName(address) : address;
-        // Cache human
-        await ensureHumanIsCached(resolvedAddress);
-        return _profilesCache[address];
-    },
+        const resolvedAddress = address.toLowerCase().endsWith(".eth") ? await this._contractProvider.ethersProvider.resolveName(address) : address;
 
-    async isRegistered(address: string, contractProvider: IContractProvider) {
-        const poh = await contractProvider.getPohContractForRead();
+        // Cache profile
+        if (!this._profilesCache[address]) {
+            const human = await this._pohApi.getProfileByAddress(resolvedAddress);
+            if (human)
+                this._profilesCache[address] = human;
+        }
+
+        // Return cached profile
+        return this._profilesCache[address];
+    }
+
+    async isRegistered(address: string) {
+        const poh = await this._contractProvider.getPohContractForRead();
         return await poh.isRegistered(address);
     }
+
 
 }
 

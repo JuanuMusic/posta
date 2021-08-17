@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { FaGithub, FaQuestion } from "react-icons/fa";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import { PostaService } from "../posta-lib";
 
 export default function SuperHeader(props: any) {

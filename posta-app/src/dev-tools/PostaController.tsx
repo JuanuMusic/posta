@@ -1,7 +1,7 @@
 import { Button, FormControl, InputGroup } from "react-bootstrap";
 import { useState } from "react";
 import { PostaService } from "../posta-lib";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 
 interface IPostaControllerProps {
   owner: string;
@@ -9,11 +9,11 @@ interface IPostaControllerProps {
 
 export default function PostaController(props: IPostaControllerProps) {
   const [baseURI, setBaseURI] = useState("");
-  const contractProvider = useContractProvider();
+  const { postaService } = usePostaContext();
 
   const handleSetBaseUrlClicked = async () => {
-    if (!contractProvider) return;
-    await PostaService.setBaseURI(props.owner, baseURI, contractProvider);
+    if (!postaService) return;
+    await postaService.setBaseURI(props.owner, baseURI);
     console.log("Base URI updated");
   };
 

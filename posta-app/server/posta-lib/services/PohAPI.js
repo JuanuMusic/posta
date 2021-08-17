@@ -41,42 +41,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PohAPI = void 0;
 var axios_1 = __importDefault(require("axios"));
-var pohApiInstance = axios_1.default.create({
-    baseURL: 'https://api.poh.dev/',
-    timeout: 1000,
-    //headers: {'X-Custom-Header': 'foobar'}
-});
-var PohAPI = {
-    profiles: {
-        getByAddress: function (address) {
-            var _a;
-            return __awaiter(this, void 0, void 0, function () {
-                var response, ex_1;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
-                        case 0:
-                            _b.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, pohApiInstance.get("/profiles/" + address)];
-                        case 1:
-                            response = _b.sent();
-                            return [2 /*return*/, response.data];
-                        case 2:
-                            ex_1 = _b.sent();
-                            if (axios_1.default.isAxiosError(ex_1)) {
-                                if (((_a = ex_1.response) === null || _a === void 0 ? void 0 : _a.status) === 404) {
-                                    console.warn("human not found or not registered");
-                                }
-                            }
-                            else {
-                                console.error("Unhandled error", ex_1.message);
-                                console.error(ex_1.stack);
-                            }
-                            return [2 /*return*/, null];
-                        case 3: return [2 /*return*/];
-                    }
-                });
-            });
-        }
+var PohAPI = /** @class */ (function () {
+    function PohAPI(baseUrl) {
+        this._baseUrl = baseUrl;
+        this._pohApiInstance = axios_1.default.create({
+            baseURL: this._baseUrl,
+            timeout: 1000,
+            //headers: {'X-Custom-Header': 'foobar'}
+        });
     }
-};
+    PohAPI.prototype.getProfileByAddress = function (address) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var response, ex_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._pohApiInstance.get("/profiles/" + address)];
+                    case 1:
+                        response = _b.sent();
+                        return [2 /*return*/, response.data];
+                    case 2:
+                        ex_1 = _b.sent();
+                        if (axios_1.default.isAxiosError(ex_1)) {
+                            if (((_a = ex_1.response) === null || _a === void 0 ? void 0 : _a.status) === 404) {
+                                console.warn("human not found or not registered");
+                            }
+                        }
+                        else {
+                            console.error("Unhandled error", ex_1.message);
+                            console.error(ex_1.stack);
+                        }
+                        return [2 /*return*/, null];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return PohAPI;
+}());
 exports.PohAPI = PohAPI;

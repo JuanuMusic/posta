@@ -1,0 +1,1 @@
+type DeployableNetwork = "kovan" | "mainnet" | "localhost";

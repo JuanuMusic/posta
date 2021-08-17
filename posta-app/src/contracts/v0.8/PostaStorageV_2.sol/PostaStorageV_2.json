@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "PostaStorageV_2",
+  "sourceName": "contracts/v0.8/PostaStorageV_2.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209d565000bc2fd8d6cd7eacfe392e72c8a08c3ba8df41cda7e62a6b11d77ff2a164736f6c63430008020033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212209d565000bc2fd8d6cd7eacfe392e72c8a08c3ba8df41cda7e62a6b11d77ff2a164736f6c63430008020033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

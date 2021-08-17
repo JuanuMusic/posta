@@ -1,16 +1,22 @@
 import { IContractProvider } from "./ContractProvider";
 
-const UBIService = {
+class UBIService {
+  
+  private _contractProvider: IContractProvider;
+
+  constructor(contractProvider: IContractProvider) {
+    this._contractProvider = contractProvider;
+  }
   /**
    * Returns the UBI balance of an account.
    * @param address 
    * @param provider 
    * @returns 
    */
-  async balanceOf(address: string, contractProvider: IContractProvider) {
+  async balanceOf(address: string) {
     try {
       if (!address) throw new Error(`Invalid address ${address}`);
-      const contract = await contractProvider.getUBIContractForRead();
+      const contract = await this._contractProvider.getUBIContractForRead();
       return await contract.balanceOf(address);
     }
     catch (error) {
@@ -18,11 +24,11 @@ const UBIService = {
       console.error(error.stack);
       return 0;
     }
-  },
+  }
 
   /** Call to Start accruing UBI  */
-  async startAccruing(address: string, contractProvider: IContractProvider) {
-    const contract = await contractProvider.getUBIContractForWrite(address);
+  async startAccruing(address: string) {
+    const contract = await this._contractProvider.getUBIContractForWrite(address);
     const tx = await contract.startAccruing(address);
     return tx;
   }

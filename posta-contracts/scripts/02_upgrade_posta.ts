@@ -1,23 +1,23 @@
 import { ethers, upgrades } from "hardhat";
+import { getContractsByNetwork } from "./utils/utils";
 
-const MAINNET_PROXY_ADDRESS = "0xae199eb85a303d11725d193efd1e6ab312a980b6";
-const KOVAN_PROXY_ADDRESS = "0x0C5E8C6F974D2E2Ac8FF59b12d61b85E0bdfcC8b";
-const LOCAL_PROXY_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
 
-const contractName = "PostaV0_7";
+
+const contractName = "PostaV0_8";
 
 async function main() {
+  const contracts = getContractsByNetwork(process.env.CONFIG || "");
   // Deploy Library
   // console.log("Deploying PostaLib...")
   // const PostaLib = await ethers.getContractFactory("PostaLib");
   // const postaLib = await PostaLib.deploy();
   // console.log("Posta Lib Address:", postaLib.address);
   const [deployer] = await ethers.getSigners();
-  console.log("Upgrading POSTA to  with account:", deployer.address);
+  console.log(`Upgrading POSTA to ${contracts.posta} with account: ${deployer.address}`);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const postaContractFactory = await ethers.getContractFactory(contractName);
-  await upgrades.upgradeProxy(KOVAN_PROXY_ADDRESS, postaContractFactory);
+  await upgrades.upgradeProxy(contracts.posta, postaContractFactory);
   console.log("Posta upgraded to",contractName);
 }
 

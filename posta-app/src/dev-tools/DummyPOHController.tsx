@@ -1,9 +1,9 @@
 import { Button } from "react-bootstrap";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import { useHuman } from "../contextProviders/HumanProvider";
 
 export default function DummyPOHController(props: IBasePostaProps) {
-  const contractProvider = useContractProvider();
+  const {contractProvider} = usePostaContext();
   const human = useHuman();
 
   const handleRegisterHumanClicked = async () => {

@@ -49,20 +49,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostaService = void 0;
 var ethers_1 = require("ethers");
-var PoHService_1 = require("./PoHService");
 var DEFAULT_CONFIRMATIONS = 5;
-var PostaService = {
+var PostaService = /** @class */ (function () {
+    function PostaService(pohService, contractProvider) {
+        this._pohService = pohService;
+        this._contractProvider = contractProvider;
+    }
     /**
      * Gets the token URL with JSON metadata
      * @param tokenId
      * @param provider
      */
-    getTokenUrl: function (tokenId, contractProvider) {
+    PostaService.prototype.getTokenUrl = function (tokenId) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, uri;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.tokenURI(tokenId)];
@@ -72,19 +75,19 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Sets the base url for buiulding the tokenURI.
      * OnlyOwner
      * @param baseUrl
      * @param provider
      */
-    setBaseURI: function (from, baseUrl, contractProvider) {
+    PostaService.prototype.setBaseURI = function (from, baseUrl) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, tx;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForWrite(from)];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForWrite(from)];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.setBaseURI(baseUrl)];
@@ -95,7 +98,7 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Returns an array with the posts logs to search for to build the posts.
      * @param authors Array of human addresses to fetch posts.
@@ -103,13 +106,13 @@ var PostaService = {
      * @param provider
      * @returns
      */
-    getPostLogs: function (authors, tokenIds, contractProvider) {
+    PostaService.prototype.getPostLogs = function (authors, tokenIds) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, filter, logs, retVal;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         filter = postaContract.filters.NewPost(authors || null, tokenIds && tokenIds.map(function (id) { return id.toNumber(); }) || null);
@@ -156,19 +159,19 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Returns an array of logs that belong to replies to a given post.
      * @param forTokenId Token ID of the posxt for which to retrieve replies
      * @param contractProvider
      */
-    getPostRepliesLogs: function (forTokenId, contractProvider) {
+    PostaService.prototype.getPostRepliesLogs = function (forTokenId) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, filter, repliesLogs, retVal;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         filter = postaContract.filters.NewPostReply(null, [forTokenId.toNumber()]);
@@ -184,7 +187,7 @@ var PostaService = {
                                     switch (_a.label) {
                                         case 0:
                                             if (!log.args) return [3 /*break*/, 2];
-                                            return [4 /*yield*/, PostaService.getPostLogs(null, [log.args.tokenId], contractProvider)];
+                                            return [4 /*yield*/, this.getPostLogs(null, [log.args.tokenId])];
                                         case 1:
                                             sourcePostLogs = _a.sent();
                                             if (!sourcePostLogs) {
@@ -204,23 +207,23 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Requests approval to burn UBIs on the Posta contract.
      * @param from Human address that burns their UBIs
      * @param provider Web3Provider
      * @param waitConfirmation Wait for this confirmations to complete transaction.
      */
-    requestBurnApproval: function (from, amount, contractProvider) {
+    PostaService.prototype.requestBurnApproval = function (from, amount) {
         return __awaiter(this, void 0, void 0, function () {
             var ubiContract, approvalTx, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getUBIContractForWrite(from)];
+                    case 0: return [4 /*yield*/, this._contractProvider.getUBIContractForWrite(from)];
                     case 1:
                         ubiContract = _c.sent();
                         _b = (_a = ubiContract).approve;
-                        return [4 /*yield*/, contractProvider.config.PostaAddress];
+                        return [4 /*yield*/, this._contractProvider.config.PostaAddress];
                     case 2: return [4 /*yield*/, _b.apply(_a, [_c.sent(), amount])];
                     case 3:
                         approvalTx = _c.sent();
@@ -229,7 +232,7 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Burn UBIs to support a users NFT.
      * @param tokenID IUD of the NFT to give support
@@ -237,14 +240,14 @@ var PostaService = {
      * @param from Human burning their UBIs.
      * @param provider Web3Provider
      */
-    giveSupport: function (tokenID, amount, from, contractProvider, confirmations) {
+    PostaService.prototype.giveSupport = function (tokenID, amount, from, confirmations) {
         return __awaiter(this, void 0, void 0, function () {
             var contract, tx, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 4, , 5]);
-                        return [4 /*yield*/, contractProvider.getPostaContractForWrite(from)];
+                        return [4 /*yield*/, this._contractProvider.getPostaContractForWrite(from)];
                     case 1:
                         contract = _a.sent();
                         return [4 /*yield*/, contract.support(tokenID, amount)];
@@ -263,30 +266,41 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Takes care of publishing a post.
      * It first uploads the post to a Decentralized service and then mints the NFT with the URL to it.
      * @param postData Data of the post
      * @param drizzle
      */
-    publishPost: function (postData, contractProvider) {
+    PostaService.prototype.publishPost = function (postData) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForWrite(postData.author)];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForWrite(postData.author)];
                     case 1:
                         postaContract = _a.sent();
-                        if (!postData.replyOfTokenId) return [3 /*break*/, 3];
-                        return [4 /*yield*/, postaContract.replyPost(postData.text, postData.replyOfTokenId)];
+                        return [4 /*yield*/, postaContract.publishPost(postData.text, postData.replyOfTokenId || 0)];
                     case 2: return [2 /*return*/, _a.sent()];
-                    case 3: return [4 /*yield*/, postaContract.publishPost(postData.text)];
-                    case 4: return [2 /*return*/, _a.sent()];
                 }
             });
         });
-    },
+    };
+    PostaService.prototype.publishOnBehalfOf = function (postRequest, funderAddress) {
+        return __awaiter(this, void 0, void 0, function () {
+            var postaContract;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForWrite(funderAddress)];
+                    case 1:
+                        postaContract = _a.sent();
+                        return [4 /*yield*/, postaContract.publishOnBehalfOf(postRequest.text, postRequest.author, postRequest.replyOfTokenId || 0, postRequest.nonce, postRequest.signature)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     /**
     * Get a list of consecutive posts
     * @param fromTokenId Token id to start fetching results.
@@ -294,12 +308,12 @@ var PostaService = {
     * @param provider
     * @returns
     */
-    getConsecutivePosts: function (fromTokenId, maxRecords, contractProvider) {
+    PostaService.prototype.getConsecutivePosts = function (fromTokenId, maxRecords) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, bnCounter, counter, tokenIds, i, postsNFTs;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getTokenCounter()];
@@ -310,7 +324,7 @@ var PostaService = {
                         for (i = counter; i > Math.max(counter - maxRecords, 0); i--) {
                             tokenIds.unshift(ethers_1.BigNumber.from(i));
                         }
-                        return [4 /*yield*/, PostaService.getPosts(null, tokenIds, contractProvider)];
+                        return [4 /*yield*/, this.getPosts(null, tokenIds)];
                     case 3:
                         postsNFTs = _a.sent();
                         // Return the list of nfts posts
@@ -318,51 +332,51 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
     * Get the latest posts
     * @param provider
     * @param maxRecords Max number of records to fetch.
     * @returns
     */
-    getLatestPosts: function (maxRecords, contractProvider) {
+    PostaService.prototype.getLatestPosts = function (maxRecords) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, bnCounter, counter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getTokenCounter()];
                     case 2:
                         bnCounter = _a.sent();
                         counter = bnCounter.toNumber();
-                        return [4 /*yield*/, PostaService.getConsecutivePosts(counter, maxRecords, contractProvider)];
+                        return [4 /*yield*/, this.getConsecutivePosts(counter, maxRecords)];
                     case 3: return [2 /*return*/, _a.sent()];
                 }
             });
         });
-    },
+    };
     /**
      * Returns a list of already built posts from a list of token ids
      * @param tokenIds
      * @param contractProvider
      * @returns
      */
-    getPosts: function (humans, tokenIds, contractProvider) {
+    PostaService.prototype.getPosts = function (humans, tokenIds) {
         return __awaiter(this, void 0, void 0, function () {
             var postLogs, postsNFTs;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, PostaService.getPostLogs(humans, tokenIds, contractProvider)];
+                    case 0: return [4 /*yield*/, this.getPostLogs(humans, tokenIds)];
                     case 1:
                         postLogs = _a.sent();
                         if (!postLogs)
                             return [2 /*return*/, null];
                         return [4 /*yield*/, Promise.all(postLogs.map(function (log) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, PostaService.buildPost(log, contractProvider)];
+                                    case 0: return [4 /*yield*/, this.buildPost(log)];
                                     case 1: return [2 /*return*/, _a.sent()];
                                 }
                             }); }); }))];
@@ -372,18 +386,18 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Returns the total number of tokens minted
      * @param contractProvider
      * @returns
      */
-    getTokenCounter: function (contractProvider) {
+    PostaService.prototype.getTokenCounter = function () {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, bnCounter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getTokenCounter()];
@@ -393,19 +407,19 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Builds a post object to be used for display.
      * @param tokenId
      * @param contractProvider
      * @returns
      */
-    buildPost: function (log, contractProvider) {
+    PostaService.prototype.buildPost = function (log) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, postNFT, tokenURI, human, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getPost(log.tokenId)];
@@ -417,7 +431,7 @@ var PostaService = {
                         _a.label = 4;
                     case 4:
                         _a.trys.push([4, 6, , 7]);
-                        return [4 /*yield*/, PoHService_1.PohService.getHuman(log.author, contractProvider)];
+                        return [4 /*yield*/, this._pohService.getHuman(log.author)];
                     case 5:
                         human = _a.sent();
                         return [3 /*break*/, 7];
@@ -445,19 +459,19 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
       * Returns the maxChars value on the posta contract
       * @param tokenIds
       * @param contractProvider
       * @returns
       */
-    getMaxChars: function (contractProvider) {
+    PostaService.prototype.getMaxChars = function () {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, maxChars;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getMaxChars()];
@@ -467,13 +481,13 @@ var PostaService = {
                 }
             });
         });
-    },
-    getBurnPct: function (contractProvider) {
+    };
+    PostaService.prototype.getBurnPct = function () {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, burnPct;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getBurnPct()];
@@ -483,13 +497,13 @@ var PostaService = {
                 }
             });
         });
-    },
-    getTreasuryPct: function (contractProvider) {
+    };
+    PostaService.prototype.getTreasuryPct = function () {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, treasuryPct;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         return [4 /*yield*/, postaContract.getTreasuryPct()];
@@ -499,18 +513,18 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Returns a list with the top recent supporters
      * @param max The max number of top supporters to retrieve.
      * @param contractProvider
      */
-    getLastSupporters: function (max, contractProvider) {
+    PostaService.prototype.getLastSupporters = function (max) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, filter, logs, retVal;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         filter = postaContract.filters.SupportGiven(null, null);
@@ -521,15 +535,15 @@ var PostaService = {
                             return [2 /*return*/, null];
                         if (logs.length > max)
                             logs = logs.slice(0, 10);
-                        return [4 /*yield*/, Promise.all(logs.map(PostaService.buildSupportLog))];
+                        return [4 /*yield*/, Promise.all(logs.map(this.buildSupportLog))];
                     case 3:
                         retVal = _a.sent();
                         return [2 /*return*/, retVal];
                 }
             });
         });
-    },
-    buildSupportLog: function (log) {
+    };
+    PostaService.prototype.buildSupportLog = function (log) {
         return __awaiter(this, void 0, void 0, function () {
             var block, retItm;
             return __generator(this, function (_a) {
@@ -551,34 +565,34 @@ var PostaService = {
                 }
             });
         });
-    },
+    };
     /**
      * Returns a list of posts authored by a specific human.
      * @param human
      * @param contractProvider
      */
-    getPostsBy: function (human, contractProvider) {
+    PostaService.prototype.getPostsBy = function (human) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, PostaService.getPosts([human], null, contractProvider)];
+                    case 0: return [4 /*yield*/, this.getPosts([human], null)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
-    },
+    };
     /**
      * Returns an array with the supporters of a post up to a max number of logs.
      * @param tokenId
      * @param max
      * @param contractProvider
      */
-    getSupportersOf: function (tokenId, max, contractProvider) {
+    PostaService.prototype.getSupportersOf = function (tokenId, max) {
         return __awaiter(this, void 0, void 0, function () {
             var postaContract, filter, logs, retVal;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, contractProvider.getPostaContractForRead()];
+                    case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForRead()];
                     case 1:
                         postaContract = _a.sent();
                         filter = postaContract.filters.SupportGiven([tokenId], null);
@@ -589,13 +603,32 @@ var PostaService = {
                             return [2 /*return*/, null];
                         if (logs.length > max)
                             logs = logs.slice(0, 10);
-                        return [4 /*yield*/, Promise.all(logs.map(PostaService.buildSupportLog))];
+                        return [4 /*yield*/, Promise.all(logs.map(this.buildSupportLog))];
                     case 3:
                         retVal = _a.sent();
                         return [2 /*return*/, retVal];
                 }
             });
         });
-    }
-};
+    };
+    PostaService.prototype.signPostaRequest = function (postData) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, ((_a = this._contractProvider) === null || _a === void 0 ? void 0 : _a.signMessage(["address", "uint256", "uint256", "string"], [
+                            postData.author,
+                            postData.replyOfTokenId ? postData.replyOfTokenId.toString() : "0",
+                            postData.nonce,
+                            postData.text,
+                        ], postData.author))];
+                    case 1: 
+                    //  Sign message with data
+                    return [2 /*return*/, _b.sent()];
+                }
+            });
+        });
+    };
+    return PostaService;
+}());
 exports.PostaService = PostaService;

@@ -1,13 +1,7 @@
 // No me la
 import Container from "react-bootstrap/Container";
 
-import {
-  Card,
-  Col,
-  Row,
-  OverlayTrigger,
-  Tooltip,
-} from "react-bootstrap";
+import { Card, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
 import moment from "moment";
 
 import { FaReply, FaUsers } from "react-icons/fa";
@@ -20,7 +14,7 @@ import {
 } from "../../posta-lib/services/PostaService";
 import { useHuman } from "../../contextProviders/HumanProvider";
 import { useEffect, useState } from "react";
-import { useContractProvider } from "../../contextProviders/ContractsProvider";
+import { usePostaContext } from "../../contextProviders/PostaContext";
 import PostReply from "../PostReply";
 import { truncateTextMiddle } from "../../utils/textHelpers";
 import SupportPostDialog from "../SupportPostDialog";
@@ -52,7 +46,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
   const [showSupportPostDialog, setShowSupportPostDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const human = useHuman();
-  const contractProvider = useContractProvider();
+  const { postaService } = usePostaContext();
   const history = useHistory();
 
   const handleReplyClicked = async () => {
@@ -60,12 +54,9 @@ export default function PostDisplay(props: IPostDisplayProps) {
   };
 
   const refreshRepliesCount = async () => {
-    if (!contractProvider || !postData) return;
+    if (!postaService || !postData) return;
     try {
-      const postLogs = await PostaService.getPostRepliesLogs(
-        postData.tokenId,
-        contractProvider
-      );
+      const postLogs = await postaService.getPostRepliesLogs(postData.tokenId);
       setRepliesLogs(postLogs);
     } catch (error) {
       console.error("ERROR LOADING POST REPLIES", error);
@@ -81,19 +72,14 @@ export default function PostDisplay(props: IPostDisplayProps) {
         setPostData(props.postOrId as IPostaNFT);
       }
       // If contract provider is set
-      else if (contractProvider) {
+      else if (postaService) {
         // Get logs for the token
-        const postLogs = await PostaService.getPostLogs(
-          null,
-          [props.postOrId as BigNumber],
-          contractProvider
-        );
+        const postLogs = await postaService.getPostLogs(null, [
+          props.postOrId as BigNumber,
+        ]);
 
         if (postLogs && postLogs.length > 0) {
-          const data = await PostaService.buildPost(
-            postLogs[0],
-            contractProvider
-          );
+          const data = await postaService.buildPost(postLogs[0]);
           setPostData(data);
         }
       }
@@ -101,7 +87,7 @@ export default function PostDisplay(props: IPostDisplayProps) {
     }
 
     loadPost();
-  }, [props.postOrId, contractProvider]);
+  }, [props.postOrId]);
 
   // Refresh replies count
   useEffect(() => {

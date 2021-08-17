@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PostEditor from "../../components/PostEditor/PostEditor";
 import PostList from "../../components/PostList";
-import { useContractProvider } from "../../contextProviders/ContractsProvider";
+import { usePostaContext } from "../../contextProviders/PostaContext";
 import { useHuman } from "../../contextProviders/HumanProvider";
 import { IPostaNFT, PostaService } from "../../posta-lib/services/PostaService";
 import HumanNotRegistered from "./components/HumanNotRegistered";
@@ -12,7 +12,7 @@ export default function MainPage() {
   const human = useHuman();
   const [posts, setPosts] = useState<IPostaNFT[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
-  const contractProvider = useContractProvider();
+  const {postaService, contractProvider} = usePostaContext();
   const recordsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(0);
   const [totalTokenCount, setTotalTokenCount] = useState(0);
@@ -20,15 +20,14 @@ export default function MainPage() {
 
   const refreshPosts = async () => {
     setIsLoadingPosts(true);
-    if (!contractProvider) {
+    if (!postaService) {
       console.warn("Contract provider not set");
       return;
     }
     try {
-      const postList = await PostaService.getConsecutivePosts(
+      const postList = await postaService.getConsecutivePosts(
         totalTokenCount - currentPage * recordsPerPage,
-        recordsPerPage,
-        contractProvider
+        recordsPerPage
       );
       console.log("postList", postList);
       // If list is not null, set to the state
@@ -48,26 +47,26 @@ export default function MainPage() {
   };
 
   async function onNewPost(author: string, tokenId: BigNumber, value: string) {
-    if (!contractProvider) return;
-    const newPost = await PostaService.getPosts(
+    if (!postaService) return;
+    const newPost = await postaService.getPosts(
       null,
-      [tokenId],
-      contractProvider
+      [tokenId]
     );
     if (newPost && newPost.length > 0) appendPost(newPost[0]);
   }
 
   useEffect(() => {
     async function onContractProviderChanged() {
-      if (!contractProvider) return;
+      if (!postaService) return;
 
       // Update posts count
-      const tokenCount = await PostaService.getTokenCounter(contractProvider);
+      const tokenCount = await postaService.getTokenCounter();
       setTotalTokenCount(tokenCount.toNumber());
 
       // Refresh the latest posts
       await refreshPosts();
 
+      if(!contractProvider) return;
       const contract = await contractProvider.getPostaContractForRead();
       // Subscribe to NewPost evemt
       contract.on("NewPost", onNewPost);
@@ -76,7 +75,7 @@ export default function MainPage() {
     }
 
     onContractProviderChanged();
-  }, [contractProvider]);
+  }, [postaService]);
 
   const appendPost = (post: IPostaNFT) => {
     const newValue = posts.concat([post]);

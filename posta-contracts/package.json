@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "deploy:local:dummies": "npx hardhat run --network localhost ./scripts/00_deploy_dummy_contracts.ts",
-    "deploy:local": "npx hardhat run --network localhost ./scripts/01_deploy_posta.ts",
-    "deploy:ganache:dummies": "npx hardhat run --network ganache ./scripts/00_deploy_dummy_contracts.ts",
-    "deploy:ganache": "npx hardhat run --network ganache ./scripts/01_deploy_posta.ts"
+    "local:deploy:dummies": "npx hardhat run --network localhost ./scripts/00_deploy_dummy_contracts.ts",
+    "local:deploy:posta": "npx hardhat run --network localhost ./scripts/01_deploy_posta.ts",
+    "local:upgrade:posta": "npx hardhat run --network localhost ./scripts/02_upgrade_posta.ts",
+    "ganache:deploy:dummies": "npx hardhat run --network ganache ./scripts/00_deploy_dummy_contracts.ts",
+    "ganache:deploy:posta": "npx hardhat run --network ganache ./scripts/01_deploy_posta.ts",
+    "ganache:upgrade:posta": "npx hardhat run --network ganache ./scripts/02_upgrade_posta.ts"
   },
   "author": "",
   "license": "ISC",

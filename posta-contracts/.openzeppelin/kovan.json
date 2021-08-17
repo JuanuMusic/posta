@@ -1555,7 +1555,7 @@
           {
             "contract": "PostaStorage",
             "label": "_posts",
-            "type": "t_mapping(t_uint256,t_struct(PostaData)3181_storage)",
+            "type": "t_mapping(t_uint256,t_struct(PostaData)3325_storage)",
             "src": "contracts\\v0.2\\PostaStorage.sol:16"
           },
           {
@@ -1614,13 +1614,13 @@
           }
         ],
         "types": {
-          "t_mapping(t_uint256,t_struct(PostaData)3181_storage)": {
+          "t_mapping(t_uint256,t_struct(PostaData)3325_storage)": {
             "label": "mapping(uint256 => struct PostaData)"
           },
           "t_uint256": {
             "label": "uint256"
           },
-          "t_struct(PostaData)3181_storage": {
+          "t_struct(PostaData)3325_storage": {
             "label": "struct PostaData",
             "members": [
               {
@@ -1650,6 +1650,436 @@
           },
           "t_string_storage": {
             "label": "string"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          }
+        }
+      }
+    },
+    "446e24f9a88d1f981487528f7f7566e502544dbadd6031594f4e0ca5581aa875": {
+      "address": "0x410f118dAad974260CC0d84700a481d194CDfB6A",
+      "txHash": "0xef7927d5252e570b8c42e2415957ddd17e385dafe0683a1048767e0c9b04f942",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:23"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:28"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ERC165Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:35"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:24"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:27"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_owners",
+            "type": "t_mapping(t_uint256,t_address)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:30"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:33"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_tokenApprovals",
+            "type": "t_mapping(t_uint256,t_address)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:36"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_operatorApprovals",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:39"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:383"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_posts",
+            "type": "t_mapping(t_uint256,t_struct(PostaData)6403_storage)",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:16"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_supporters",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:19"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_poh",
+            "type": "t_address",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:21"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_ubi",
+            "type": "t_address",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:22"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_treasury",
+            "type": "t_address_payable",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:23"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_tokenCounter",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:25"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_maxChars",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:26"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_burnPct",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:29"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_treasuryPct",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:32"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "baseURI",
+            "type": "t_string_storage",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:35"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_seenNonces",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:37"
+          }
+        ],
+        "types": {
+          "t_mapping(t_uint256,t_struct(PostaData)6403_storage)": {
+            "label": "mapping(uint256 => struct PostaData)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_struct(PostaData)6403_storage": {
+            "label": "struct PostaData",
+            "members": [
+              {
+                "label": "supportGiven",
+                "type": "t_uint256"
+              },
+              {
+                "label": "supportersCount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_bool))": {
+            "label": "mapping(uint256 => mapping(address => bool))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_bool))": {
+            "label": "mapping(address => mapping(uint256 => bool))"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          }
+        }
+      }
+    },
+    "ab92936e19210a3c6f9e5b2088a474dad91e9d7d4291aee2af72ed48682c833d": {
+      "address": "0x119650cc21e734361414B1A9221AFC96e14F7978",
+      "txHash": "0xcfe694e530ba090114c82e153ca3a643bac79439d54352f6ebc75b7a6efb3e36",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:23"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:28"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "ERC165Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:35"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:24"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:27"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_owners",
+            "type": "t_mapping(t_uint256,t_address)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:30"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:33"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_tokenApprovals",
+            "type": "t_mapping(t_uint256,t_address)",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:36"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "_operatorApprovals",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:39"
+          },
+          {
+            "contract": "ERC721Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:383"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_posts",
+            "type": "t_mapping(t_uint256,t_struct(PostaData)6403_storage)",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:16"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_supporters",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:19"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_poh",
+            "type": "t_address",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:21"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_ubi",
+            "type": "t_address",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:22"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_treasury",
+            "type": "t_address_payable",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:23"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_tokenCounter",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:25"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_maxChars",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:26"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_burnPct",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:29"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_treasuryPct",
+            "type": "t_uint256",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:32"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "baseURI",
+            "type": "t_string_storage",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:35"
+          },
+          {
+            "contract": "PostaStorageV_2",
+            "label": "_seenNonces",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "src": "contracts\\v0.8\\PostaStorageV_2.sol:37"
+          }
+        ],
+        "types": {
+          "t_mapping(t_uint256,t_struct(PostaData)6403_storage)": {
+            "label": "mapping(uint256 => struct PostaData)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_struct(PostaData)6403_storage": {
+            "label": "struct PostaData",
+            "members": [
+              {
+                "label": "supportGiven",
+                "type": "t_uint256"
+              },
+              {
+                "label": "supportersCount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_bool))": {
+            "label": "mapping(uint256 => mapping(address => bool))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_bool))": {
+            "label": "mapping(address => mapping(uint256 => bool))"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
           },
           "t_mapping(t_uint256,t_address)": {
             "label": "mapping(uint256 => address)"

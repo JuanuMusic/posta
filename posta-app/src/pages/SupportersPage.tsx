@@ -4,24 +4,24 @@ import { Col, Container, Row } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import HumanCard from "../components/HumanCard";
 import PostDisplay from "../components/PostDisplay/PostDisplay";
-import { useContractProvider } from "../contextProviders/ContractsProvider";
+import { usePostaContext } from "../contextProviders/PostaContext";
 import { PostaService } from "../posta-lib";
 
 function SupportersPage(props: any) {
   const [humanAddresses, setHumanAddresses] = useState<string[] | null>(null);
-  const contractProvider = useContractProvider();
+  const {postaService} = usePostaContext();
   const tokenId = props.match.params.tokenId;
 
   async function loadSupporters() {
-      if(!tokenId || !contractProvider) return;
+      if(!tokenId || !postaService) return;
       if(tokenId === "test") return;
-      const supportLogs = await PostaService.getSupportersOf(BigNumber.from(tokenId), 50, contractProvider);
+      const supportLogs = await postaService.getSupportersOf(BigNumber.from(tokenId), 50);
       supportLogs && setHumanAddresses(supportLogs.map((supportLog: SupportGivenLog) => supportLog.supporter));
   }
 
   useEffect(() => {
     loadSupporters();
-  }, [contractProvider, tokenId]);
+  }, [postaService, tokenId]);
 
   return (
     <Container>

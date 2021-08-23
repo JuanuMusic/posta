@@ -55,6 +55,7 @@
   },
   "scripts": {
     "build-server": "cd server && tsc",
+    "build-n-serve": "npm run build-server && npm run serve",
     "serve": "node ./server/server.js",
     "start": "npm run serve",
     "dev": "react-scripts start",

@@ -15,6 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // }
 exports.default = {
     getConfig: function () {
-        return require("./" + process.env.CONFIG + ".json");
+        return require("./" + process.env.REACT_APP_CONFIG + ".json");
     },
 };

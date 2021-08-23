@@ -307,7 +307,8 @@ class PostaService implements IPostaService {
 
   async publishOnBehalfOf(postRequest: ISignedPostRequest, funderAddress: string): Promise<TransactionResponse> {
     const postaContract = await this._contractProvider.getPostaContractForWrite(funderAddress);
-    return await postaContract.publishOnBehalfOf(postRequest.text, postRequest.author, postRequest.replyOfTokenId || 0, postRequest.nonce, postRequest.signature);
+
+    return await postaContract.publishOnBehalfOf(postRequest.text, postRequest.author, postRequest.replyOfTokenId || "0", postRequest.nonce, postRequest.signature);
   }
 
   /**
@@ -502,6 +503,7 @@ class PostaService implements IPostaService {
   }
 
   async signPostaRequest(postData: IPostRequest) : Promise<string> {
+    console.log("SIGNING WITH", postData);
     //  Sign message with data
     return await this._contractProvider?.signMessage(
       ["address", "uint256", "uint256", "string"],

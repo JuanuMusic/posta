@@ -1,10 +1,10 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { NoEthereumProviderError } from "@web3-react/injected-connector";
 import { useEffect, useState } from "react";
 import { Button, Modal, Spinner } from "react-bootstrap";
-import { injected } from "../connectors";
+import { injected, walletconnect } from "../connectors";
 import { Web3Provider } from "@ethersproject/providers";
 import { ReactComponent as MetamaskLogo } from "../assets/metamask-fox.svg";
+import { ReactComponent as WalletConnect } from "../assets/walletconnect.svg";
 
 interface IConnectWalletDialogProps {
   show: boolean;
@@ -14,7 +14,7 @@ interface IConnectWalletDialogProps {
 enum ConnectorNames {
   Injected = "MetaMask",
   //   Network = "Network",
-  //   WalletConnect = "WalletConnect",
+  WalletConnect = "WalletConnect",
   //   WalletLink = "WalletLink",
   //   Ledger = "Ledger",
   //   Trezor = "Trezor",
@@ -27,14 +27,15 @@ enum ConnectorNames {
   //   Torus = "Torus",
 }
 
-// const connectorImages: { [connectorName in ConnectorNames]: any } = {
-//   [ConnectorNames.Injected]: MetamaskLogo,
-// };
+const connectorImages: { [connectorName in ConnectorNames]: React.ReactElement } = {
+  [ConnectorNames.Injected]: <MetamaskLogo className="wallet-logo" />,
+  [ConnectorNames.WalletConnect]: <WalletConnect className="wallet-logo" />
+};
 
 const connectorsByName: { [connectorName in ConnectorNames]: any } = {
   [ConnectorNames.Injected]: injected,
   //   [ConnectorNames.Network]: network,
-  //   [ConnectorNames.WalletConnect]: walletconnect,
+  [ConnectorNames.WalletConnect]: walletconnect,
   //   [ConnectorNames.WalletLink]: walletlink,
   //   [ConnectorNames.Ledger]: ledger,
   //   [ConnectorNames.Trezor]: trezor,
@@ -148,7 +149,7 @@ export default function ConnectWalletDialog(props: IConnectWalletDialogProps) {
                 )} */}
                 </div>
                 <div>
-                    <MetamaskLogo className="wallet-logo" />{" "}
+                    {connectorImages[name as ConnectorNames]}{" "}
                     {name}
                 </div>
               </Button>

@@ -21,7 +21,7 @@ import { IConfiguration } from "../posta-lib/services/ContractProvider";
 export default {
 
     getConfig(): IConfiguration {
-        return require(`./${process.env.CONFIG}.json`) as IConfiguration;
+        return require(`./${process.env.REACT_APP_CONFIG}.json`) as IConfiguration;
     },
     
     

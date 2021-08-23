@@ -295,7 +295,7 @@ var PostaService = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this._contractProvider.getPostaContractForWrite(funderAddress)];
                     case 1:
                         postaContract = _a.sent();
-                        return [4 /*yield*/, postaContract.publishOnBehalfOf(postRequest.text, postRequest.author, postRequest.replyOfTokenId || 0, postRequest.nonce, postRequest.signature)];
+                        return [4 /*yield*/, postaContract.publishOnBehalfOf(postRequest.text, postRequest.author, postRequest.replyOfTokenId || "0", postRequest.nonce, postRequest.signature)];
                     case 2: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -616,12 +616,14 @@ var PostaService = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, ((_a = this._contractProvider) === null || _a === void 0 ? void 0 : _a.signMessage(["address", "uint256", "uint256", "string"], [
-                            postData.author,
-                            postData.replyOfTokenId ? postData.replyOfTokenId.toString() : "0",
-                            postData.nonce,
-                            postData.text,
-                        ], postData.author))];
+                    case 0:
+                        console.log("SIGNING WITH", postData);
+                        return [4 /*yield*/, ((_a = this._contractProvider) === null || _a === void 0 ? void 0 : _a.signMessage(["address", "uint256", "uint256", "string"], [
+                                postData.author,
+                                postData.replyOfTokenId ? postData.replyOfTokenId.toString() : "0",
+                                postData.nonce,
+                                postData.text,
+                            ], postData.author))];
                     case 1: 
                     //  Sign message with data
                     return [2 /*return*/, _b.sent()];
